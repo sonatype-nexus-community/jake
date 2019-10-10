@@ -13,6 +13,7 @@
 # limitations under the License.
 import requests
 import logging
+import json
 
 class OssIndex(object):
     def __init__(self, url='https://ossindex.sonatype.org/api/v3/component-report', headers={'Content-type': 'application/json', 'User-Agent': 'jake'}):
@@ -32,5 +33,7 @@ class OssIndex(object):
         response = requests.post(self.get_url(), data=purls, headers=self.get_headers())
 
         self._log.debug(response.status_code)
-
-        return response 
+        if (response.status_code == 200):
+            return json.loads(response.text)
+        else:
+            return None

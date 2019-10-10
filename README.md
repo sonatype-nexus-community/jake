@@ -9,7 +9,7 @@
 ### Usage
 
 ```
- ~ > snek
+ ~ > jake
 ```
 
 ### Options

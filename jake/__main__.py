@@ -20,13 +20,15 @@ from os import _exit, EX_OSERR
 
 from jake.ossindex.ossindex import OssIndex
 from jake.parse.parse import Parse
+from jake.audit.audit import Audit
 
 def main():
     log = logging.getLogger('jake')
-    log.setLevel(logging.DEBUG)
+    log.setLevel(logging.ERROR)
 
     parse = Parse()
     ossindex = OssIndex()
+    audit = Audit()
 
     log.debug('Getting arguments')
     args = sys.argv[1:]
@@ -44,7 +46,10 @@ def main():
             log.debug(purls)
 
             response = ossindex.callOSSIndex(purls)
-            log.debug(response.json())
+
+            code = audit.auditResults(response)
+
+            _exit(code)
 
 if __name__ == '__main__':
     main()

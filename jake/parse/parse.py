@@ -40,6 +40,7 @@ class Parse(object):
     def reallyGetCondaDependencies(self, run_command_list):
         results = self.runCondaListCommand(run_command_list)
 
+        #self._log.debug("results: " + results)
         length = len(results)
 
         if results[length-1] == 0:

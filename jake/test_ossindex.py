@@ -11,10 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import ast
 import unittest
 from unittest.mock import Mock, patch
 
-from ossindex.ossindex import OssIndex
+import json
+
+from jake.ossindex.ossindex import OssIndex
 
 class TestOssIndex(unittest.TestCase):
     def setUp(self):
@@ -28,15 +31,12 @@ class TestOssIndex(unittest.TestCase):
     
     @patch('jake.ossindex.ossindex.requests.post')
     def test_callGetDependenciesReturnsPurls(self, mock_post):
-        expected_result = '''{
-           "coordinates": [
-               "pkg:conda/thing"
-           ] 
-        }'''
+        #expected_result = json.dumps(ast.literal_eval('{ "coordinates": [ "pkg:conda/thing"]}'))
+        expected_result = '{ "coordinates": [ "pkg:conda/thing"]}'
 
-        mock_post.return_value.status_code = "200"
-        mock_post.return_value.json = expected_result
+        mock_post.return_value.status_code = 200
+        mock_post.return_value.text = expected_result
         response = self.func.callOSSIndex("purls")
         
-        self.assertEqual(response.status_code, "200")
-        self.assertEqual(response.json, expected_result)
+        self.assertEqual(len(response["coordinates"]), 1)
+        self.assertEqual(response["coordinates"][0], "pkg:conda/thing")

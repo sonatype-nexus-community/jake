@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import sys
+import argparse
 import logging
 import json
 
@@ -23,33 +24,37 @@ from jake.parse.parse import Parse
 from jake.audit.audit import Audit
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('run', help='run jake', choices=['ddt'])
+    parser.add_argument('-V', '--version', help='show program version', action='store_true')
+    parser.add_argument('-E', '--env', help="conda environment to run", default='root')
+    parser.add_argument('-VV', '--verbose', help="set verbosity level to debug", action='store_true')
+    args = parser.parse_args()
     log = logging.getLogger('jake')
-    log.setLevel(logging.DEBUG)
+    if args.verbose:
+        log.setLevel(logging.DEBUG)
+    else:
+        log.setLevel(logging.ERROR)
 
     parse = Parse()
     ossindex = OssIndex()
     audit = Audit()
-
-    log.debug('Getting arguments')
-    args = sys.argv[1:]
     
-    for arg in args:
-        log.debug(arg)
-        if arg == 'ddt':
-            log.info('Calling OSS Index')
+    if args.run == 'ddt':
+        log.info('Calling OSS Index')
+        env = args.env
+        purls = parse.getDependencies(run_command_list=run_command(Commands.LIST, "-n " + env))
+        if purls is None:
+            log.error("No purls returned, likely culprit is no Conda installed")
+            _exit(EX_OSERR)
+        
+        log.debug(purls)
 
-            purls = parse.getDependencies(run_command_list=run_command(Commands.LIST, "-n root"))
-            if purls is None:
-                log.error("No purls returned, likely culprit is no Conda installed")
-                _exit(EX_OSERR)
-            
-            log.debug(purls)
+        response = ossindex.callOSSIndex(purls)
 
-            response = ossindex.callOSSIndex(purls)
+        code = audit.auditResults(response)
 
-            code = audit.auditResults(response)
-
-            _exit(code)
+        _exit(code)
 
 if __name__ == '__main__':
     main()

@@ -33,7 +33,7 @@ class OssIndex(object):
         response = requests.post(self.get_url(), data=purls, headers=self.get_headers())
 
         self._log.debug(response.status_code)
-        if (response.status_code == 200):
+        if response.status_code == 200:
             return json.loads(response.text)
         else:
             return None

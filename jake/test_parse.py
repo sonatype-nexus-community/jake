@@ -295,4 +295,4 @@ class TestParse(unittest.TestCase):
         oneWithHeader = '''#
 # Name                    Version                   Build  Channel
 ''' + oneCondaPackage
-        return (oneWithHeader, "", 0)
+        return oneWithHeader, "", 0

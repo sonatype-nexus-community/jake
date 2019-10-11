@@ -58,10 +58,18 @@ class Parse(object):
             if "#" in line:
                 self._log.debug("Skipping line")
             else:
-                purls.add_coordinate(self.parseLineIntoPurl(line))
-        return purls.get_coordinates_as_json()
+                purl = self.parseLineIntoPurl(line)
+                if purl is not None:
+                    purls.add_coordinate(self.parseLineIntoPurl(line))
+        if len(purls.get_coordinates()) == 0:
+            return None
+        else:
+            return purls.get_coordinates_as_json()
 
     def parseLineIntoPurl(self, line):
         lineArray = line.split()
         template = "pkg:conda/{}@{}"
-        return template.format(lineArray[0], lineArray[1])
+        if len(lineArray) is not 0:
+            return template.format(lineArray[0], lineArray[1])
+        else:
+            return None

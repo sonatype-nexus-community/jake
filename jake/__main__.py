@@ -24,7 +24,7 @@ from jake.audit.audit import Audit
 
 def main():
     log = logging.getLogger('jake')
-    log.setLevel(logging.ERROR)
+    log.setLevel(logging.DEBUG)
 
     parse = Parse()
     ossindex = OssIndex()
@@ -32,7 +32,7 @@ def main():
 
     log.debug('Getting arguments')
     args = sys.argv[1:]
-
+    
     for arg in args:
         log.debug(arg)
         if arg == 'ddt':

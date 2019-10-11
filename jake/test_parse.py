@@ -12,23 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import unittest
-import json
 
 from jake.parse.parse import Parse
 
 oneCondaPackage = "alabaster                 0.7.12                   py27_0"
 
-class TestParse(unittest.TestCase):
-    def setUp(self):
-        self.func = Parse()
-    
-    def test_callGetDependenciesReturnsPurls(self):
-        actual = self.func.getDependencies(run_command_list=self.mockListCommand())
-        #self.assertEqual(actual, json.dumps({"coordinates": ["pkg:pypi/django@1.11.1", "pkg:pypi/django@1.11.2"]}))
-        self.assertEqual(actual, '{"coordinates": ["pkg:conda/alabaster@0.7.12"]}')
-
-    def mockListCommand(self):
-        condaListOutput = '''# packages in environment at /anaconda2:
+condaListOutput = '''# packages in environment at /anaconda2:
 #
 # Name                    Version                   Build  Channel
 _ipyw_jlab_nb_ext_conf    0.1.0                    py27_0  
@@ -294,8 +283,16 @@ zipp                      0.3.3                    py27_1
 zlib                      1.2.11               h1de35cc_3  
 zstd                      1.3.7                h5bba6e5_0'''
 
+class TestParse(unittest.TestCase):
+    def setUp(self):
+        self.func = Parse()
+
+    def test_callGetDependenciesReturnsPurls(self):
+        actual = self.func.getDependencies(run_command_list=self.mockListCommand())
+        self.assertEqual(actual, '{"coordinates": ["pkg:conda/alabaster@0.7.12"]}')
+
+    def mockListCommand(self):
         oneWithHeader = '''#
 # Name                    Version                   Build  Channel
 ''' + oneCondaPackage
         return (oneWithHeader, "", 0)
-        #return (condaListOutput, "", 0)

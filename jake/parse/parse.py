@@ -43,7 +43,6 @@ class Parse(object):
     def reallyGetCondaDependencies(self, run_command_list):
         results = self.runCondaListCommand(run_command_list)
 
-        #self._log.debug("results: " + results)
         length = len(results)
 
         if results[length-1] == 0:
@@ -67,7 +66,7 @@ class Parse(object):
         if len(purls.get_coordinates()) == 0:
             return None
         else:
-            return purls.get_coordinates_as_json()
+            return purls
 
     def parseLineIntoPurl(self, line):
         lineArray = line.split()

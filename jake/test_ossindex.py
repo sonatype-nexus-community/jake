@@ -14,10 +14,14 @@
 import ast
 import unittest
 from unittest.mock import Mock, patch
+import sys
+import pathlib
 
 import json
 
 from jake.ossindex.ossindex import OssIndex
+from jake.parse.parse import Parse
+from jake.parse.coordinates import Coordinates
 
 class TestOssIndex(unittest.TestCase):
     def setUp(self):
@@ -28,15 +32,33 @@ class TestOssIndex(unittest.TestCase):
 
     def test_getUrl(self):
         self.assertEqual(self.func.get_url(), "http://blahblah")
+
+    def get_fakePurls(self):
+        fakePurls = Coordinates()
+        fakePurls.add_coordinate("pkg:conda/thing1")
+        fakePurls.add_coordinate("pkg:conda/thing2")
+        fakePurls.add_coordinate("pkg:conda/thing3")
+        return fakePurls
     
     @patch('jake.ossindex.ossindex.requests.post')
     def test_callGetDependenciesReturnsPurls(self, mock_post):
-        #expected_result = json.dumps(ast.literal_eval('{ "coordinates": [ "pkg:conda/thing"]}'))
-        expected_result = '{ "coordinates": [ "pkg:conda/thing"]}'
+        mock_result = '[{"coordinates": "pkg:conda/thing1"}, {"coordinates": "pkg:conda/thing2"}, {"coordinates": "pkg:conda/thing3"}]'
 
         mock_post.return_value.status_code = 200
-        mock_post.return_value.text = expected_result
-        response = self.func.callOSSIndex("purls")
+        mock_post.return_value.text = mock_result
+        response = self.func.callOSSIndex(self.get_fakePurls())
         
-        self.assertEqual(len(response["coordinates"]), 1)
-        self.assertEqual(response["coordinates"][0], "pkg:conda/thing")
+        self.assertEqual(len(response), 3)
+        self.assertEqual(response[0]["coordinates"], "pkg:conda/thing1")
+
+    def test_chunk(self):
+        fn = pathlib.Path(__file__).parent / "condalistoutput.txt"
+        sys.stdin = open(fn, "r")
+        parse = Parse()
+        purls = parse.getDependenciesFromStdin(sys.stdin)
+        actual_result = self.func.chunk(purls)
+        self.assertEqual(len(actual_result), 3)
+        self.assertEqual(len(actual_result[0]), 128)
+        self.assertEqual(actual_result[0][0], "pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0")
+        self.assertEqual(actual_result[1][0], "pkg:conda/mistune@0.8.4")
+        self.assertEqual(actual_result[2][0], "pkg:conda/yaml@0.1.7")

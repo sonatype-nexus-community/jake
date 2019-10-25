@@ -24,9 +24,9 @@ class TestParse(unittest.TestCase):
 
     def test_callGetDependenciesReturnsPurls(self):
         fn = pathlib.Path(__file__).parent / "condalistoutput.txt"
-        sys.stdin = open(fn, "r")
-        actual = self.func.getDependenciesFromStdin(sys.stdin)
-        output = json.loads(actual)["coordinates"]
+        with open(fn, "r") as stdin:
+            actual = self.func.getDependenciesFromStdin(stdin)
+            output = actual.get_coordinates()
         self.assertEqual(len(output), 262)
         self.assertEqual(output[0], "pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0")
         self.assertEqual(output[131], "pkg:conda/mkl_fft@1.0.12")

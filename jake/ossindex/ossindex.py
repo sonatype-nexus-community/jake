@@ -20,6 +20,7 @@ class OssIndex(object):
         self._url = url
         self._headers = headers
         self._log = logging.getLogger('jake')
+        self._maxcoords = 128
 
     def get_url(self):
         return self._url
@@ -27,14 +28,37 @@ class OssIndex(object):
     def get_headers(self):
         return self._headers
 
+    def chunk(self, purls):
+        chunks = []
+        divided = []
+        length = len(purls.get_coordinates())
+        num_chunks = length // self._maxcoords
+        if length % self._maxcoords > 0:
+            num_chunks += 1
+        start_index = 0
+        end_index = self._maxcoords
+        for i in range(0, num_chunks):
+            if i == (num_chunks - 1):
+                divided = purls.get_coordinates()[start_index:length]
+            else:    
+                divided = purls.get_coordinates()[start_index:end_index]
+                start_index = end_index
+                end_index += end_index
+            chunks.append(divided)
+        return chunks
+
     def callOSSIndex(self, purls):
         self._log.debug(purls)
 
-        response = requests.post(self.get_url(), data=purls, headers=self.get_headers())
-
-        self._log.debug(response.status_code)
-        
-        if response.status_code == 200:
-            return json.loads(response.text)
-        else:
-            return None
+        chunk_purls = self.chunk(purls)
+        results = []
+        for purls in chunk_purls:
+            data = {}
+            data["coordinates"] = purls
+            response = requests.post(self.get_url(), data=json.dumps(data), headers=self.get_headers())
+            if response.status_code == 200:
+                first_results = json.loads(response.text)
+            else:
+                return None
+            results.extend(first_results)
+        return results

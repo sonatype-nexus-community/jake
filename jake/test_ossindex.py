@@ -62,3 +62,4 @@ class TestOssIndex(unittest.TestCase):
         self.assertEqual(actual_result[0][0], "pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0")
         self.assertEqual(actual_result[1][0], "pkg:conda/mistune@0.8.4")
         self.assertEqual(actual_result[2][0], "pkg:conda/yaml@0.1.7")
+        

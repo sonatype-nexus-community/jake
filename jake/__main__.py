@@ -42,8 +42,7 @@ def main():
     
     if args.run == 'ddt':
         log.info('Calling OSS Index')
-        env = args.env
-        purls = parse.getDependencies(run_command_list=run_command(Commands.LIST, "-n " + env))
+        purls = parse.getDependenciesFromStdin(sys.stdin)
         if purls is None:
             log.error("No purls returned, likely culprit is no Conda installed")
             _exit(EX_OSERR)

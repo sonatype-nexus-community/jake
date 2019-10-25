@@ -26,6 +26,9 @@ class Parse(object):
         else:
             return None
 
+    def getDependenciesFromStdin(self, stdin):
+        return self.parseCondaDependenciesIntoPurls(stdin)
+
     def checkIfCondaExists(self):
         self._log.debug(which("python"))
         condaExists = which("conda")
@@ -51,11 +54,10 @@ class Parse(object):
     def runCondaListCommand(self, run_command_list):
         return run_command_list
 
-    def parseCondaDependenciesIntoPurls(self, results):
+    def parseCondaDependenciesIntoPurls(self, stdin):
         purls = Coordinates()
-        string = results[0].splitlines()
         self._log.debug("Starting to parse results")
-        for line in string:
+        for line in stdin:
             if "#" in line:
                 self._log.debug("Skipping line")
             else:

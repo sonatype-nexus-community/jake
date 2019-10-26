@@ -26,6 +26,7 @@ from jake.parse.coordinates import Coordinates
 class TestOssIndex(unittest.TestCase):
     def setUp(self):
         self.func = OssIndex(url="http://blahblah", headers={"thing": "thing", "anotherthing": "anotherthing"})
+        self.parse = Parse()
     
     def test_getHeaders(self):
         self.assertEqual(self.func.get_headers(), {"thing": "thing", "anotherthing": "anotherthing"})
@@ -54,12 +55,19 @@ class TestOssIndex(unittest.TestCase):
     def test_chunk(self):
         fn = pathlib.Path(__file__).parent / "condalistoutput.txt"
         sys.stdin = open(fn, "r")
-        parse = Parse()
-        purls = parse.getDependenciesFromStdin(sys.stdin)
+        
+        purls = self.parse.getDependenciesFromStdin(sys.stdin)
         actual_result = self.func.chunk(purls)
         self.assertEqual(len(actual_result), 3)
         self.assertEqual(len(actual_result[0]), 128)
         self.assertEqual(actual_result[0][0], "pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0")
         self.assertEqual(actual_result[1][0], "pkg:conda/mistune@0.8.4")
         self.assertEqual(actual_result[2][0], "pkg:conda/yaml@0.1.7")
+
+    def test_insertIntoCache(self):
+        fn = pathlib.Path(__file__).parent / "ossindexresponse.txt"
+        sys.stdin = open(fn, "r")
+        (cached, num_cached) = self.func.maybeInsertIntoCache(sys.stdin.read())
+        self.assertEqual(num_cached, 46)
+        self.assertEqual(cached, True)
         

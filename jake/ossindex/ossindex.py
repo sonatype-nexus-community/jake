@@ -28,6 +28,10 @@ class OssIndex(object):
         self._log = logging.getLogger('jake')
         self._maxcoords = 128
         home = str(Path.home())
+        dir_oss = home + "/.ossindex/"
+        self._log.debug(Path(dir_oss).exists())
+        if not Path(dir_oss).exists():
+            Path(dir_oss).mkdir(parents=True, exist_ok=True)
         self._db = TinyDB(home + "/.ossindex/jake.json")
 
     def get_url(self):

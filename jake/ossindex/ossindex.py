@@ -22,17 +22,19 @@ from tinydb import TinyDB, Query
 from pathlib import Path
 
 class OssIndex(object):
-    def __init__(self, url='https://ossindex.sonatype.org/api/v3/component-report', headers={'Content-type': 'application/json', 'User-Agent': 'jake'}):
+    def __init__(self, url='https://ossindex.sonatype.org/api/v3/component-report', headers={'Content-type': 'application/json', 'User-Agent': 'jake'}, cache_location=''):
         self._url = url
         self._headers = headers
         self._log = logging.getLogger('jake')
         self._maxcoords = 128
-        home = str(Path.home())
-        dir_oss = home + "/.ossindex/"
-        self._log.debug(Path(dir_oss).exists())
+        if cache_location == '':
+            home = str(Path.home())
+            dir_oss = home + "/.ossindex/"
+        else:
+            dir_oss = cache_location + "/.ossindex/"
         if not Path(dir_oss).exists():
             Path(dir_oss).mkdir(parents=True, exist_ok=True)
-        self._db = TinyDB(home + "/.ossindex/jake.json")
+        self._db = TinyDB(dir_oss + "jake.json")
 
     def get_url(self):
         return self._url
@@ -107,5 +109,15 @@ class OssIndex(object):
     def getPurlsAndResultsFromCache(self, purls):
         # New Purls will be the purls that are not in TinyDB OR their TTL is fine, so we do need to query OSS Index on them
         # Results will be a list of responses for purls that were in TinyDB and their TTL was not expired
+        new_purls = []
+        results = []
+        Coordinate = Query()
+        for purl in purls:
+            mydatetime = datetime.now()
+            result = self._db.search(Coordinate.purl == purl['coordinates'])
+            if len(result) is 0 or parse(result[0]['ttl']) < mydatetime:
+                new_purls.append(purl)
+            else:
+                results.extend(result)
         return (new_purls, results)
 

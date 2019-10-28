@@ -15,8 +15,8 @@ import ast
 import unittest
 from unittest.mock import Mock, patch
 import sys
-import pathlib
-
+from pathlib import Path
+from tinydb import TinyDB, Query
 import json
 
 from jake.ossindex.ossindex import OssIndex
@@ -25,8 +25,12 @@ from jake.parse.coordinates import Coordinates
 
 class TestOssIndex(unittest.TestCase):
     def setUp(self):
-        self.func = OssIndex(url="http://blahblah", headers={"thing": "thing", "anotherthing": "anotherthing"})
+        self.func = OssIndex(url="http://blahblah", headers={"thing": "thing", "anotherthing": "anotherthing"}, cache_location="/tmp")
         self.parse = Parse()
+    
+    def tearDown(self):
+        if Path('/tmp/.ossindex/jake.json').exists():
+            Path('/tmp/.ossindex/jake.json').unlink()
     
     def test_getHeaders(self):
         self.assertEqual(self.func.get_headers(), {"thing": "thing", "anotherthing": "anotherthing"})
@@ -53,7 +57,7 @@ class TestOssIndex(unittest.TestCase):
         self.assertEqual(response[0]["coordinates"], "pkg:conda/thing1")
 
     def test_chunk(self):
-        fn = pathlib.Path(__file__).parent / "condalistoutput.txt"
+        fn = Path(__file__).parent / "condalistoutput.txt"
         sys.stdin = open(fn, "r")
         
         purls = self.parse.getDependenciesFromStdin(sys.stdin)
@@ -65,9 +69,13 @@ class TestOssIndex(unittest.TestCase):
         self.assertEqual(actual_result[2][0], "pkg:conda/yaml@0.1.7")
 
     def test_insertIntoCache(self):
-        fn = pathlib.Path(__file__).parent / "ossindexresponse.txt"
+        fn = Path(__file__).parent / "ossindexresponse.txt"
         sys.stdin = open(fn, "r")
         (cached, num_cached) = self.func.maybeInsertIntoCache(sys.stdin.read())
         self.assertEqual(num_cached, 46)
         self.assertEqual(cached, True)
-        
+
+    def test_getPurlsFromCache(self):
+        self.func.maybeInsertIntoCache("[{'coordinates': 'pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/alabaster@0.7.12', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/alabaster@0.7.12', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/anaconda@2019.07', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/anaconda@2019.07', 'vulnerabilities': []}]")
+        (new_purls, results) = self.func.getPurlsAndResultsFromCache("[{'coordinates': 'pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0', 'vulnerabilities': []}]")
+        self.assertEqual(results[0], "[{'coordinates': 'pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0', 'vulnerabilities': []}]")

@@ -109,8 +109,6 @@ class OssIndex(object):
         return (cached, num_cached)
 
     def getPurlsAndResultsFromCache(self, purls: Coordinates):
-        # New Purls will be the purls that are not in TinyDB OR their TTL is fine, so we do need to query OSS Index on them
-        # Results will be a list of responses for purls that were in TinyDB and their TTL was not expired
         valid = isinstance(purls, Coordinates)
         if not valid:
             return (None, None)

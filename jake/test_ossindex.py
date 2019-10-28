@@ -11,13 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import sys
 import ast
 import unittest
+import json
 from unittest.mock import Mock, patch
-import sys
 from pathlib import Path
 from tinydb import TinyDB, Query
-import json
+from dateutil.parser import parse
+from datetime import datetime, timedelta
+
 
 from jake.ossindex.ossindex import OssIndex
 from jake.parse.parse import Parse
@@ -88,7 +91,18 @@ class TestOssIndex(unittest.TestCase):
         (cached, num_cached) = self.func.maybeInsertIntoCache(sys.stdin.read())
         self.assertEqual(num_cached, 0)
         self.assertEqual(cached, False)
-        # TODO datetime that is expired
+
+    def test_insertIntoCacheExpiredTTL(self):
+        db = TinyDB('/tmp/.ossindex/jake.json')
+        Coordinates = Query()
+        self.func.maybeInsertIntoCache("[{'coordinates': 'pkg:conda/astroid@2.3.1', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/astroid@2.3.1', 'vulnerabilities': []}]")
+        resultExpired = db.search(Coordinates.purl == "pkg:conda/astroid@2.3.1")
+        timeUnwind = parse(resultExpired[0]['ttl']) - timedelta(hours=13)
+        db.update({'ttl': timeUnwind.isoformat()}, Coordinates.purl == "pkg:conda/astroid@2.3.1")
+        
+        (cached, num_cached) = self.func.maybeInsertIntoCache("[{'coordinates': 'pkg:conda/astroid@2.3.1', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/astroid@2.3.1', 'vulnerabilities': []}]")
+        self.assertEqual(cached, True)
+        self.assertEqual(num_cached, 1)
 
     def test_getPurlsFromCache(self):
         self.func.maybeInsertIntoCache("[{'coordinates': 'pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/alabaster@0.7.12', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/alabaster@0.7.12', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/anaconda@2019.07', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/anaconda@2019.07', 'vulnerabilities': []}]")

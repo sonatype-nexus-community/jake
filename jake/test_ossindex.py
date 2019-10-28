@@ -80,6 +80,16 @@ class TestOssIndex(unittest.TestCase):
         self.assertEqual(num_cached, 46)
         self.assertEqual(cached, True)
 
+    def test_insertIntoCacheDoesNotDuplicate(self):
+        fn = Path(__file__).parent / "ossindexresponse.txt"
+        sys.stdin = open(fn, "r")
+        self.func.maybeInsertIntoCache(sys.stdin.read())
+        sys.stdin = open(fn, "r")
+        (cached, num_cached) = self.func.maybeInsertIntoCache(sys.stdin.read())
+        self.assertEqual(num_cached, 0)
+        self.assertEqual(cached, False)
+        # TODO datetime that is expired
+
     def test_getPurlsFromCache(self):
         self.func.maybeInsertIntoCache("[{'coordinates': 'pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/alabaster@0.7.12', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/alabaster@0.7.12', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/anaconda@2019.07', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/anaconda@2019.07', 'vulnerabilities': []}]")
         (new_purls, results) = self.func.getPurlsAndResultsFromCache(self.get_fakeActualPurls())
@@ -99,3 +109,8 @@ class TestOssIndex(unittest.TestCase):
         (new_purls, results) = self.func.getPurlsAndResultsFromCache("bad data")
         self.assertEqual(new_purls, None)
         self.assertEqual(results, None)
+
+    def test_cleanWipesDB(self):
+        self.func.maybeInsertIntoCache("[{'coordinates': 'pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0', 'vulnerabilities': []}]")
+        result = self.func.cleanCache()
+        self.assertEqual(len(result), 0)

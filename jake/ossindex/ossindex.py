@@ -81,6 +81,7 @@ class OssIndex(object):
             results.extend(first_results)
 
         self.maybeInsertIntoCache(results)
+        # TODO log to debug tuple
         return results
 
     def maybeInsertIntoCache(self, text):
@@ -125,3 +126,6 @@ class OssIndex(object):
                 results.append(result[0]['response'])
         return (new_purls, results)
 
+    def cleanCache(self):
+        self._db.purge()
+        return self._db.all()

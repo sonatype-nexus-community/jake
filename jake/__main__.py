@@ -29,17 +29,20 @@ def main():
     parser.add_argument('-V', '--version', help='show program version', action='store_true')
     parser.add_argument('-E', '--env', help="conda environment to run", default='root')
     parser.add_argument('-VV', '--verbose', help="set verbosity level to debug", action='store_true')
+    parser.add_argument('-C', '--clean', help="wipe out jake cache", action='store_true')
     args = parser.parse_args()
     log = logging.getLogger('jake')
     if args.verbose:
         log.setLevel(logging.DEBUG)
     else:
         log.setLevel(logging.ERROR)
-
     parse = Parse()
     ossindex = OssIndex()
     audit = Audit()
     
+    if args.clean:
+        ossindex.cleanCache()
+        
     if args.run == 'ddt':
         log.info('Calling OSS Index')
         purls = parse.getDependenciesFromStdin(sys.stdin)

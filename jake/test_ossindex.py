@@ -45,6 +45,11 @@ class TestOssIndex(unittest.TestCase):
         fakePurls.add_coordinate("pkg:conda/thing3")
         return fakePurls
     
+    def get_fakeActualPurls(self):
+        fakeActualPurls = Coordinates()
+        fakeActualPurls.add_coordinate("pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0")
+        return fakeActualPurls
+    
     @patch('jake.ossindex.ossindex.requests.post')
     def test_callGetDependenciesReturnsPurls(self, mock_post):
         mock_result = '[{"coordinates": "pkg:conda/thing1"}, {"coordinates": "pkg:conda/thing2"}, {"coordinates": "pkg:conda/thing3"}]'
@@ -77,5 +82,20 @@ class TestOssIndex(unittest.TestCase):
 
     def test_getPurlsFromCache(self):
         self.func.maybeInsertIntoCache("[{'coordinates': 'pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/alabaster@0.7.12', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/alabaster@0.7.12', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/anaconda@2019.07', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/anaconda@2019.07', 'vulnerabilities': []}]")
-        (new_purls, results) = self.func.getPurlsAndResultsFromCache("[{'coordinates': 'pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0', 'vulnerabilities': []}]")
-        self.assertEqual(results[0], "[{'coordinates': 'pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0', 'vulnerabilities': []}]")
+        (new_purls, results) = self.func.getPurlsAndResultsFromCache(self.get_fakeActualPurls())
+        self.assertEqual(results, ast.literal_eval("[{'coordinates': 'pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0', 'vulnerabilities': []}]"))
+        self.assertEqual(len(new_purls.get_coordinates()), 0)
+        self.assertEqual(isinstance(new_purls, Coordinates), True)
+
+    def test_getPurlsFromCacheWithCacheMiss(self):
+        self.func.maybeInsertIntoCache("[{'coordinates': 'pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0', 'vulnerabilities': []}]")
+        fake_purls = self.get_fakeActualPurls()
+        fake_purls.add_coordinate("pkg:conda/alabaster@0.7.12")
+        (new_purls, results) = self.func.getPurlsAndResultsFromCache(fake_purls)
+        self.assertEqual(len(new_purls.get_coordinates()), 1)
+        self.assertEqual(results, ast.literal_eval("[{'coordinates': 'pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0', 'vulnerabilities': []}]"))
+
+    def test_getPurlsFromCacheWithNonValidObject(self):
+        (new_purls, results) = self.func.getPurlsAndResultsFromCache("bad data")
+        self.assertEqual(new_purls, None)
+        self.assertEqual(results, None)

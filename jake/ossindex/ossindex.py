@@ -20,6 +20,7 @@ from datetime import datetime, timedelta
 from dateutil.parser import parse
 from tinydb import TinyDB, Query
 from pathlib import Path
+from jake.parse.parse import Coordinates
 
 class OssIndex(object):
     def __init__(self, url='https://ossindex.sonatype.org/api/v3/component-report', headers={'Content-type': 'application/json', 'User-Agent': 'jake'}, cache_location=''):
@@ -106,18 +107,21 @@ class OssIndex(object):
 
         return (cached, num_cached)
 
-    def getPurlsAndResultsFromCache(self, purls):
+    def getPurlsAndResultsFromCache(self, purls: Coordinates):
         # New Purls will be the purls that are not in TinyDB OR their TTL is fine, so we do need to query OSS Index on them
         # Results will be a list of responses for purls that were in TinyDB and their TTL was not expired
-        new_purls = []
+        valid = isinstance(purls, Coordinates)
+        if not valid:
+            return (None, None)
+        new_purls = Coordinates()
         results = []
         Coordinate = Query()
-        for purl in purls:
+        for purl in purls.get_coordinates():
             mydatetime = datetime.now()
-            result = self._db.search(Coordinate.purl == purl['coordinates'])
+            result = self._db.search(Coordinate.purl == purl)
             if len(result) is 0 or parse(result[0]['ttl']) < mydatetime:
-                new_purls.append(purl)
+                new_purls.add_coordinate(purl)
             else:
-                results.extend(result)
+                results.append(result[0]['response'])
         return (new_purls, results)
 

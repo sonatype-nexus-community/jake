@@ -80,8 +80,8 @@ class OssIndex(object):
                 return None
             results.extend(first_results)
 
-        self.maybeInsertIntoCache(results)
-        # TODO log to debug tuple
+        (cached, num_cached) = self.maybeInsertIntoCache(results)
+        self._log.debug("Cached: " + cached + " num_cached: " + num_cached)
         return results
 
     def maybeInsertIntoCache(self, text):

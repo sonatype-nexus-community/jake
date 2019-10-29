@@ -65,8 +65,8 @@ class TestOssIndex(unittest.TestCase):
         mock_post.return_value.text = mock_result
         response = self.func.callOSSIndex(self.get_fakePurls())
         
-        self.assertEqual(len(response), 3)
-        self.assertEqual(response[0]["coordinates"], "pkg:conda/thing1")
+        self.assertEqual(len(response), 46)
+        self.assertEqual(response[0].getCoordinates(), "pkg:conda/astroid@2.3.1")
 
     def test_chunk(self):
         fn = Path(__file__).parent / "condalistoutput.txt"
@@ -128,7 +128,12 @@ class TestOssIndex(unittest.TestCase):
         fake_purls.add_coordinate("pkg:conda/alabaster@0.7.12")
         (new_purls, results) = self.func.getPurlsAndResultsFromCache(fake_purls)
         self.assertEqual(len(new_purls.get_coordinates()), 1)
-        self.assertEqual(results, ast.literal_eval("[{'coordinates': 'pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0', 'vulnerabilities': []}]"))
+        self.assertEqual(isinstance(new_purls, Coordinates), True)
+        self.assertEqual(isinstance(results, List), True)
+        self.assertEqual(isinstance(results[0], CoordinateResults), True)
+        self.assertEqual(isinstance(results[0].getVulnerabilities(), List), True)
+        self.assertEqual(results[0].getCoordinates(), "pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0")
+        self.assertEqual(results[0].getReference(), "https://ossindex.sonatype.org/component/pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0")
 
     def test_getPurlsFromCacheWithNonValidObject(self):
         (new_purls, results) = self.func.getPurlsAndResultsFromCache("bad data")

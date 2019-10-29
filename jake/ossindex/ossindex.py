@@ -84,7 +84,7 @@ class OssIndex(object):
             results.extend(first_results)
 
         (cached, num_cached) = self.maybeInsertIntoCache(results)
-        self._log.debug("Cached: " + cached + " num_cached: " + num_cached)
+        self._log.debug("Cached: " + str(cached) + " num_cached: " + str(num_cached))
         return results
 
     def maybeInsertIntoCache(self, results: List[CoordinateResults]):

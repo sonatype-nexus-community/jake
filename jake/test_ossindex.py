@@ -58,22 +58,19 @@ class TestOssIndex(unittest.TestCase):
     @patch('jake.ossindex.ossindex.requests.post')
     def test_callGetDependenciesReturnsPurls(self, mock_post):
         fn = Path(__file__).parent / "ossindexresponse.txt"
-        sys.stdin = open(fn, "r")
-        mock_result = sys.stdin.read().replace("'", '"')
-
-        mock_post.return_value.status_code = 200
-        mock_post.return_value.text = mock_result
-        response = self.func.callOSSIndex(self.get_fakePurls())
-        
+        with open(fn, "r") as stdin:
+            mock_result = stdin.read().replace("'", '"')
+            mock_post.return_value.status_code = 200
+            mock_post.return_value.text = mock_result
+            response = self.func.callOSSIndex(self.get_fakePurls())
         self.assertEqual(len(response), 46)
         self.assertEqual(response[0].getCoordinates(), "pkg:conda/astroid@2.3.1")
 
     def test_chunk(self):
         fn = Path(__file__).parent / "condalistoutput.txt"
-        sys.stdin = open(fn, "r")
-        
-        purls = self.parse.getDependenciesFromStdin(sys.stdin)
-        actual_result = self.func.chunk(purls)
+        with open(fn, "r") as stdin:
+            purls = self.parse.getDependenciesFromStdin(stdin)
+            actual_result = self.func.chunk(purls)
         self.assertEqual(len(actual_result), 3)
         self.assertEqual(len(actual_result[0]), 128)
         self.assertEqual(actual_result[0][0], "pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0")
@@ -82,18 +79,18 @@ class TestOssIndex(unittest.TestCase):
 
     def test_insertIntoCache(self):
         fn = Path(__file__).parent / "ossindexresponse.txt"
-        sys.stdin = open(fn, "r")
-        response = json.loads(sys.stdin.read().replace("'", '"'), cls=ResultsDecoder)
-        (cached, num_cached) = self.func.maybeInsertIntoCache(response)
+        with open(fn, "r") as stdin:
+            response = json.loads(stdin.read().replace("'", '"'), cls=ResultsDecoder)
+            (cached, num_cached) = self.func.maybeInsertIntoCache(response)
         self.assertEqual(num_cached, 46)
         self.assertEqual(cached, True)
 
     def test_insertIntoCacheDoesNotDuplicate(self):
         fn = Path(__file__).parent / "ossindexresponse.txt"
-        sys.stdin = open(fn, "r")
-        response = json.loads(sys.stdin.read().replace("'", '"'), cls=ResultsDecoder)
-        self.func.maybeInsertIntoCache(response)
-        (cached, num_cached) = self.func.maybeInsertIntoCache(response)
+        with open(fn, "r") as stdin:
+            response = json.loads(stdin.read().replace("'", '"'), cls=ResultsDecoder)
+            self.func.maybeInsertIntoCache(response)
+            (cached, num_cached) = self.func.maybeInsertIntoCache(response)
         self.assertEqual(num_cached, 0)
         self.assertEqual(cached, False)
 

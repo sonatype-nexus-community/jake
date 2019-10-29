@@ -20,11 +20,13 @@ from pathlib import Path
 from tinydb import TinyDB, Query
 from dateutil.parser import parse
 from datetime import datetime, timedelta
-
+from typing import List
 
 from jake.ossindex.ossindex import OssIndex
 from jake.parse.parse import Parse
 from jake.parse.coordinates import Coordinates
+from jake.types.coordinateresults import CoordinateResults
+from jake.types.results_decoder import ResultsDecoder
 
 class TestOssIndex(unittest.TestCase):
     def setUp(self):
@@ -55,7 +57,9 @@ class TestOssIndex(unittest.TestCase):
     
     @patch('jake.ossindex.ossindex.requests.post')
     def test_callGetDependenciesReturnsPurls(self, mock_post):
-        mock_result = '[{"coordinates": "pkg:conda/thing1"}, {"coordinates": "pkg:conda/thing2"}, {"coordinates": "pkg:conda/thing3"}]'
+        fn = Path(__file__).parent / "ossindexresponse.txt"
+        sys.stdin = open(fn, "r")
+        mock_result = sys.stdin.read().replace("'", '"')
 
         mock_post.return_value.status_code = 200
         mock_post.return_value.text = mock_result
@@ -79,40 +83,47 @@ class TestOssIndex(unittest.TestCase):
     def test_insertIntoCache(self):
         fn = Path(__file__).parent / "ossindexresponse.txt"
         sys.stdin = open(fn, "r")
-        (cached, num_cached) = self.func.maybeInsertIntoCache(sys.stdin.read())
+        response = json.loads(sys.stdin.read().replace("'", '"'), cls=ResultsDecoder)
+        (cached, num_cached) = self.func.maybeInsertIntoCache(response)
         self.assertEqual(num_cached, 46)
         self.assertEqual(cached, True)
 
     def test_insertIntoCacheDoesNotDuplicate(self):
         fn = Path(__file__).parent / "ossindexresponse.txt"
         sys.stdin = open(fn, "r")
-        self.func.maybeInsertIntoCache(sys.stdin.read())
-        sys.stdin = open(fn, "r")
-        (cached, num_cached) = self.func.maybeInsertIntoCache(sys.stdin.read())
+        response = json.loads(sys.stdin.read().replace("'", '"'), cls=ResultsDecoder)
+        self.func.maybeInsertIntoCache(response)
+        (cached, num_cached) = self.func.maybeInsertIntoCache(response)
         self.assertEqual(num_cached, 0)
         self.assertEqual(cached, False)
 
     def test_insertIntoCacheExpiredTTL(self):
         db = TinyDB('/tmp/.ossindex/jake.json')
         Coordinates = Query()
-        self.func.maybeInsertIntoCache("[{'coordinates': 'pkg:conda/astroid@2.3.1', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/astroid@2.3.1', 'vulnerabilities': []}]")
+        response = self.stringToCoordinatesResult("[{'coordinates': 'pkg:conda/astroid@2.3.1', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/astroid@2.3.1', 'vulnerabilities': []}]")
+        self.func.maybeInsertIntoCache(response)
         resultExpired = db.search(Coordinates.purl == "pkg:conda/astroid@2.3.1")
         timeUnwind = parse(resultExpired[0]['ttl']) - timedelta(hours=13)
         db.update({'ttl': timeUnwind.isoformat()}, Coordinates.purl == "pkg:conda/astroid@2.3.1")
         
-        (cached, num_cached) = self.func.maybeInsertIntoCache("[{'coordinates': 'pkg:conda/astroid@2.3.1', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/astroid@2.3.1', 'vulnerabilities': []}]")
+        nextResponse = self.stringToCoordinatesResult("[{'coordinates': 'pkg:conda/astroid@2.3.1', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/astroid@2.3.1', 'vulnerabilities': []}]")
+        (cached, num_cached) = self.func.maybeInsertIntoCache(nextResponse)
         self.assertEqual(cached, True)
         self.assertEqual(num_cached, 1)
 
     def test_getPurlsFromCache(self):
-        self.func.maybeInsertIntoCache("[{'coordinates': 'pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/alabaster@0.7.12', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/alabaster@0.7.12', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/anaconda@2019.07', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/anaconda@2019.07', 'vulnerabilities': []}]")
+        self.func.maybeInsertIntoCache(self.stringToCoordinatesResult("[{'coordinates': 'pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/alabaster@0.7.12', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/alabaster@0.7.12', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/anaconda@2019.07', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/anaconda@2019.07', 'vulnerabilities': []}]"))
         (new_purls, results) = self.func.getPurlsAndResultsFromCache(self.get_fakeActualPurls())
-        self.assertEqual(results, ast.literal_eval("[{'coordinates': 'pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0', 'vulnerabilities': []}]"))
+        self.assertEqual(isinstance(results, List), True)
+        self.assertEqual(isinstance(results[0], CoordinateResults), True)
+        self.assertEqual(results[0].getCoordinates(), "pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0")
+        self.assertEqual(results[0].getReference(), "https://ossindex.sonatype.org/component/pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0")
+        self.assertEqual(isinstance(results[0].getVulnerabilities(), List), True)
         self.assertEqual(len(new_purls.get_coordinates()), 0)
         self.assertEqual(isinstance(new_purls, Coordinates), True)
 
     def test_getPurlsFromCacheWithCacheMiss(self):
-        self.func.maybeInsertIntoCache("[{'coordinates': 'pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0', 'vulnerabilities': []}]")
+        self.func.maybeInsertIntoCache(self.stringToCoordinatesResult("[{'coordinates': 'pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0', 'vulnerabilities': []}]"))
         fake_purls = self.get_fakeActualPurls()
         fake_purls.add_coordinate("pkg:conda/alabaster@0.7.12")
         (new_purls, results) = self.func.getPurlsAndResultsFromCache(fake_purls)
@@ -125,6 +136,9 @@ class TestOssIndex(unittest.TestCase):
         self.assertEqual(results, None)
 
     def test_cleanWipesDB(self):
-        self.func.maybeInsertIntoCache("[{'coordinates': 'pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0', 'vulnerabilities': []}]")
+        self.func.maybeInsertIntoCache(self.stringToCoordinatesResult("[{'coordinates': 'pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0', 'vulnerabilities': []}]"))
         result = self.func.cleanCache()
         self.assertEqual(len(result), 0)
+
+    def stringToCoordinatesResult(self, string):
+        return json.loads(string.replace("'", '"'), cls=ResultsDecoder)

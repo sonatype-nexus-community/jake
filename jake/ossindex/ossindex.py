@@ -16,11 +16,14 @@ import logging
 import json
 import ast
 
+from typing import List
 from datetime import datetime, timedelta
 from dateutil.parser import parse
 from tinydb import TinyDB, Query
 from pathlib import Path
 from jake.parse.parse import Coordinates
+from jake.types.results_decoder import ResultsDecoder
+from jake.types.coordinateresults import CoordinateResults
 
 class OssIndex(object):
     def __init__(self, url='https://ossindex.sonatype.org/api/v3/component-report', headers={'Content-type': 'application/json', 'User-Agent': 'jake'}, cache_location=''):
@@ -62,7 +65,7 @@ class OssIndex(object):
             chunks.append(divided)
         return chunks
 
-    def callOSSIndex(self, purls):
+    def callOSSIndex(self, purls: Coordinates):
         self._log.debug(purls)
 
         results = []
@@ -75,7 +78,7 @@ class OssIndex(object):
             data["coordinates"] = purls
             response = requests.post(self.get_url(), data=json.dumps(data), headers=self.get_headers())
             if response.status_code == 200:
-                first_results = json.loads(response.text)
+                first_results = json.loads(response.text, cls=ResultsDecoder)
             else:
                 return None
             results.extend(first_results)
@@ -84,24 +87,23 @@ class OssIndex(object):
         self._log.debug("Cached: " + cached + " num_cached: " + num_cached)
         return results
 
-    def maybeInsertIntoCache(self, text):
-        response = ast.literal_eval(text)
+    def maybeInsertIntoCache(self, results: List[CoordinateResults]):
         Coordinate = Query()
         num_cached = 0
         cached = False
-        for coordinate in response:
+        for coordinate in results:
             mydatetime = datetime.now()
             twelvelater = mydatetime + timedelta(hours=12)
-            result = self._db.search(Coordinate.purl == coordinate['coordinates'])
+            result = self._db.search(Coordinate.purl == coordinate.getCoordinates())
             if len(result) is 0:
-                self._db.insert({'purl': coordinate['coordinates'], 'response': coordinate, 'ttl': twelvelater.isoformat()})
+                self._db.insert({'purl': coordinate.getCoordinates(), 'response': coordinate.toJSON(), 'ttl': twelvelater.isoformat()})
                 self._log.debug("Coordinate inserted into cache")
                 num_cached += 1
                 cached = True
             else:
                 timetolive = parse(result[0]['ttl'])
                 if mydatetime > timetolive:
-                    self._db.update({'response': coordinate, 'ttl': twelvelater.isoformat()}, doc_ids=[result[0].doc_id])
+                    self._db.update({'response': coordinate.toJSON(), 'ttl': twelvelater.isoformat()}, doc_ids=[result[0].doc_id])
                     self._log.debug("Coordinate updated in cache because TTL expired")
                     num_cached += 1
                     cached = True
@@ -121,7 +123,7 @@ class OssIndex(object):
             if len(result) is 0 or parse(result[0]['ttl']) < mydatetime:
                 new_purls.add_coordinate(purl)
             else:
-                results.append(result[0]['response'])
+                results.append(json.loads(result[0]['response'], cls=ResultsDecoder))
         return (new_purls, results)
 
     def cleanCache(self):

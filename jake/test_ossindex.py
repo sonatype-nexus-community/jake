@@ -11,15 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import sys
-import ast
 import unittest
 import json
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 from pathlib import Path
 from tinydb import TinyDB, Query
 from dateutil.parser import parse
-from datetime import datetime, timedelta
+from datetime import timedelta
 from typing import List
 
 from jake.ossindex.ossindex import OssIndex

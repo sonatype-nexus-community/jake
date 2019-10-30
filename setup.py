@@ -11,11 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from jake._version import __version__
 from setuptools import setup
 
 setup(
     name = 'jake',
-    version = '0.0.1',
+    version = __version__,
     packages = ['jake'],
     entry_points = {
         'console_scripts': [

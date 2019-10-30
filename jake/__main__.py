@@ -23,6 +23,8 @@ from jake.ossindex.ossindex import OssIndex
 from jake.parse.parse import Parse
 from jake.audit.audit import Audit
 
+from ._version import __version__
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('run', help='run jake', choices=['ddt'])
@@ -31,10 +33,16 @@ def main():
     parser.add_argument('-C', '--clean', help="wipe out jake cache", action='store_true')
     args = parser.parse_args()
     log = logging.getLogger('jake')
+    
     if args.verbose:
         log.setLevel(logging.DEBUG)
     else:
         log.setLevel(logging.ERROR)
+
+    if args.version:
+        print(__version__)
+        _exit(0)
+    
     parse = Parse()
     ossindex = OssIndex()
     audit = Audit()

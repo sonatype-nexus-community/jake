@@ -25,7 +25,7 @@ from jake.types.results_decoder import ResultsDecoder
 from jake.types.coordinateresults import CoordinateResults
 
 class OssIndex(object):
-    def __init__(self, url='https://ossindex.sonatype.org/api/v3/component-report', headers={'Content-type': 'application/json', 'User-Agent': 'jake'}, cache_location=''):
+    def __init__(self, url='https://ossindex.sonatype.org/api/v3/component-report', headers={'Content-type': 'application/vnd.ossindex.component-report-request.v1+json', 'User-Agent': 'jake'}, cache_location=''):
         self._url = url
         self._headers = headers
         self._log = logging.getLogger('jake')

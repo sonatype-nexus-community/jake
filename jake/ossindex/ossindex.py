@@ -20,7 +20,7 @@ from datetime import datetime, timedelta
 from dateutil.parser import parse
 from tinydb import TinyDB, Query
 from pathlib import Path
-from jake.parse.parse import Coordinates
+from jake.types.coordinates import Coordinates
 from jake.types.results_decoder import ResultsDecoder
 from jake.types.coordinateresults import CoordinateResults
 

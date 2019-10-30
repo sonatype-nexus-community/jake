@@ -22,7 +22,7 @@ from typing import List
 
 from jake.ossindex.ossindex import OssIndex
 from jake.parse.parse import Parse
-from jake.parse.coordinates import Coordinates
+from jake.types.coordinates import Coordinates
 from jake.types.coordinateresults import CoordinateResults
 from jake.types.results_decoder import ResultsDecoder
 

@@ -31,8 +31,8 @@ class CoordinateResults(object):
   def getReference(self):
     return self._reference
 
-  def addVulnerability(self, vulnerability):
-    self._vulnerabilities = vulnerability
+  def setVulnerabilities(self, vulnerabilities):
+    self._vulnerabilities = vulnerabilities
 
   def getVulnerabilities(self):
     return self._vulnerabilities

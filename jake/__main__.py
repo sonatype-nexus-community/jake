@@ -22,17 +22,27 @@ from os import _exit, EX_OSERR
 from jake.ossindex.ossindex import OssIndex
 from jake.parse.parse import Parse
 from jake.audit.audit import Audit
+from jake.config.config import Config
 
 from ._version import __version__
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('run', help='run jake', choices=['ddt'])
+    parser.add_argument('config', help='set optional jake config', choices=['snake'])
     parser.add_argument('-V', '--version', help='show program version and exit', action='store_true')
     parser.add_argument('-VV', '--verbose', help="set verbosity level to debug", action='store_true')
     parser.add_argument('-C', '--clean', help="wipe out jake cache", action='store_true')
     args = parser.parse_args()
     log = logging.getLogger('jake')
+
+    if args.config == 'snake':
+        config = Config()
+        result = config.getConfigFromStdIn()
+        if result is False:
+            _exit(OSError)
+        else:
+            _exit(0)
     
     if args.verbose:
         log.setLevel(logging.DEBUG)

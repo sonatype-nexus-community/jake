@@ -62,6 +62,8 @@ This project also uses `pip` for dependencies, so you will need to download make
 
 Follow instructions in Build from source.
 
+Tests can be run with `python3 -m unittest discover`
+
 More TBD.
 
 ## Contributing

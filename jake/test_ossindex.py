@@ -67,6 +67,13 @@ class TestOssIndex(unittest.TestCase):
         self.assertEqual(len(response), 46)
         self.assertEqual(response[0].getCoordinates(), "pkg:conda/astroid@2.3.1")
 
+    @patch('jake.ossindex.ossindex.requests.post')
+    def test_callOSSIndex_PostReturnsError(self, mock_post):
+        mock_post.return_value.status_code = 404
+        mock_post.return_value.text = "yadda"
+        response = self.func.callOSSIndex(self.get_fakePurls())
+        self.assertEqual(response, None)
+
     def test_chunk(self):
         fn = Path(__file__).parent / "condalistoutput.txt"
         with open(fn, "r") as stdin:

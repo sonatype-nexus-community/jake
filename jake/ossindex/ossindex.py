@@ -65,9 +65,11 @@ class OssIndex(object):
         return chunks
 
     def callOSSIndex(self, purls: Coordinates):
-        self._log.debug(purls)
+        self._log.debug("Purls received, total purls before chunk: %s", len(purls.get_coordinates()))
 
         (purls, results) = self.getPurlsAndResultsFromCache(purls)
+
+        self._log.debug("Purls checked against cache, total purls remaining to call OSS Index: %s", len(purls.get_coordinates()))
 
         chunk_purls = self.chunk(purls)
         for purls in chunk_purls:
@@ -94,14 +96,14 @@ class OssIndex(object):
             result = self._db.search(Coordinate.purl == coordinate.getCoordinates())
             if len(result) is 0:
                 self._db.insert({'purl': coordinate.getCoordinates(), 'response': coordinate.toJSON(), 'ttl': twelvelater.isoformat()})
-                self._log.debug("Coordinate inserted into cache")
+                self._log.debug("Coordinate inserted into cache: <%s>", coordinate.getCoordinates())
                 num_cached += 1
                 cached = True
             else:
                 timetolive = parse(result[0]['ttl'])
                 if mydatetime > timetolive:
                     self._db.update({'response': coordinate.toJSON(), 'ttl': twelvelater.isoformat()}, doc_ids=[result[0].doc_id])
-                    self._log.debug("Coordinate updated in cache because TTL expired")
+                    self._log.debug("Coordinate: <%s> updated in cache because TTL expired", coordinate.getCoordinates())
                     num_cached += 1
                     cached = True
 

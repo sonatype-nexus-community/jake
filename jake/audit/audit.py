@@ -22,7 +22,7 @@ class Audit(object):
         self._log = logging.getLogger('jake')
 
     def auditResults(self, results: List[CoordinateResults]):
-        self._log.debug(results)
+        self._log.debug("Results recieved, %s total results", len(results))
 
         totalVulns = 0
         pkgNum = 0

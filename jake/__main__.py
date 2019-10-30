@@ -54,10 +54,10 @@ def main():
         log.info('Calling OSS Index')
         purls = parse.getDependenciesFromStdin(sys.stdin)
         if purls is None:
-            log.error("No purls returned, likely culprit is no Conda installed")
+            log.error("No purls returned, ensure that conda list is returning a list of dependencies")
             _exit(EX_OSERR)
         
-        log.debug(purls)
+        log.debug("Total purls: %s", len(purls.get_coordinates()))
 
         response = ossindex.callOSSIndex(purls)
 

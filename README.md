@@ -11,10 +11,26 @@
 ### Usage
 
 ```
- ~ > jake
+$ jake --help
+usage: jake [-h] [-V] [-VV] [-C] {ddt}
+
+positional arguments:
+  {ddt}           run jake
+
+optional arguments:
+  -h, --help      show this help message and exit
+  -V, --version   show program version
+  -VV, --verbose  set verbosity level to debug
+  -C, --clean     wipe out jake cache
 ```
 
+Typical usage of `jake` is to run it like so: `conda list | jake ddt`, which will feed your Conda dependencies in your current Conda environment to `jake`, which will then reach out and check OSS Index to see if they are vulnerable!
+
 ### Options
+
+You may also run `jake` with `-VV` for a slew of debug data, in case you are running in to an odd situation, or you want to help out on development!
+
+You can also run `jake -C` to clean out your local cache if desired. We cache results from OSS Index for 12 hours to prevent you from potentially getting rate limited (as your dependencies likely won't change super often). 
 
 ## Why Jake?
 
@@ -22,15 +38,33 @@ Jake The Snake was scared of Snakes. The finishing move was DDT. He finishes the
 
 ## Installation
 
+### Download from PyPI
+
+TBD
+
 ### Build from source
 
-### Download as Conda package
+* Clone the repo
+* Install Python 3.7 or higher
+* Ensure pip is installed (it should be)
+* Run `python3 venv .venv` (or whatever virtual environment you prefer)
+* Run `source .venv/bin/activate`
+* Run `pip install -r requirements`
+* Run `pip install -e .`
+
+Once you've done this, you should have `jake` available to test with fairly globally, pointed at the local source you've cloned.
 
 ## Development
 
-`jake` is written using Python.
+`jake` is written using Python 3.7
 
 This project also uses `pip` for dependencies, so you will need to download make sure you have `pip`.
+
+Follow instructions in Build from source.
+
+Tests can be run with `python3 -m unittest discover`
+
+More TBD.
 
 ## Contributing
 

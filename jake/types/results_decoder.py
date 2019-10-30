@@ -11,15 +11,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from jake._version import __version__
-from setuptools import setup
+import json
 
-setup(
-    name = 'jake',
-    version = __version__,
-    packages = ['jake'],
-    entry_points = {
-        'console_scripts': [
-            'jake = jake.__main__:main'
-        ]
-    })
+from jake.types.coordinateresults import CoordinateResults
+
+class ResultsDecoder(json.JSONDecoder):
+  def __init__(self):
+    json.JSONDecoder.__init__(self, object_hook=self.dict_to_object)
+
+  def dict_to_object(self, dictionary):
+    item = CoordinateResults()
+    item.setCoordinates(dictionary["coordinates"])
+    item.setReference(dictionary["reference"])
+    item.setVulnerabilities(dictionary["vulnerabilities"])
+
+    return item

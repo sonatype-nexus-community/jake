@@ -13,12 +13,16 @@
 # limitations under the License.
 import logging
 
+from typing import List
+
+from jake.types.coordinateresults import CoordinateResults
+
 class Audit(object):
     def __init__(self):
         self._log = logging.getLogger('jake')
 
-    def auditResults(self, results):
-        self._log.debug(results)
+    def auditResults(self, results: List[CoordinateResults]):
+        self._log.debug("Results recieved, %s total results", len(results))
 
         totalVulns = 0
         pkgNum = 0
@@ -29,15 +33,15 @@ class Audit(object):
 
         return totalVulns
 
-    def printResult(self, coordinate, number, length):
-        if len(coordinate['vulnerabilities']) == 0:
-            print("[{}/{}] - {} - no known vulnerabilities for this version".format(number, length, coordinate['coordinates']))
-            return len(coordinate['vulnerabilities'])
+    def printResult(self, coordinate: CoordinateResults, number, length):
+        if len(coordinate.getVulnerabilities()) == 0:
+            print("[{}/{}] - {} - no known vulnerabilities for this version".format(number, length, coordinate.getCoordinates()))
+            return len(coordinate.getVulnerabilities())
         else:
-            print("[{}/{}] - {} [VULNERABLE] {} known vulnerabilities for this version".format(number, length, coordinate['coordinates'], len(coordinate['vulnerabilities'])))
-            for vulnerability in coordinate['vulnerabilities']:
+            print("[{}/{}] - {} [VULNERABLE] {} known vulnerabilities for this version".format(number, length, coordinate.getCoordinates(), len(coordinate.getVulnerabilities())))
+            for vulnerability in coordinate.getVulnerabilities():
                 self.printVulnerability(vulnerability)
-            return len(coordinate['vulnerabilities'])
+            return len(coordinate.getVulnerabilities())
 
     def printVulnerability(self, vulnerability):
         print(vulnerability)

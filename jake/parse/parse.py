@@ -14,7 +14,7 @@
 import logging
 from shutil import which
 
-from .coordinates import Coordinates
+from jake.types.coordinates import Coordinates
 
 class Parse(object):
     def __init__(self):

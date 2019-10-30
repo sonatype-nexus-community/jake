@@ -23,35 +23,48 @@ from jake.ossindex.ossindex import OssIndex
 from jake.parse.parse import Parse
 from jake.audit.audit import Audit
 
+from ._version import __version__
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('run', help='run jake', choices=['ddt'])
-    parser.add_argument('-V', '--version', help='show program version', action='store_true')
-    parser.add_argument('-E', '--env', help="conda environment to run", default='root')
+    parser.add_argument('-V', '--version', help='show program version and exit', action='store_true')
     parser.add_argument('-VV', '--verbose', help="set verbosity level to debug", action='store_true')
+    parser.add_argument('-C', '--clean', help="wipe out jake cache", action='store_true')
     args = parser.parse_args()
     log = logging.getLogger('jake')
+    
     if args.verbose:
         log.setLevel(logging.DEBUG)
     else:
         log.setLevel(logging.ERROR)
 
+    if args.version:
+        print(__version__)
+        _exit(0)
+    
     parse = Parse()
     ossindex = OssIndex()
     audit = Audit()
     
+    if args.clean:
+        ossindex.cleanCache()
+        
     if args.run == 'ddt':
         log.info('Calling OSS Index')
         purls = parse.getDependenciesFromStdin(sys.stdin)
         if purls is None:
-            log.error("No purls returned, likely culprit is no Conda installed")
+            log.error("No purls returned, ensure that conda list is returning a list of dependencies")
             _exit(EX_OSERR)
         
-        log.debug(purls)
+        log.debug("Total purls: %s", len(purls.get_coordinates()))
 
         response = ossindex.callOSSIndex(purls)
-
-        code = audit.auditResults(response)
+        if response is not None:
+            code = audit.auditResults(response)
+        else:
+            log.error("Something went horribly wrong, please rerun with -VV to see what happened")
+            _exit(EX_OSERR)
 
         _exit(code)
 

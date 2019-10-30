@@ -12,14 +12,15 @@
 
 ```
 $ jake --help
-usage: jake [-h] [-V] [-VV] [-C] {ddt}
+usage: jake [-h] [-V] [-VV] [-C] {ddt} {snake}
 
 positional arguments:
   {ddt}           run jake
+  {snake}         set optional jake config
 
 optional arguments:
   -h, --help      show this help message and exit
-  -V, --version   show program version
+  -V, --version   show program version and exit
   -VV, --verbose  set verbosity level to debug
   -C, --clean     wipe out jake cache
 ```
@@ -28,9 +29,11 @@ Typical usage of `jake` is to run it like so: `conda list | jake ddt`, which wil
 
 ### Options
 
-You may also run `jake` with `-VV` for a slew of debug data, in case you are running in to an odd situation, or you want to help out on development!
+You may also run `jake ddt` with `-VV` for a slew of debug data, in case you are running in to an odd situation, or you want to help out on development!
 
-You can also run `jake -C` to clean out your local cache if desired. We cache results from OSS Index for 12 hours to prevent you from potentially getting rate limited (as your dependencies likely won't change super often). 
+You can also run `jake ddt -C` to clean out your local cache if desired. We cache results from OSS Index for 12 hours to prevent you from potentially getting rate limited (as your dependencies likely won't change super often). 
+
+You can also run `jake ddt snake` to set optional configuration of your OSS Index username and API Key so that you can run more requests without getting rate limited. You may register for an account [at this link](https://ossindex.sonatype.org/user/register), and see [the information provided here](https://ossindex.sonatype.org/doc/rest) on Rate Limiting for why this is useful.
 
 ## Why Jake?
 

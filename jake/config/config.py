@@ -63,4 +63,6 @@ class Config(object):
 
     return (username, password)
 
-  
+  def checkIfConfigExists(self):
+      config_location = Path(self._save_location + "/.jake-config")
+      return config_location.exists()

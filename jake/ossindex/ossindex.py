@@ -23,6 +23,7 @@ from pathlib import Path
 from jake.types.coordinates import Coordinates
 from jake.types.results_decoder import ResultsDecoder
 from jake.types.coordinateresults import CoordinateResults
+from jake.config.config import Config
 
 class OssIndex(object):
     def __init__(self, url='https://ossindex.sonatype.org/api/v3/component-report', headers={'Content-type': 'application/vnd.ossindex.component-report-request.v1+json', 'User-Agent': 'jake'}, cache_location=''):
@@ -75,7 +76,12 @@ class OssIndex(object):
         for purls in chunk_purls:
             data = {}
             data["coordinates"] = purls
-            response = requests.post(self.get_url(), data=json.dumps(data), headers=self.get_headers())
+            config_file = Config()
+            if config_file.checkIfConfigExists() is False:
+                response = requests.post(self.get_url(), data=json.dumps(data), headers=self.get_headers())
+            else: 
+                (username, password) = config_file.getConfigFromFile()
+                response = requests.post(self.get_url(), data=json.dumps(data), headers=self.get_headers(), auth=(username, password))
             if response.status_code == 200:
                 self._log.debug(response.headers)
                 first_results = json.loads(response.text, cls=ResultsDecoder)
@@ -87,7 +93,7 @@ class OssIndex(object):
             results.extend(first_results)
 
         (cached, num_cached) = self.maybeInsertIntoCache(results)
-        self._log.debug("Cached: " + str(cached) + " num_cached: " + str(num_cached))
+        self._log.debug("Cached: <%s> num_cached: <%s>", cached, num_cached)
         return results
 
     def maybeInsertIntoCache(self, results: List[CoordinateResults]):

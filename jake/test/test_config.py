@@ -33,3 +33,9 @@ class TestConfig(unittest.TestCase):
     (username, password) = self.func.getConfigFromFile()
     self.assertEqual(username, "test@me.com")
     self.assertEqual(password, "password")
+
+  def test_returnTrueWhenConfigExists(self):
+    self.func.setPassword("password")
+    self.func.setUsername("test@me.com")
+    self.func.saveConfigToFile()
+    self.assertEqual(self.func.checkIfConfigExists(), True)

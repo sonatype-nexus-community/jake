@@ -14,7 +14,6 @@
 import requests
 import logging
 import json
-import ast
 
 from typing import List
 from datetime import datetime, timedelta
@@ -67,8 +66,6 @@ class OssIndex(object):
 
     def callOSSIndex(self, purls: Coordinates):
         self._log.debug(purls)
-
-        results = []
 
         (purls, results) = self.getPurlsAndResultsFromCache(purls)
 

@@ -5,7 +5,6 @@ conda==4.3.16
 cytoolz==0.10.0
 idna==2.8
 isort==4.3.21
--e git+git@github.com:sonatype-nexus-community/jake.git@7cdf0f547eda9fecc34f579d276bdfae5170268c#egg=jake
 lazy-object-proxy==1.4.2
 mccabe==0.6.1
 pickleDB==0.9.2

@@ -23,6 +23,6 @@ class ResultsDecoder(json.JSONDecoder):
     item = CoordinateResults()
     item.setCoordinates(dictionary["coordinates"])
     item.setReference(dictionary["reference"])
-    item.addVulnerability(dictionary["vulnerabilities"])
+    item.setVulnerabilities(dictionary["vulnerabilities"])
 
     return item

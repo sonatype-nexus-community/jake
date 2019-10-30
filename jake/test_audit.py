@@ -13,7 +13,6 @@
 # limitations under the License.
 import unittest
 import json
-import ast
 
 from jake.audit.audit import Audit
 from jake.types.results_decoder import ResultsDecoder

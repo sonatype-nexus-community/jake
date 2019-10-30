@@ -11,15 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import sys
-import ast
 import unittest
 import json
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 from pathlib import Path
 from tinydb import TinyDB, Query
 from dateutil.parser import parse
-from datetime import datetime, timedelta
+from datetime import timedelta
 from typing import List
 
 from jake.ossindex.ossindex import OssIndex
@@ -66,6 +64,13 @@ class TestOssIndex(unittest.TestCase):
             response = self.func.callOSSIndex(self.get_fakePurls())
         self.assertEqual(len(response), 46)
         self.assertEqual(response[0].getCoordinates(), "pkg:conda/astroid@2.3.1")
+
+    @patch('jake.ossindex.ossindex.requests.post')
+    def test_callOSSIndex_PostReturnsError(self, mock_post):
+        mock_post.return_value.status_code = 404
+        mock_post.return_value.text = "yadda"
+        response = self.func.callOSSIndex(self.get_fakePurls())
+        self.assertEqual(response, None)
 
     def test_chunk(self):
         fn = Path(__file__).parent / "condalistoutput.txt"

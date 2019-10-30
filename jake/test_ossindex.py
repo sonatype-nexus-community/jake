@@ -34,6 +34,7 @@ class TestOssIndex(unittest.TestCase):
         self.parse = Parse()
     
     def tearDown(self):
+        self.func.closeDB()
         if Path('/tmp/.ossindex/jake.json').exists():
             Path('/tmp/.ossindex/jake.json').unlink()
     
@@ -107,6 +108,7 @@ class TestOssIndex(unittest.TestCase):
         (cached, num_cached) = self.func.maybeInsertIntoCache(nextResponse)
         self.assertEqual(cached, True)
         self.assertEqual(num_cached, 1)
+        db.close()
 
     def test_getPurlsFromCache(self):
         self.func.maybeInsertIntoCache(self.stringToCoordinatesResult("[{'coordinates': 'pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/alabaster@0.7.12', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/alabaster@0.7.12', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/anaconda@2019.07', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/anaconda@2019.07', 'vulnerabilities': []}]"))
@@ -139,8 +141,7 @@ class TestOssIndex(unittest.TestCase):
 
     def test_cleanWipesDB(self):
         self.func.maybeInsertIntoCache(self.stringToCoordinatesResult("[{'coordinates': 'pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0', 'vulnerabilities': []}]"))
-        result = self.func.cleanCache()
-        self.assertEqual(len(result), 0)
+        self.assertEqual(self.func.cleanCache(), True)
 
     def stringToCoordinatesResult(self, string):
         return json.loads(string.replace("'", '"'), cls=ResultsDecoder)

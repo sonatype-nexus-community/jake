@@ -128,4 +128,7 @@ class OssIndex(object):
 
     def cleanCache(self):
         self._db.purge()
-        return self._db.all()
+        return True
+
+    def closeDB(self):
+        self._db.close()

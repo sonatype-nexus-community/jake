@@ -60,8 +60,11 @@ def main():
         log.debug("Total purls: %s", len(purls.get_coordinates()))
 
         response = ossindex.callOSSIndex(purls)
-
-        code = audit.auditResults(response)
+        if response is not None:
+            code = audit.auditResults(response)
+        else:
+            log.error("Something went horribly wrong, please rerun with -VV to see what happened")
+            _exit(EX_OSERR)
 
         _exit(code)
 

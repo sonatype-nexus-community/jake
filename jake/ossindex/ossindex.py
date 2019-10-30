@@ -80,6 +80,9 @@ class OssIndex(object):
                 self._log.debug(response.headers)
                 first_results = json.loads(response.text, cls=ResultsDecoder)
             else:
+                self._log.debug("Response failed, status: %s", response.status_code)
+                self._log.debug("Failure reason if any: %s", response.reason)
+                self._log.debug("Failure text if any: %s", response.text)
                 return None
             results.extend(first_results)
 

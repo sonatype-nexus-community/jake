@@ -13,7 +13,6 @@
 # limitations under the License.
 import json
 
-from jake.types.results import Results
 from jake.types.coordinateresults import CoordinateResults
 
 class ResultsDecoder(json.JSONDecoder):

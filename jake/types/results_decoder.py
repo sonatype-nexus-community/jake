@@ -14,6 +14,7 @@
 import json
 
 from jake.types.coordinateresults import CoordinateResults
+from jake.types.vulnerabilities import Vulnerabilities
 
 class ResultsDecoder(json.JSONDecoder):
   def __init__(self):
@@ -27,3 +28,11 @@ class ResultsDecoder(json.JSONDecoder):
       item.setVulnerabilities(dictionary["vulnerabilities"])
 
       return item
+    else:
+      vulnerability = Vulnerabilities()
+      vulnerability.add_id(dictionary["id"])
+      vulnerability.add_title(dictionary["title"])
+      vulnerability.add_description(dictionary["description"])
+      vulnerability.add_cvssScore(dictionary["cvssScore"])
+
+      return vulnerability

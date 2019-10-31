@@ -16,6 +16,7 @@ import logging
 from typing import List
 
 from jake.types.coordinateresults import CoordinateResults
+from jake.types.vulnerabilities import Vulnerabilities
 
 class Audit(object):
     def __init__(self):
@@ -43,5 +44,9 @@ class Audit(object):
                 self.printVulnerability(vulnerability)
             return len(coordinate.getVulnerabilities())
 
-    def printVulnerability(self, vulnerability):
-        print(vulnerability)
+    def printVulnerability(self, vulnerability: Vulnerabilities):
+        print("ID: {}".format(vulnerability.get_id()))
+        print("Title: {}".format(vulnerability.get_title()))
+        print("Description: {}".format(vulnerability.get_description()))
+        print("CVSS Score: {}".format(vulnerability.get_cvssScore()))
+        print("----------------------------------------------------")

@@ -38,10 +38,4 @@ class CoordinateResults(object):
     return self._vulnerabilities
 
   def toJSON(self):
-    return json.dumps(self, default=lambda o: CoordinateJsonResult(o.getCoordinates(), o.getReference(), o.getVulnerabilities()).__dict__)
-
-class CoordinateJsonResult(object):
-  def __init__(self, coordinate, reference, vulnerabilities):
-    self.coordinates = coordinate
-    self.reference = reference
-    self.vulnerabilities = vulnerabilities
+    return json.dumps(self.__dict__, default=lambda o: o.__dict__)

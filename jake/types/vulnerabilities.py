@@ -23,52 +23,26 @@ class Vulnerabilities(object):
     self._cve = ""
     self._reference = ""
     
-    def add_id(self, id):
-      self._id = id
+  def add_id(self, id):
+    self._id = id
 
-    def get_id(self):
-      return self._id
+  def get_id(self):
+    return self._id
 
-    def add_title(self, title):
-      self._title = title
+  def add_title(self, title):
+    self._title = title
 
-    def get_title(self):
-      return self._title
+  def get_title(self):
+    return self._title
 
-    def add_description(self, description):
-      self._description = description
+  def add_description(self, description):
+    self._description = description
 
-    def add_cvssScore(self, cvssScore):
-      self._cvssScore = cvssScore
+  def get_description(self):
+    return self._description
 
-    def get_id(self):
-      return self._id
-    
-    def add_id(self, id):
-      self._id = id
+  def add_cvssScore(self, cvssScore):
+    self._cvssScore = cvssScore
 
-    def get_id(self):
-      return self._id    
-    
-    def add_id(self, id):
-      self._id = id
-
-    def get_id(self):
-      return self._id
-
-    def add_id(self, id):
-      self._id = id
-
-    def get_id(self):
-      return self._id    
-    
-    def add_id(self, id):
-      self._id = id
-
-    def get_id(self):
-      return self._id
-        
-    def get_vulnerabilities_as_json(self):
-        vulnerabilities = {}
-        vulnerabilities['vulnerabilities'] = self._vulnerabilities
-        return json.dumps(vulnerabilities)
+  def get_cvssScore(self):
+    return self._cvssScore

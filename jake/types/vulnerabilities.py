@@ -46,3 +46,21 @@ class Vulnerabilities(object):
 
   def get_cvssScore(self):
     return self._cvssScore
+  
+  def add_cvssVector(self, cvssVector):
+    self._cvssVector = cvssVector
+
+  def get_cvssVector(self):
+    return self._cvssVector
+  
+  def add_cve(self, cve):
+    self._cve = cve
+
+  def get_cve(self):
+    return self._cve
+
+  def add_reference(self, reference):
+    self._reference = reference
+
+  def get_reference(self):
+    return self._reference

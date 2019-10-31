@@ -49,4 +49,7 @@ class Audit(object):
         print("Title: {}".format(vulnerability.get_title()))
         print("Description: {}".format(vulnerability.get_description()))
         print("CVSS Score: {}".format(vulnerability.get_cvssScore()))
+        print("CVSS Vector: {}".format(vulnerability.get_cvssVector()))
+        print("CVE: {}".format(vulnerability.get_cve()))
+        print("Reference: {}".format(vulnerability.get_reference()))
         print("----------------------------------------------------")

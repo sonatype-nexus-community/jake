@@ -19,7 +19,7 @@ from jake.types.vulnerabilities import Vulnerabilities
 class ResultsDecoder(json.JSONDecoder):
   def __init__(self):
     json.JSONDecoder.__init__(self, object_hook=self.dict_to_object)
-
+  
   def dict_to_object(self, dictionary):
     if 'coordinates' in dictionary:
       item = CoordinateResults()
@@ -28,11 +28,16 @@ class ResultsDecoder(json.JSONDecoder):
       item.setVulnerabilities(dictionary["vulnerabilities"])
 
       return item
+
     else:
       vulnerability = Vulnerabilities()
       vulnerability.add_id(dictionary["id"])
       vulnerability.add_title(dictionary["title"])
       vulnerability.add_description(dictionary["description"])
       vulnerability.add_cvssScore(dictionary["cvssScore"])
+      if dictionary.get('cvssVector') is not None:
+        vulnerability.add_cvssVector(dictionary["cvssVector"])
+      vulnerability.add_cve(dictionary["cve"])
+      vulnerability.add_reference(dictionary["reference"])
 
       return vulnerability

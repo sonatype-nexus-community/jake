@@ -15,27 +15,27 @@ import json
 
 class CoordinateResults(object):
   def __init__(self):
-    self._coordinates = ""
-    self._reference = ""
-    self._vulnerabilities = []
+    self.coordinates = ""
+    self.reference = ""
+    self.vulnerabilities = []
   
   def setCoordinates(self, coordinate):
-    self._coordinates = coordinate
+    self.coordinates = coordinate
 
   def getCoordinates(self):
-    return self._coordinates
+    return self.coordinates
   
   def setReference(self, reference):
-    self._reference = reference
+    self.reference = reference
 
   def getReference(self):
-    return self._reference
+    return self.reference
 
   def setVulnerabilities(self, vulnerabilities):
-    self._vulnerabilities = vulnerabilities
+    self.vulnerabilities = vulnerabilities
 
   def getVulnerabilities(self):
-    return self._vulnerabilities
+    return self.vulnerabilities
 
   def toJSON(self):
     return json.dumps(self.__dict__, default=lambda o: o.__dict__)

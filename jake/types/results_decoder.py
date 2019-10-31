@@ -21,11 +21,11 @@ class ResultsDecoder(json.JSONDecoder):
     json.JSONDecoder.__init__(self, object_hook=self.dict_to_object)
   
   def dict_to_object(self, dictionary):
-    if 'coordinates' in dictionary:
+    if dictionary.get('coordinates') is not None:
       item = CoordinateResults()
-      item.setCoordinates(dictionary["coordinates"])
-      item.setReference(dictionary["reference"])
-      item.setVulnerabilities(dictionary["vulnerabilities"])
+      item.setCoordinates(dictionary.get("coordinates"))
+      item.setReference(dictionary.get("reference"))
+      item.setVulnerabilities(dictionary.get("vulnerabilities"))
 
       return item
     else:

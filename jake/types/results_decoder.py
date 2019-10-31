@@ -20,9 +20,10 @@ class ResultsDecoder(json.JSONDecoder):
     json.JSONDecoder.__init__(self, object_hook=self.dict_to_object)
 
   def dict_to_object(self, dictionary):
-    item = CoordinateResults()
-    item.setCoordinates(dictionary["coordinates"])
-    item.setReference(dictionary["reference"])
-    item.setVulnerabilities(dictionary["vulnerabilities"])
+    if 'coordinates' in dictionary:
+      item = CoordinateResults()
+      item.setCoordinates(dictionary["coordinates"])
+      item.setReference(dictionary["reference"])
+      item.setVulnerabilities(dictionary["vulnerabilities"])
 
-    return item
+      return item

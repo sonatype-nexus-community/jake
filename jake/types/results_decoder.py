@@ -28,16 +28,14 @@ class ResultsDecoder(json.JSONDecoder):
       item.setVulnerabilities(dictionary["vulnerabilities"])
 
       return item
-
     else:
       vulnerability = Vulnerabilities()
-      vulnerability.add_id(dictionary["id"])
-      vulnerability.add_title(dictionary["title"])
-      vulnerability.add_description(dictionary["description"])
-      vulnerability.add_cvssScore(dictionary["cvssScore"])
-      if dictionary.get('cvssVector') is not None:
-        vulnerability.add_cvssVector(dictionary["cvssVector"])
-      vulnerability.add_cve(dictionary["cve"])
-      vulnerability.add_reference(dictionary["reference"])
+      vulnerability.add_id(dictionary.get("id"))
+      vulnerability.add_title(dictionary.get("title"))
+      vulnerability.add_description(dictionary.get("description"))
+      vulnerability.add_cvssScore(dictionary.get("cvssScore"))
+      vulnerability.add_cvssVector(dictionary.get('cvssVector'))
+      vulnerability.add_cve(dictionary.get("cve"))
+      vulnerability.add_reference(dictionary.get("reference"))
 
       return vulnerability

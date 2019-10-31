@@ -19,7 +19,7 @@ class Vulnerabilities(object):
     self._title = ""
     self._description = ""
     self._cvssScore = ""
-    self._cvssVector = ""
+    self._cvssVector = None
     self._cve = ""
     self._reference = ""
     
@@ -48,7 +48,8 @@ class Vulnerabilities(object):
     return self._cvssScore
   
   def add_cvssVector(self, cvssVector):
-    self._cvssVector = cvssVector
+    if cvssVector is not None:
+      self._cvssVector = cvssVector
 
   def get_cvssVector(self):
     return self._cvssVector

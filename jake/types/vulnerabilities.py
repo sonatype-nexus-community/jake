@@ -15,53 +15,53 @@ import json
 
 class Vulnerabilities(object):
   def __init__(self):
-    self._id = ""
-    self._title = ""
-    self._description = ""
-    self._cvssScore = ""
-    self._cvssVector = None
-    self._cve = ""
-    self._reference = ""
+    self.id = ""
+    self.title = ""
+    self.description = ""
+    self.cvssScore = ""
+    self.cvssVector = None
+    self.cve = ""
+    self.reference = ""
     
   def add_id(self, id):
-    self._id = id
+    self.id = id
 
   def get_id(self):
-    return self._id
+    return self.id
 
   def add_title(self, title):
-    self._title = title
+    self.title = title
 
   def get_title(self):
-    return self._title
+    return self.title
 
   def add_description(self, description):
-    self._description = description
+    self.description = description
 
   def get_description(self):
-    return self._description
+    return self.description
 
   def add_cvssScore(self, cvssScore):
-    self._cvssScore = cvssScore
+    self.cvssScore = cvssScore
 
   def get_cvssScore(self):
-    return self._cvssScore
+    return self.cvssScore
   
   def add_cvssVector(self, cvssVector):
     if cvssVector is not None:
-      self._cvssVector = cvssVector
+      self.cvssVector = cvssVector
 
   def get_cvssVector(self):
-    return self._cvssVector
+    return self.cvssVector
   
   def add_cve(self, cve):
-    self._cve = cve
+    self.cve = cve
 
   def get_cve(self):
-    return self._cve
+    return self.cve
 
   def add_reference(self, reference):
-    self._reference = reference
+    self.reference = reference
 
   def get_reference(self):
-    return self._reference
+    return self.reference

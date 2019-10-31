@@ -25,6 +25,7 @@ from jake.parse.parse import Parse
 from jake.types.coordinates import Coordinates
 from jake.types.coordinateresults import CoordinateResults
 from jake.types.results_decoder import ResultsDecoder
+from jake.types.vulnerabilities import Vulnerabilities
 
 class TestOssIndex(unittest.TestCase):
     def setUp(self):
@@ -116,18 +117,21 @@ class TestOssIndex(unittest.TestCase):
         db.close()
 
     def test_getPurlsFromCache(self):
-        self.func.maybeInsertIntoCache(self.stringToCoordinatesResult('[{"coordinates":"pkg:conda/pycrypto@2.6.1","reference":"https://ossindex.sonatype.org/component/pkg:conda/pycrypto@2.6.1","vulnerabilities":[]}]'))
+        self.func.maybeInsertIntoCache(self.stringToCoordinatesResult('[{"coordinates":"pkg:conda/pycrypto@2.6.1","reference":"https://ossindex.sonatype.org/component/pkg:conda/pycrypto@2.6.1","vulnerabilities":[{"id":"156d71e4-6ed5-4d5f-ae47-7d57be01d387","title":"[CVE-2019-16056] jake the snake","cvssScore":0.0,"cve":"CVE-2019-16056","reference":"http://www.wrestling.com"}]}]'))
         (new_purls, results) = self.func.getPurlsAndResultsFromCache(self.get_fakeActualPurls())
         self.assertEqual(isinstance(results, List), True)
         self.assertEqual(isinstance(results[0], CoordinateResults), True)
         self.assertEqual(results[0].getCoordinates(), "pkg:conda/pycrypto@2.6.1")
         self.assertEqual(results[0].getReference(), "https://ossindex.sonatype.org/component/pkg:conda/pycrypto@2.6.1")
         self.assertEqual(isinstance(results[0].getVulnerabilities(), List), True)
+        self.assertEqual(isinstance(results[0].getVulnerabilities()[0], Vulnerabilities), True)
+        self.assertEqual(results[0].getVulnerabilities()[0].get_id(), "156d71e4-6ed5-4d5f-ae47-7d57be01d387")
+        self.assertEqual(results[0].getVulnerabilities()[0].get_cve(), "CVE-2019-16056")
         self.assertEqual(len(new_purls.get_coordinates()), 0)
         self.assertEqual(isinstance(new_purls, Coordinates), True)
 
     def test_getPurlsFromCacheWithCacheMiss(self):
-        self.func.maybeInsertIntoCache(self.stringToCoordinatesResult('[{"coordinates":"pkg:conda/pycrypto@2.6.1","reference":"https://ossindex.sonatype.org/component/pkg:conda/pycrypto@2.6.1","vulnerabilities":[]}]'))
+        self.func.maybeInsertIntoCache(self.stringToCoordinatesResult('[{"coordinates":"pkg:conda/pycrypto@2.6.1","reference":"https://ossindex.sonatype.org/component/pkg:conda/pycrypto@2.6.1","vulnerabilities":[{"id":"156d71e4-6ed5-4d5f-ae47-7d57be01d387","title":"[CVE-2019-16056] jake the snake","cvssScore":0.0,"cve":"CVE-2019-16056","reference":"http://www.wrestling.com"}]}]'))
         fake_purls = self.get_fakeActualPurls()
         fake_purls.add_coordinate("pkg:conda/alabaster@0.7.12")
         (new_purls, results) = self.func.getPurlsAndResultsFromCache(fake_purls)
@@ -135,9 +139,12 @@ class TestOssIndex(unittest.TestCase):
         self.assertEqual(isinstance(new_purls, Coordinates), True)
         self.assertEqual(isinstance(results, List), True)
         self.assertEqual(isinstance(results[0], CoordinateResults), True)
-        self.assertEqual(isinstance(results[0].getVulnerabilities(), List), True)
+        self.assertEqual(isinstance(results[0].getVulnerabilities()[0], Vulnerabilities), True)
+        self.assertEqual(results[0].getVulnerabilities()[0].get_id(), "156d71e4-6ed5-4d5f-ae47-7d57be01d387")
+        self.assertEqual(results[0].getVulnerabilities()[0].get_cve(), "CVE-2019-16056")
         self.assertEqual(results[0].getCoordinates(), "pkg:conda/pycrypto@2.6.1")
         self.assertEqual(results[0].getReference(), "https://ossindex.sonatype.org/component/pkg:conda/pycrypto@2.6.1")
+        self.assertEqual(new_purls.get_coordinates()[0], "pkg:conda/alabaster@0.7.12")
 
     def test_getPurlsFromCacheWithNonValidObject(self):
         (new_purls, results) = self.func.getPurlsAndResultsFromCache("bad data")

@@ -12,17 +12,17 @@
 
 ```
 $ jake --help
-usage: jake [-h] [-V] [-VV] [-C] {ddt} {snake}
+usage: jake {ddt} [-h] [-V] [-VV] [-C] [-S]
 
 positional arguments:
   {ddt}           run jake
-  {snake}         set optional jake config
 
 optional arguments:
   -h, --help      show this help message and exit
   -V, --version   show program version and exit
   -VV, --verbose  set verbosity level to debug
   -C, --clean     wipe out jake cache
+  -S, --snake     set optional jake config
 ```
 
 Typical usage of `jake` is to run it like so: `conda list | jake ddt`, which will feed your Conda dependencies in your current Conda environment to `jake`, which will then reach out and check OSS Index to see if they are vulnerable!

@@ -4,6 +4,6 @@ source .venv/bin/activate
 
 pip install pylint
 
-pylint .
+pylint jake
 
 python3 -m unittest discover

@@ -13,29 +13,30 @@
 # limitations under the License.
 import json
 
+
 class CoordinateResults(object):
-  def __init__(self):
-    self.coordinates = ""
-    self.reference = ""
-    self.vulnerabilities = []
-  
-  def setCoordinates(self, coordinate):
-    self.coordinates = coordinate
+    def __init__(self):
+        self.coordinates = ""
+        self.reference = ""
+        self.vulnerabilities = []
 
-  def getCoordinates(self):
-    return self.coordinates
-  
-  def setReference(self, reference):
-    self.reference = reference
+    def setCoordinates(self, coordinate):
+        self.coordinates = coordinate
 
-  def getReference(self):
-    return self.reference
+    def getCoordinates(self):
+        return self.coordinates
 
-  def setVulnerabilities(self, vulnerabilities):
-    self.vulnerabilities = vulnerabilities
+    def setReference(self, reference):
+        self.reference = reference
 
-  def getVulnerabilities(self):
-    return self.vulnerabilities
+    def getReference(self):
+        return self.reference
 
-  def toJSON(self):
-    return json.dumps(self.__dict__, default=lambda o: o.__dict__)
+    def setVulnerabilities(self, vulnerabilities):
+        self.vulnerabilities = vulnerabilities
+
+    def getVulnerabilities(self):
+        return self.vulnerabilities
+
+    def toJSON(self):
+        return json.dumps(self.__dict__, default=lambda o: o.__dict__)

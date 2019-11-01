@@ -16,26 +16,27 @@ import json
 from jake.types.coordinateresults import CoordinateResults
 from jake.types.vulnerabilities import Vulnerabilities
 
+
 class ResultsDecoder(json.JSONDecoder):
-  def __init__(self):
-    json.JSONDecoder.__init__(self, object_hook=self.dict_to_object)
-  
-  def dict_to_object(self, dictionary):
-    if dictionary.get('coordinates') is not None:
-      item = CoordinateResults()
-      item.setCoordinates(dictionary.get("coordinates"))
-      item.setReference(dictionary.get("reference"))
-      item.setVulnerabilities(dictionary.get("vulnerabilities"))
+    def __init__(self):
+        json.JSONDecoder.__init__(self, object_hook=self.dict_to_object)
 
-      return item
-    else:
-      vulnerability = Vulnerabilities()
-      vulnerability.add_id(dictionary.get("id"))
-      vulnerability.add_title(dictionary.get("title"))
-      vulnerability.add_description(dictionary.get("description"))
-      vulnerability.add_cvssScore(dictionary.get("cvssScore"))
-      vulnerability.add_cvssVector(dictionary.get('cvssVector'))
-      vulnerability.add_cve(dictionary.get("cve"))
-      vulnerability.add_reference(dictionary.get("reference"))
+    def dict_to_object(self, dictionary):
+        if dictionary.get('coordinates') is not None:
+            item = CoordinateResults()
+            item.setCoordinates(dictionary.get("coordinates"))
+            item.setReference(dictionary.get("reference"))
+            item.setVulnerabilities(dictionary.get("vulnerabilities"))
 
-      return vulnerability
+            return item
+        else:
+            vulnerability = Vulnerabilities()
+            vulnerability.add_id(dictionary.get("id"))
+            vulnerability.add_title(dictionary.get("title"))
+            vulnerability.add_description(dictionary.get("description"))
+            vulnerability.add_cvssScore(dictionary.get("cvssScore"))
+            vulnerability.add_cvssVector(dictionary.get('cvssVector'))
+            vulnerability.add_cve(dictionary.get("cve"))
+            vulnerability.add_reference(dictionary.get("reference"))
+
+            return vulnerability

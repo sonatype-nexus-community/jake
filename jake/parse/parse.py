@@ -16,6 +16,7 @@ from shutil import which
 
 from jake.types.coordinates import Coordinates
 
+
 class Parse(object):
     def __init__(self):
         self._log = logging.getLogger('jake')
@@ -71,7 +72,7 @@ class Parse(object):
     def parseLineIntoPurl(self, line):
         lineArray = line.split()
         template = "pkg:conda/{}@{}"
-        if len(lineArray) is not 0:
+        if len(lineArray) != 0:
             return template.format(lineArray[0], lineArray[1])
         else:
             return None

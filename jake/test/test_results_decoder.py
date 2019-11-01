@@ -20,15 +20,19 @@ from typing import List
 from jake.types.results_decoder import ResultsDecoder
 from jake.types.coordinateresults import CoordinateResults
 
+
 class TestResultsDecoder(unittest.TestCase):
-  def test_resultsDecoderCanTransformOssIndexResponseIntoCoordinateResultsList(self):
-    fn = pathlib.Path(__file__).parent / "ossindexresponse.txt"
-    with open(fn, "r") as stdin:
-      result = json.loads(stdin.read(), cls=ResultsDecoder)
-    self.assertEqual(len(result), 32)
-    self.assertEqual(isinstance(result, List), True)
-    self.assertEqual(isinstance(result[0], CoordinateResults), True)
-    self.assertEqual(result[0].getCoordinates(), "pkg:conda/pycrypto@2.6.1")
-    self.assertEqual(result[0].getReference(), "https://ossindex.sonatype.org/component/pkg:conda/pycrypto@2.6.1")
-    self.assertEqual(isinstance(result[0].getVulnerabilities(), List), True)
-    self.assertEqual(len(result[0].getVulnerabilities()), 0)
+    def test_resultsDecoderCanTransformOssIndexResponseIntoCoordinateResultsList(self):
+        fn = pathlib.Path(__file__).parent / "ossindexresponse.txt"
+        with open(fn, "r") as stdin:
+            result = json.loads(stdin.read(), cls=ResultsDecoder)
+        self.assertEqual(len(result), 32)
+        self.assertEqual(isinstance(result, List), True)
+        self.assertEqual(isinstance(result[0], CoordinateResults), True)
+        self.assertEqual(result[0].getCoordinates(),
+                         "pkg:conda/pycrypto@2.6.1")
+        self.assertEqual(result[0].getReference(
+        ), "https://ossindex.sonatype.org/component/pkg:conda/pycrypto@2.6.1")
+        self.assertEqual(isinstance(
+            result[0].getVulnerabilities(), List), True)
+        self.assertEqual(len(result[0].getVulnerabilities()), 0)

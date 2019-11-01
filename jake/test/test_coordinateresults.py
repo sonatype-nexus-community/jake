@@ -12,24 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import unittest
-import json
 import ast
 
 from jake.types.coordinateresults import CoordinateResults
 
+
 class TestResultsDecoder(unittest.TestCase):
-  def test_toJsonOnCoordinateResultsReturnsProperJson(self):
-    undertest = CoordinateResults()
-    undertest.setCoordinates("pkg:conda/thing@1.0.0")
-    undertest.setReference("http://www.wrestling.com")
-    undertest.setVulnerabilities('[{"id":"156d71e4-6ed5-4d5f-ae47-7d57be01d387","title":"[CVE-2019-16056] jake the snake","cvssScore":0.0,"cve":"CVE-2019-16056","reference":"http://www.wrestling.com"}]')
+    def test_toJsonOnCoordinateResultsReturnsProperJson(self):
+        undertest = CoordinateResults()
+        undertest.setCoordinates("pkg:conda/thing@1.0.0")
+        undertest.setReference("http://www.wrestling.com")
+        undertest.setVulnerabilities(
+            '[{"id":"156d71e4-6ed5-4d5f-ae47-7d57be01d387","title":"[CVE-2019-16056] jake the snake","cvssScore":0.0,"cve":"CVE-2019-16056","reference":"http://www.wrestling.com"}]')
 
-    result = undertest.toJSON()
-    dictionary = ast.literal_eval(result)
+        result = undertest.toJSON()
+        dictionary = ast.literal_eval(result)
 
-    self.assertEqual(isinstance(result, str), True)
-    self.assertEqual(dictionary['coordinates'], "pkg:conda/thing@1.0.0")
-    self.assertEqual(dictionary['reference'], "http://www.wrestling.com")
-    self.assertEqual(dictionary['vulnerabilities'], '[{"id":"156d71e4-6ed5-4d5f-ae47-7d57be01d387","title":"[CVE-2019-16056] jake the snake","cvssScore":0.0,"cve":"CVE-2019-16056","reference":"http://www.wrestling.com"}]')
-    
-
+        self.assertEqual(isinstance(result, str), True)
+        self.assertEqual(dictionary['coordinates'], "pkg:conda/thing@1.0.0")
+        self.assertEqual(dictionary['reference'], "http://www.wrestling.com")
+        self.assertEqual(dictionary['vulnerabilities'],
+                         '[{"id":"156d71e4-6ed5-4d5f-ae47-7d57be01d387","title":"[CVE-2019-16056] jake the snake","cvssScore":0.0,"cve":"CVE-2019-16056","reference":"http://www.wrestling.com"}]')

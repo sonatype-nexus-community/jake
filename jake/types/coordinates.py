@@ -13,10 +13,11 @@
 # limitations under the License.
 import json
 
+
 class Coordinates(object):
     def __init__(self):
         self._coordinates = []
-    
+
     def add_coordinate(self, coordinate):
         self._coordinates.append(coordinate)
 

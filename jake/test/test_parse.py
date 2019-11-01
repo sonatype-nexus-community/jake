@@ -16,6 +16,7 @@ import pathlib
 
 from jake.parse.parse import Parse
 
+
 class TestParse(unittest.TestCase):
     def setUp(self):
         self.func = Parse()

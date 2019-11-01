@@ -37,12 +37,19 @@ class Audit(object):
 
     def printResult(self, coordinate: CoordinateResults, number, length):
         if len(coordinate.getVulnerabilities()) == 0:
-            print("[{}/{}] - {} - no known vulnerabilities for this version".format(
-                number, length, coordinate.getCoordinates()))
+            print("[{}/{}] - {} - no known vulnerabilities for this version"
+                  .format(
+                    number,
+                    length,
+                    coordinate.getCoordinates()))
             return len(coordinate.getVulnerabilities())
         else:
-            print("[{}/{}] - {} [VULNERABLE] {} known vulnerabilities for this version".format(
-                number, length, coordinate.getCoordinates(), len(coordinate.getVulnerabilities())))
+            print(("[{}/{}] - {} [VULNERABLE] {} known vulnerabilities for"
+                  "this version").format(
+                    number,
+                    length,
+                    coordinate.getCoordinates(),
+                    len(coordinate.getVulnerabilities())))
             for vulnerability in coordinate.getVulnerabilities():
                 self.printVulnerability(vulnerability)
             return len(coordinate.getVulnerabilities())

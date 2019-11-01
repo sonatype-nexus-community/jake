@@ -74,7 +74,8 @@ def main():
         purls = parse.getDependenciesFromStdin(sys.stdin)
         if purls is None:
             log.error(
-                "No purls returned, ensure that conda list is returning a list of dependencies")
+                "No purls returned, ensure that conda list is returning"
+                "a list of dependencies")
             _exit(EX_OSERR)
 
         log.debug("Total purls: %s", len(purls.get_coordinates()))
@@ -84,7 +85,8 @@ def main():
             code = audit.auditResults(response)
         else:
             log.error(
-                "Something went horribly wrong, please rerun with -VV to see what happened")
+                "Something went horribly wrong, please rerun with -VV to see"
+                "what happened")
             _exit(EX_OSERR)
 
         _exit(code)

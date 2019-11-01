@@ -25,8 +25,8 @@ class TestAudit(unittest.TestCase):
         self.func = Audit()
 
     def test_callauditResultsPrintsOutput(self):
-        self.assertEqual(self.func.auditResults(
-            self.results), self.expectedResults())
+        self.assertEqual(self.func.auditResults(self.results),
+                         self.expectedResults())
 
     def expectedResults(self):
         return 0

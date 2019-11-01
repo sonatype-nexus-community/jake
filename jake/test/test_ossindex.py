@@ -65,6 +65,9 @@ class TestOssIndex(unittest.TestCase):
             response = self.func.callOSSIndex(self.get_fakePurls())
         self.assertEqual(len(response), 32)
         self.assertEqual(response[0].getCoordinates(), "pkg:conda/pycrypto@2.6.1")
+        self.assertEqual(response[18].getCoordinates(), "pkg:conda/python@3.7.3")
+        self.assertEqual(isinstance(response[18].getVulnerabilities()[0], Vulnerabilities), True)
+        self.assertEqual(response[18].getVulnerabilities()[0].get_id(), "156d71e4-6ed5-4d5f-ae47-7d57be01d387")
 
     @patch('jake.ossindex.ossindex.requests.post')
     def test_callOSSIndex_PostReturnsError(self, mock_post):

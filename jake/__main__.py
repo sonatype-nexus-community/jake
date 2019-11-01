@@ -29,11 +29,17 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('run', help='run jake', choices=['ddt'])
     parser.add_argument(
-        '-S', '--snake', help='set optional jake config', action='store_true')
+        '-S', '--snake',
+        help='set optional jake config',
+        action='store_true')
     parser.add_argument(
-        '-V', '--version', help='show program version and exit', action='store_true')
+        '-V', '--version',
+        help='show program version and exit',
+        action='store_true')
     parser.add_argument(
-        '-VV', '--verbose', help="set verbosity level to debug", action='store_true')
+        '-VV', '--verbose',
+        help="set verbosity level to debug",
+        action='store_true')
     parser.add_argument(
         '-C', '--clean', help="wipe out jake cache", action='store_true')
     args = parser.parse_args()

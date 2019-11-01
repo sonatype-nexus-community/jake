@@ -36,23 +36,23 @@ class Audit(object):
         return totalVulns
 
     def printResult(self, coordinate: CoordinateResults, number, length):
-        if len(coordinate.getVulnerabilities()) == 0:
+        if len(coordinate.get_vulnerabilities()) == 0:
             print("[{}/{}] - {} - no known vulnerabilities for this version"
                   .format(
                     number,
                     length,
-                    coordinate.getCoordinates()))
-            return len(coordinate.getVulnerabilities())
+                    coordinate.get_coordinates()))
+            return len(coordinate.get_vulnerabilities())
         else:
             print(("[{}/{}] - {} [VULNERABLE] {} known vulnerabilities for"
                   "this version").format(
                     number,
                     length,
-                    coordinate.getCoordinates(),
-                    len(coordinate.getVulnerabilities())))
-            for vulnerability in coordinate.getVulnerabilities():
+                    coordinate.get_coordinates(),
+                    len(coordinate.get_vulnerabilities())))
+            for vulnerability in coordinate.get_vulnerabilities():
                 self.printVulnerability(vulnerability)
-            return len(coordinate.getVulnerabilities())
+            return len(coordinate.get_vulnerabilities())
 
     def printVulnerability(self, vulnerability: Vulnerabilities):
         print("ID: {}".format(vulnerability.get_id()))

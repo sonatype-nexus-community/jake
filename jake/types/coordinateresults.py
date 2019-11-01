@@ -20,22 +20,22 @@ class CoordinateResults(object):
         self.reference = ""
         self.vulnerabilities = []
 
-    def setCoordinates(self, coordinate):
+    def set_coordinates(self, coordinate):
         self.coordinates = coordinate
 
-    def getCoordinates(self):
+    def get_coordinates(self):
         return self.coordinates
 
-    def setReference(self, reference):
+    def set_reference(self, reference):
         self.reference = reference
 
-    def getReference(self):
+    def get_reference(self):
         return self.reference
 
-    def setVulnerabilities(self, vulnerabilities):
+    def set_vulnerabilities(self, vulnerabilities):
         self.vulnerabilities = vulnerabilities
 
-    def getVulnerabilities(self):
+    def get_vulnerabilities(self):
         return self.vulnerabilities
 
     def toJSON(self):

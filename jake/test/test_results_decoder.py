@@ -29,10 +29,11 @@ class TestResultsDecoder(unittest.TestCase):
         self.assertEqual(len(result), 32)
         self.assertEqual(isinstance(result, List), True)
         self.assertEqual(isinstance(result[0], CoordinateResults), True)
-        self.assertEqual(result[0].getCoordinates(),
+        self.assertEqual(result[0].get_coordinates(),
                          "pkg:conda/pycrypto@2.6.1")
-        self.assertEqual(result[0].getReference(
+        self.assertEqual(result[0].get_reference(
         ), "https://ossindex.sonatype.org/component/pkg:conda/pycrypto@2.6.1")
         self.assertEqual(isinstance(
-            result[0].getVulnerabilities(), List), True)
-        self.assertEqual(len(result[0].getVulnerabilities()), 0)
+            result[0].get_vulnerabilities(), 
+            List), True)
+        self.assertEqual(len(result[0].get_vulnerabilities()), 0)

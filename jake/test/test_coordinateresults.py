@@ -20,9 +20,9 @@ from jake.types.coordinateresults import CoordinateResults
 class TestResultsDecoder(unittest.TestCase):
     def test_toJsonOnCoordinateResultsReturnsProperJson(self):
         undertest = CoordinateResults()
-        undertest.setCoordinates("pkg:conda/thing@1.0.0")
-        undertest.setReference("http://www.wrestling.com")
-        undertest.setVulnerabilities(
+        undertest.set_coordinates("pkg:conda/thing@1.0.0")
+        undertest.set_reference("http://www.wrestling.com")
+        undertest.set_vulnerabilities(
             '[{"id":"156d71e4-6ed5-4d5f-ae47-7d57be01d387",'
             '"title":"[CVE-2019-16056]'
             ' jake the snake","cvssScore":0.0,"cve":"CVE-2019-16056"'

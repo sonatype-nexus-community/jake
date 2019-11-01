@@ -24,9 +24,9 @@ class ResultsDecoder(json.JSONDecoder):
     def dict_to_object(self, dictionary):
         if dictionary.get('coordinates') is not None:
             item = CoordinateResults()
-            item.setCoordinates(dictionary.get("coordinates"))
-            item.setReference(dictionary.get("reference"))
-            item.setVulnerabilities(dictionary.get("vulnerabilities"))
+            item.set_coordinates(dictionary.get("coordinates"))
+            item.set_reference(dictionary.get("reference"))
+            item.set_vulnerabilities(dictionary.get("vulnerabilities"))
 
             return item
         else:

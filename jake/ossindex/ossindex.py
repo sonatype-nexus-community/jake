@@ -120,14 +120,14 @@ class OssIndex(object):
             mydatetime = datetime.now()
             twelvelater = mydatetime + timedelta(hours=12)
             result = self._db.search(
-                Coordinate.purl == coordinate.getCoordinates())
+                Coordinate.purl == coordinate.get_coordinates())
             if len(result) == 0:
-                self._db.insert({'purl': coordinate.getCoordinates(),
+                self._db.insert({'purl': coordinate.get_coordinates(),
                                  'response': coordinate.toJSON(),
                                  'ttl': twelvelater.isoformat()})
                 self._log.debug(
                     "Coordinate inserted into cache: <%s>",
-                    coordinate.getCoordinates())
+                    coordinate.get_coordinates())
                 num_cached += 1
                 cached = True
             else:
@@ -139,7 +139,7 @@ class OssIndex(object):
                     self._log.debug(
                         "Coordinate: <%s> updated in cache because TTL"
                         "expired",
-                        coordinate.getCoordinates())
+                        coordinate.get_coordinates())
                     num_cached += 1
                     cached = True
 

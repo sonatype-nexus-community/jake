@@ -11,15 +11,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import requests
 import logging
 import json
-
 from typing import List
 from datetime import datetime, timedelta
+from pathlib import Path
 from dateutil.parser import parse
 from tinydb import TinyDB, Query
-from pathlib import Path
+import requests
 from jake.types.coordinates import Coordinates
 from jake.types.results_decoder import ResultsDecoder
 from jake.types.coordinateresults import CoordinateResults

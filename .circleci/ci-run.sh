@@ -4,6 +4,6 @@ source .venv/bin/activate
 
 pip install pylint
 
-pylint jake
+pylint jake --ignore=test/
 
 python3 -m unittest discover

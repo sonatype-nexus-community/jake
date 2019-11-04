@@ -17,10 +17,10 @@ import logging
 
 from os import _exit, EX_OSERR
 
-from jake.ossindex.ossindex import OssIndex
-from jake.parse.parse import Parse
-from jake.audit.audit import Audit
-from jake.config.config import Config
+from .ossindex.ossindex import OssIndex
+from .parse.parse import Parse
+from .audit.audit import Audit
+from .config.config import Config
 
 from ._version import __version__
 

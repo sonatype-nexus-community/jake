@@ -12,13 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import logging
+import sys
+
 
 from typing import List
 
 from jake.types.coordinateresults import CoordinateResults
 from jake.types.vulnerabilities import Vulnerabilities
 
-
+sys.path.append('../')
 class Audit(object):
     def __init__(self):
         self._log = logging.getLogger('jake')

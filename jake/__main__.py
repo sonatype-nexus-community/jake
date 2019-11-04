@@ -69,7 +69,7 @@ def main():
   audit = Audit()
 
   if args.clean:
-    ossindex.cleanCache()
+    ossindex.clean_cache()
 
   if args.run == 'ddt':
     log.info('Calling OSS Index')
@@ -82,7 +82,7 @@ def main():
 
     log.debug("Total purls: %s", len(purls.get_coordinates()))
 
-    response = ossindex.callOSSIndex(purls)
+    response = ossindex.call_ossindex(purls)
     if response is not None:
       code = audit.audit_results(response)
     else:

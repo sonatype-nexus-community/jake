@@ -38,7 +38,7 @@ class TestOssIndex(unittest.TestCase):
         self.parse = Parse()
 
     def tearDown(self):
-        self.func.closeDB()
+        self.func.close_db()
         if Path('/tmp/.ossindex/jake.json').exists():
             Path('/tmp/.ossindex/jake.json').unlink()
 
@@ -68,7 +68,7 @@ class TestOssIndex(unittest.TestCase):
             mock_result = stdin.read()
             mock_post.return_value.status_code = 200
             mock_post.return_value.text = mock_result
-            response = self.func.callOSSIndex(self.get_fakePurls())
+            response = self.func.call_ossindex(self.get_fakePurls())
         self.assertEqual(len(response), 32)
         self.assertEqual(response[0].get_coordinates(),
                          "pkg:conda/pycrypto@2.6.1")
@@ -83,7 +83,7 @@ class TestOssIndex(unittest.TestCase):
     def test_callOSSIndex_PostReturnsError(self, mock_post):
         mock_post.return_value.status_code = 404
         mock_post.return_value.text = "yadda"
-        response = self.func.callOSSIndex(self.get_fakePurls())
+        response = self.func.call_ossindex(self.get_fakePurls())
         self.assertEqual(response, None)
 
     def test_chunk(self):
@@ -102,7 +102,7 @@ class TestOssIndex(unittest.TestCase):
         fn = Path(__file__).parent / "ossindexresponse.txt"
         with open(fn, "r") as stdin:
             response = json.loads(stdin.read(), cls=ResultsDecoder)
-            (cached, num_cached) = self.func.maybeInsertIntoCache(response)
+            (cached, num_cached) = self.func.maybe_insert_into_cache(response)
         self.assertEqual(num_cached, 32)
         self.assertEqual(cached, True)
 
@@ -110,8 +110,8 @@ class TestOssIndex(unittest.TestCase):
         fn = Path(__file__).parent / "ossindexresponse.txt"
         with open(fn, "r") as stdin:
             response = json.loads(stdin.read(), cls=ResultsDecoder)
-            self.func.maybeInsertIntoCache(response)
-            (cached, num_cached) = self.func.maybeInsertIntoCache(response)
+            self.func.maybe_insert_into_cache(response)
+            (cached, num_cached) = self.func.maybe_insert_into_cache(response)
         self.assertEqual(num_cached, 0)
         self.assertEqual(cached, False)
 
@@ -122,7 +122,7 @@ class TestOssIndex(unittest.TestCase):
             """[{"coordinates":"pkg:conda/pycrypto@2.6.1",
             "reference":"https://ossindex.sonatype.org/component/pkg:conda/pycrypto@2.6.1",
             "vulnerabilities":[]}]""")
-        self.func.maybeInsertIntoCache(response)
+        self.func.maybe_insert_into_cache(response)
         resultExpired = db.search(
             Coordinates.purl == "pkg:conda/pycrypto@2.6.1")
         timeUnwind = parse(resultExpired[0]['ttl']) - timedelta(hours=13)
@@ -133,20 +133,20 @@ class TestOssIndex(unittest.TestCase):
             """[{"coordinates":"pkg:conda/pycrypto@2.6.1",
             "reference":"https://ossindex.sonatype.org/component/pkg:conda/pycrypto@2.6.1",
             "vulnerabilities":[]}]""")
-        (cached, num_cached) = self.func.maybeInsertIntoCache(nextResponse)
+        (cached, num_cached) = self.func.maybe_insert_into_cache(nextResponse)
         self.assertEqual(cached, True)
         self.assertEqual(num_cached, 1)
         db.close()
 
     def test_getPurlsFromCache(self):
-        self.func.maybeInsertIntoCache(self.stringToCoordinatesResult(
+        self.func.maybe_insert_into_cache(self.stringToCoordinatesResult(
             """[{"coordinates":"pkg:conda/pycrypto@2.6.1",
             "reference":"https://ossindex.sonatype.org/component/pkg:conda/pycrypto@2.6.1",
             "vulnerabilities":[{"id":"156d71e4-6ed5-4d5f-ae47-7d57be01d387",
             "title":"[CVE-2019-16056] jake the snake",
             "cvssScore":0.0,"cve":"CVE-2019-16056",
             "reference":"http://www.wrestling.com"}]}]"""))
-        (new_purls, results) = self.func.getPurlsAndResultsFromCache(
+        (new_purls, results) = self.func.get_purls_and_results_from_cache(
             self.get_fakeActualPurls())
         self.assertEqual(isinstance(results, List), True)
         self.assertEqual(isinstance(results[0], CoordinateResults), True)
@@ -166,7 +166,7 @@ class TestOssIndex(unittest.TestCase):
         self.assertEqual(isinstance(new_purls, Coordinates), True)
 
     def test_getPurlsFromCacheWithCacheMiss(self):
-        self.func.maybeInsertIntoCache(self.stringToCoordinatesResult(
+        self.func.maybe_insert_into_cache(self.stringToCoordinatesResult(
             """[{"coordinates":"pkg:conda/pycrypto@2.6.1",
             "reference":"https://ossindex.sonatype.org/component/pkg:conda/pycrypto@2.6.1",
             "vulnerabilities":[{"id":"156d71e4-6ed5-4d5f-ae47-7d57be01d387",
@@ -175,7 +175,7 @@ class TestOssIndex(unittest.TestCase):
             "reference":"http://www.wrestling.com"}]}]"""))
         fake_purls = self.get_fakeActualPurls()
         fake_purls.add_coordinate("pkg:conda/alabaster@0.7.12")
-        (new_purls, results) = self.func.getPurlsAndResultsFromCache(
+        (new_purls, results) = self.func.get_purls_and_results_from_cache(
           fake_purls)
         self.assertEqual(len(new_purls.get_coordinates()), 1)
         self.assertEqual(isinstance(new_purls, Coordinates), True)
@@ -196,17 +196,17 @@ class TestOssIndex(unittest.TestCase):
                          0], "pkg:conda/alabaster@0.7.12")
 
     def test_getPurlsFromCacheWithNonValidObject(self):
-        (new_purls, results) = self.func.getPurlsAndResultsFromCache(
+        (new_purls, results) = self.func.get_purls_and_results_from_cache(
           "bad data")
         self.assertEqual(new_purls, None)
         self.assertEqual(results, None)
 
     def test_cleanWipesDB(self):
-        self.func.maybeInsertIntoCache(self.stringToCoordinatesResult(
+        self.func.maybe_insert_into_cache(self.stringToCoordinatesResult(
             """[{"coordinates":"pkg:conda/pycrypto@2.6.1",
             "reference":"https://ossindex.sonatype.org/component/pkg:conda/pycrypto@2.6.1",
             "vulnerabilities":[]}]"""))
-        self.assertEqual(self.func.cleanCache(), True)
+        self.assertEqual(self.func.clean_cache(), True)
 
     def stringToCoordinatesResult(self, string):
         return json.loads(string, cls=ResultsDecoder)

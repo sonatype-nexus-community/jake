@@ -87,11 +87,11 @@ class OssIndex(object):
             data = {}
             data["coordinates"] = purls
             config_file = Config()
-            if config_file.checkIfConfigExists() is False:
+            if config_file.check_if_config_exists() is False:
                 response = requests.post(self.get_url(), data=json.dumps(
                     data), headers=self.get_headers())
             else:
-                (username, password) = config_file.getConfigFromFile()
+                (username, password) = config_file.get_config_from_file()
                 response = requests.post(self.get_url(),
                                          data=json.dumps(data),
                                          headers=self.get_headers(),

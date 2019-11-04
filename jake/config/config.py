@@ -1,3 +1,4 @@
+"""config.py stores OSSIndex credntials"""
 # Copyright 2019 Sonatype Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,54 +18,61 @@ from pathlib import Path
 
 
 class Config(object):
-    def __init__(self, save_location=''):
-        self._log = logging.getLogger('jake')
-        self._username = ""
-        self._password = ""
-        if save_location != '':
-            self._save_location = save_location
-        else:
-            self._save_location = str(Path.home())
+  """config.py stores OSSIndex credntials"""
+  def __init__(self, save_location=''):
+    self._log = logging.getLogger('jake')
+    self._username = ""
+    self._password = ""
+    if save_location != '':
+      self._save_location = save_location
+    else:
+      self._save_location = str(Path.home())
 
-    def setPassword(self, password):
-        self._password = password
+  def set_password(self, password):
+    """set password for OSSIndex request"""
+    self._password = password
 
-    def setUsername(self, username):
-        self._username = username
+  def set_username(self, username):
+    """set username for OSSIndex request"""
+    self._username = username
 
-    def getConfigFromStdIn(self):
-        username = input(
-            "Please enter your email address for your OSS Index account: ")
-        password = input("Please enter your API Key for OSS Index: ")
+  def get_config_from_std_in(self):
+    """requests user to input their username and password from stdin"""
+    username = input(
+        "Please enter your email address for your OSS Index account: ")
+    password = input("Please enter your API Key for OSS Index: ")
 
-        self.setUsername(username)
-        self.setPassword(password)
+    self.set_username(username)
+    self.set_password(password)
 
-        result = self.saveConfigToFile()
+    result = self.save_config_to_file()
 
-        return result
+    return result
 
-    def saveConfigToFile(self):
-        try:
-            with open(self._save_location + "/.jake-config", "w+") as f:
-                f.write("Username: " + self._username + "\n")
-                f.write("Password: " + self._password + "\n")
-                return True
-        except Exception as e:
-            self._log.error("Uh oh, an error happened: %s", str(e))
-            return False
+  def save_config_to_file(self):
+    """save stdin to /.jake-config"""
+    try:
+      with open(self._save_location + "/.jake-config", "w+") as file:
+        file.write("Username: " + self._username + "\n")
+        file.write("Password: " + self._password + "\n")
+        return True
+    except Exception as exception:
+      self._log.error("Uh oh, an error happened: %s", str(exception))
+      return False
 
-    def getConfigFromFile(self):
-        with open(self._save_location + "/.jake-config") as f:
-            for line in f.readlines():
-                lineArray = line.split(" ")
-                if lineArray[0] == 'Username:':
-                    username = str(lineArray[1]).rstrip()
-                elif lineArray[0] == 'Password:':
-                    password = str(lineArray[1]).rstrip()
+  def get_config_from_file(self):
+    """get credentials from /.jake-config"""
+    with open(self._save_location + "/.jake-config") as file:
+      for line in file.readlines():
+        line_array = line.split(" ")
+        if line_array[0] == 'Username:':
+          username = str(line_array[1]).rstrip()
+        elif line_array[0] == 'Password:':
+          password = str(line_array[1]).rstrip()
 
-        return (username, password)
+    return (username, password)
 
-    def checkIfConfigExists(self):
-        config_location = Path(self._save_location + "/.jake-config")
-        return config_location.exists()
+  def check_if_config_exists(self):
+    """check to see if /.jake-config exists"""
+    config_location = Path(self._save_location + "/.jake-config")
+    return config_location.exists()

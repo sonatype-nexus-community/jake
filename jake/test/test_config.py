@@ -17,26 +17,26 @@ from jake.config.config import Config
 
 
 class TestConfig(unittest.TestCase):
-    def setUp(self):
-        self.func = Config(save_location='/tmp/')
+  def setUp(self):
+    self.func = Config(save_location='/tmp/')
 
-    def test_configObjectSavesConfigFile(self):
-        self.func.setPassword("password")
-        self.func.setUsername("test@me.com")
-        result = self.func.saveConfigToFile()
-        self.assertEqual(result, True)
+  def test_configObjectSavesConfigFile(self):
+    self.func.set_password("password")
+    self.func.set_username("test@me.com")
+    result = self.func.save_config_to_file()
+    self.assertEqual(result, True)
 
-    def test_getConfigFromFile(self):
-        self.func.setPassword("password")
-        self.func.setUsername("test@me.com")
-        self.func.saveConfigToFile()
+  def test_getConfigFromFile(self):
+    self.func.set_password("password")
+    self.func.set_username("test@me.com")
+    self.func.save_config_to_file()
 
-        (username, password) = self.func.getConfigFromFile()
-        self.assertEqual(username, "test@me.com")
-        self.assertEqual(password, "password")
+    (username, password) = self.func.get_config_from_file()
+    self.assertEqual(username, "test@me.com")
+    self.assertEqual(password, "password")
 
-    def test_returnTrueWhenConfigExists(self):
-        self.func.setPassword("password")
-        self.func.setUsername("test@me.com")
-        self.func.saveConfigToFile()
-        self.assertEqual(self.func.checkIfConfigExists(), True)
+  def test_returnTrueWhenConfigExists(self):
+    self.func.set_password("password")
+    self.func.set_username("test@me.com")
+    self.func.save_config_to_file()
+    self.assertEqual(self.func.check_if_config_exists(), True)

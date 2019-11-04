@@ -49,7 +49,7 @@ def main():
 
   if args.snake:
     config = Config()
-    result = config.getConfigFromStdIn()
+    result = config.get_config_from_std_in()
     if result is False:
       _exit(OSError)
     else:

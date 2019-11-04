@@ -73,7 +73,7 @@ def main():
 
   if args.run == 'ddt':
     log.info('Calling OSS Index')
-    purls = parse.getDependenciesFromStdin(sys.stdin)
+    purls = parse.get_dependencies_from_stdin(sys.stdin)
     if purls is None:
       log.error(
           "No purls returned, ensure that conda list is returning"

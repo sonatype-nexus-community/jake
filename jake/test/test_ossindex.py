@@ -89,7 +89,7 @@ class TestOssIndex(unittest.TestCase):
     def test_chunk(self):
         fn = Path(__file__).parent / "condalistoutput.txt"
         with open(fn, "r") as stdin:
-            purls = self.parse.getDependenciesFromStdin(stdin)
+            purls = self.parse.get_dependencies_from_stdin(stdin)
             actual_result = self.func.chunk(purls)
         self.assertEqual(len(actual_result), 3)
         self.assertEqual(len(actual_result[0]), 128)

@@ -14,8 +14,7 @@
 # limitations under the License.
 import json
 
-
-class Coordinates(object):
+class Coordinates():
   """Coordinates creates a Coordinates type object"""
   def __init__(self):
     self._coordinates = []

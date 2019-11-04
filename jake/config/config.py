@@ -16,8 +16,7 @@ import logging
 
 from pathlib import Path
 
-
-class Config(object):
+class Config():
   """config.py stores OSSIndex credntials"""
   def __init__(self, save_location=''):
     self._log = logging.getLogger('jake')

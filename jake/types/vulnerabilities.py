@@ -1,4 +1,6 @@
 """vulnerabilities.py creates a Vulnerabilities type object"""
+# pylint: disable=C0103
+# pylint: disable=W0622
 # Copyright 2019 Sonatype Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,7 +16,7 @@
 # limitations under the License.
 
 
-class Vulnerabilities(object):
+class Vulnerabilities():
   """creates a Vulnerabilities type object"""
   def __init__(self):
     self.id = ""

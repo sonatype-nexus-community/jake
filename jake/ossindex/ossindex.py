@@ -1,4 +1,5 @@
 """ossindex.py makes a request to OSSIndex"""
+# pylint: disable=W0102
 # Copyright 2019 Sonatype Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,27 +15,29 @@
 # limitations under the License.
 import logging
 import json
+
 from typing import List
 from datetime import datetime, timedelta
 from pathlib import Path
 from dateutil.parser import parse
 from tinydb import TinyDB, Query
+
 import requests
+
 from jake.types.coordinates import Coordinates
 from jake.types.results_decoder import ResultsDecoder
 from jake.types.coordinateresults import CoordinateResults
 from jake.config.config import Config
 
+DEFAULT_HEADERS = {
+    'Content-type': 'application/vnd.ossindex.component-report-request.v1+json',
+    'User-Agent': 'jake'}
 
-class OssIndex(object):
+class OssIndex():
   """ossindex.py makes a request to OSSIndex"""
   def __init__(self,
                url='https://ossindex.sonatype.org/api/v3/component-report',
-               headers={
-                   'Content-type':
-                   'application/vnd.ossindex.component-report-request.v1+json',
-                   'User-Agent':
-                   'jake'},
+               headers=DEFAULT_HEADERS,
                cache_location=''):
     self._url = url
     self._headers = headers
@@ -89,9 +92,9 @@ class OssIndex(object):
                     len(purls.get_coordinates()))
 
     chunk_purls = self.chunk(purls)
-    for purls in chunk_purls:
+    for purls_chunk in chunk_purls:
       data = {}
-      data["coordinates"] = purls
+      data["coordinates"] = purls_chunk
       config_file = Config()
       if config_file.check_if_config_exists() is False:
         response = requests.post(self.get_url(), data=json.dumps(
@@ -119,14 +122,14 @@ class OssIndex(object):
 
   def maybe_insert_into_cache(self, results: List[CoordinateResults]):
     """checks to see if result is in cache and if not, stores it"""
-    Coordinate = Query()
+    coordinate_query = Query()
     num_cached = 0
     cached = False
     for coordinate in results:
       mydatetime = datetime.now()
       twelvelater = mydatetime + timedelta(hours=12)
       result = self._db.search(
-          Coordinate.purl == coordinate.get_coordinates())
+          coordinate_query.purl == coordinate.get_coordinates())
       if len(result) == 0:
         self._db.insert({'purl': coordinate.get_coordinates(),
                          'response': coordinate.to_json(),
@@ -158,10 +161,10 @@ class OssIndex(object):
       return (None, None)
     new_purls = Coordinates()
     results = []
-    Coordinate = Query()
+    coordinate_query = Query()
     for purl in purls.get_coordinates():
       mydatetime = datetime.now()
-      result = self._db.search(Coordinate.purl == purl)
+      result = self._db.search(coordinate_query.purl == purl)
       if len(result) == 0 or parse(result[0]['ttl']) < mydatetime:
         new_purls.add_coordinate(purl)
       else:

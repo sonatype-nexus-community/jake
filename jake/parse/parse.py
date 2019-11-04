@@ -17,8 +17,7 @@ from shutil import which
 
 from jake.types.coordinates import Coordinates
 
-
-class Parse(object):
+class Parse():
   """parse.py parses dependencies and converts them to purls"""
   def __init__(self):
     self._log = logging.getLogger('jake')
@@ -56,7 +55,8 @@ class Parse(object):
 
     return None
 
-  def run_conda_list_command(self, run_command_list):
+  @classmethod
+  def run_conda_list_command(cls, run_command_list):
     """checks stdout to see if user installed conda"""
     return run_command_list
 
@@ -76,7 +76,8 @@ class Parse(object):
 
     return purls
 
-  def parse_line_into_purl(self, line):
+  @classmethod
+  def parse_line_into_purl(cls, line):
     """formats list of purls for logging"""
     line_array = line.split()
     template = "pkg:conda/{}@{}"

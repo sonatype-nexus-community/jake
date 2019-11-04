@@ -19,7 +19,7 @@ from typing import List
 from jake.types.coordinateresults import CoordinateResults
 from jake.types.vulnerabilities import Vulnerabilities
 
-class Audit(object):
+class Audit():
   """ Audit does the business, it prints results from OSS Index to the standard out """
   def __init__(self):
     self._log = logging.getLogger('jake')
@@ -65,7 +65,8 @@ class Audit(object):
       self.print_vulnerability(vulnerability)
     return len(coordinate.get_vulnerabilities())
 
-  def print_vulnerability(self, vulnerability: Vulnerabilities):
+  @classmethod
+  def print_vulnerability(cls, vulnerability: Vulnerabilities):
     """
     print_vulnerability takes a vulnerability, and well, it prints it
     """

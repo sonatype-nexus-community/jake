@@ -191,7 +191,9 @@ class TestOssIndex(unittest.TestCase):
     self.assertEqual(isinstance(new_purls, Coordinates), True)
 
   def test_get_purls_from_cache_with_cache_miss(self):
-    """i am unsure what this test is doing"""
+    """ This test ensures that a) results can be added to the cache
+    and b) if a purl is not in the cache, that purl is still in the new purls
+    that are returned """
     self.func.maybe_insert_into_cache(self.string_to_coordinatesresult(
         """[{"coordinates":"pkg:conda/pycrypto@2.6.1",
         "reference":"https://ossindex.sonatype.org/component/pkg:conda/pycrypto@2.6.1",

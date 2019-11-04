@@ -1,5 +1,4 @@
 """ossindex.py makes a request to OSSIndex"""
-# pylint: disable=W0102
 # Copyright 2019 Sonatype Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,10 +36,9 @@ class OssIndex():
   """ossindex.py makes a request to OSSIndex"""
   def __init__(self,
                url='https://ossindex.sonatype.org/api/v3/component-report',
-               headers=DEFAULT_HEADERS,
                cache_location=''):
     self._url = url
-    self._headers = headers
+    self._headers = DEFAULT_HEADERS
     self._log = logging.getLogger('jake')
     self._maxcoords = 128
     if cache_location == '':

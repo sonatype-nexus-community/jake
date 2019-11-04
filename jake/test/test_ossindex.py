@@ -31,10 +31,7 @@ from jake.types.vulnerabilities import Vulnerabilities
 
 class TestOssIndex(unittest.TestCase):
   def setUp(self):
-    self.func = OssIndex(url="http://blahblah", headers={
-        "thing": "thing",
-        "anotherthing":
-        "anotherthing"},
+    self.func = OssIndex(url="http://blahblah",
                          cache_location="/tmp")
     self.parse = Parse()
 

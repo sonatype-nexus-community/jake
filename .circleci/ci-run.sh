@@ -2,8 +2,8 @@
 
 source .venv/bin/activate
 
-pip install flake8
+pip install pylint
 
-flake8 jake
+pylint jake
 
 python3 -m unittest discover

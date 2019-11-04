@@ -1,3 +1,4 @@
+""" test_audit.py , for all your testing of audit py needs """
 # Copyright 2019 Sonatype Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,23 +15,27 @@
 import unittest
 import json
 
-from jake.audit.audit import Audit
-from jake.types.results_decoder import ResultsDecoder
 from pathlib import Path
 
+from jake.audit.audit import Audit
+from jake.types.results_decoder import ResultsDecoder
 
 class TestAudit(unittest.TestCase):
-    def setUp(self):
-        self.func = Audit()
+  """ TestAudit is responsible for testing the Audit class """
+  def setUp(self):
+    self.func = Audit()
 
-    def test_callauditResultsPrintsOutput(self):
-        fn = Path(__file__).parent / "ossindexresponse.txt"
-        with open(fn, "r") as stdin:
-            response = json.loads(
-              stdin.read(),
-              cls=ResultsDecoder)
-        self.assertEqual(self.func.auditResults(response),
-                         self.expectedResults())
+  def test_call_audit_results_prints_output(self):
+    """ test_call_audit_results_prints_output ensures that when called with
+    a valid result, audit_results returns the number of vulnerabilities found """
+    filename = Path(__file__).parent / "ossindexresponse.txt"
+    with open(filename, "r") as stdin:
+      response = json.loads(
+          stdin.read(),
+          cls=ResultsDecoder)
+    self.assertEqual(self.func.audit_results(response),
+                     self.expected_results())
 
-    def expectedResults(self):
-        return 3
+  def expected_results(self):
+    """ Weeee, I'm helping! """
+    return 3

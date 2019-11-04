@@ -82,7 +82,7 @@ def main():
 
         response = ossindex.callOSSIndex(purls)
         if response is not None:
-            code = audit.auditResults(response)
+            code = audit.audit_results(response)
         else:
             log.error(
                 "Something went horribly wrong, please rerun with -VV to see"

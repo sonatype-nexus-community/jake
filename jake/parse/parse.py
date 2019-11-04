@@ -23,7 +23,7 @@ class Parse():
     self._log = logging.getLogger('jake')
 
   def get_dependencies(self, run_command_list):
-    """checks if conda exists and then gets a list of condadepencies from stdout"""
+    """checks if conda exists and then gets a list of conda dependencies from stdout"""
     if self.check_if_conda_exists():
       return self.really_get_conda_dependencies(run_command_list)
     return None

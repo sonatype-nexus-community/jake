@@ -1,4 +1,5 @@
 """config.py stores OSSIndex credntials"""
+# pylint: disable=W0703
 # Copyright 2019 Sonatype Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

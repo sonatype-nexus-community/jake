@@ -36,6 +36,7 @@ class TestAudit(unittest.TestCase):
     self.assertEqual(self.func.audit_results(response),
                      self.expected_results())
 
-  def expected_results(self):
+  @staticmethod
+  def expected_results():
     """ Weeee, I'm helping! """
     return 3

@@ -239,7 +239,8 @@ class TestOssIndex(unittest.TestCase):
         "vulnerabilities":[]}]"""))
     self.assertEqual(self.func.clean_cache(), True)
 
-  def string_to_coordinatesresult(self, string):
+  @staticmethod
+  def string_to_coordinatesresult(string):
     """string_to_coordinatesresult is a helper function that turns a string
     into a CoordinateResult typed object"""
     return json.loads(string, cls=ResultsDecoder)

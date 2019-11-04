@@ -1,5 +1,4 @@
-"""config.py stores OSSIndex credntials"""
-# pylint: disable=W0703
+"""config.py stores OSSIndex credentials"""
 # Copyright 2019 Sonatype Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,7 +17,7 @@ import logging
 from pathlib import Path
 
 class Config():
-  """config.py stores OSSIndex credntials"""
+  """config.py handles getting credentials for OSSIndex or setting them"""
   def __init__(self, save_location=''):
     self._log = logging.getLogger('jake')
     self._username = ""
@@ -50,18 +49,18 @@ class Config():
     return result
 
   def save_config_to_file(self):
-    """save stdin to /.jake-config"""
+    """save stdin to save_location/.jake-config"""
     try:
       with open(self._save_location + "/.jake-config", "w+") as file:
         file.write("Username: " + self._username + "\n")
         file.write("Password: " + self._password + "\n")
         return True
-    except Exception as exception:
+    except FileNotFoundError as exception:
       self._log.error("Uh oh, an error happened: %s", str(exception))
       return False
 
   def get_config_from_file(self):
-    """get credentials from /.jake-config"""
+    """get credentials from save_location/.jake-config"""
     with open(self._save_location + "/.jake-config") as file:
       for line in file.readlines():
         line_array = line.split(" ")
@@ -73,6 +72,6 @@ class Config():
     return (username, password)
 
   def check_if_config_exists(self):
-    """check to see if /.jake-config exists"""
+    """check to see if save_location/.jake-config exists"""
     config_location = Path(self._save_location + "/.jake-config")
     return config_location.exists()

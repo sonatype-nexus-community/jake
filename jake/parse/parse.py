@@ -27,8 +27,7 @@ class Parse(object):
     """checks if conda exists and then gets a list of condadepencies from stdout"""
     if self.check_if_conda_exists():
       return self.really_get_conda_dependencies(run_command_list)
-    else:
-      return None
+    return None
 
   def get_dependencies_from_stdin(self, stdin):
     """gets depdencies from stdin"""
@@ -37,14 +36,14 @@ class Parse(object):
   def check_if_conda_exists(self):
     """checks to see if user installed conda"""
     self._log.debug(which("python"))
-    condaExists = which("conda")
+    conda_exists = which("conda")
 
-    self._log.debug(condaExists)
+    self._log.debug(conda_exists)
 
-    if condaExists is not None:
+    if conda_exists is not None:
       return True
-    else:
-      return False
+
+    return False
 
   def really_get_conda_dependencies(self, run_command_list):
     """gets a list of installed conda dependencies"""
@@ -54,8 +53,8 @@ class Parse(object):
 
     if results[length-1] == 0:
       return self.parse_conda_dependencies_into_purls(results)
-    else:
-      return None
+
+    return None
 
   def run_conda_list_command(self, run_command_list):
     """checks stdout to see if user installed conda"""
@@ -74,8 +73,8 @@ class Parse(object):
           purls.add_coordinate(self.parse_line_into_purl(line))
     if len(purls.get_coordinates()) == 0:
       return None
-    else:
-      return purls
+
+    return purls
 
   def parse_line_into_purl(self, line):
     """formats list of purls for logging"""
@@ -83,5 +82,5 @@ class Parse(object):
     template = "pkg:conda/{}@{}"
     if len(line_array) != 0:
       return template.format(line_array[0], line_array[1])
-    else:
-      return None
+
+    return None

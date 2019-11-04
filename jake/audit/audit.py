@@ -72,9 +72,9 @@ class Audit(object):
     print("ID: {}".format(vulnerability.get_id()))
     print("Title: {}".format(vulnerability.get_title()))
     print("Description: {}".format(vulnerability.get_description()))
-    print("CVSS Score: {}".format(vulnerability.get_cvssScore()))
-    if vulnerability.get_cvssVector() is not None:
-      print("CVSS Vector: {}".format(vulnerability.get_cvssVector()))
+    print("CVSS Score: {}".format(vulnerability.get_cvss_score()))
+    if vulnerability.get_cvss_vector() is not None:
+      print("CVSS Vector: {}".format(vulnerability.get_cvss_vector()))
     print("CVE: {}".format(vulnerability.get_cve()))
     print("Reference: {}".format(vulnerability.get_reference()))
     print("----------------------------------------------------")

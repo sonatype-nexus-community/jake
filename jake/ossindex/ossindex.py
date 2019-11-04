@@ -129,7 +129,7 @@ class OssIndex(object):
           Coordinate.purl == coordinate.get_coordinates())
       if len(result) == 0:
         self._db.insert({'purl': coordinate.get_coordinates(),
-                         'response': coordinate.toJSON(),
+                         'response': coordinate.to_json(),
                          'ttl': twelvelater.isoformat()})
         self._log.debug(
             "Coordinate inserted into cache: <%s>",
@@ -139,7 +139,7 @@ class OssIndex(object):
       else:
         timetolive = parse(result[0]['ttl'])
         if mydatetime > timetolive:
-          self._db.update({'response': coordinate.toJSON(),
+          self._db.update({'response': coordinate.to_json(),
                            'ttl': twelvelater.isoformat()},
                           doc_ids=[result[0].doc_id])
           self._log.debug(

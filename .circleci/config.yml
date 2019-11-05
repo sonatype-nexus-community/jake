@@ -7,6 +7,9 @@ jobs:
         environment: # environment variables for primary container
           PIPENV_VENV_IN_PROJECT: true 
     steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "4f:7d:6b:26:dc:44:de:b0:4d:f1:96:50:2a:b5:bd:b3"
       - checkout
       - run: sudo chown -R circleci:circleci /usr/local/bin
       - run: sudo chown -R circleci:circleci /usr/local/lib/python3.6/site-packages

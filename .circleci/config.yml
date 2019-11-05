@@ -1,5 +1,21 @@
 version: 2.1
+
 jobs:
+  publish:
+    docker: # run the steps with Docker
+      - image: circleci/python:3.6.4
+        environment: # environment variables for primary container
+          PIPENV_VENV_IN_PROJECT: true 
+    steps:
+      - checkout
+      - run: sudo chown -R circleci:circleci /usr/local/bin
+      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.6/site-packages
+      - run:
+          command: |
+            pip install -r requirements.txt
+      - run:
+          command: |
+            .circleci/ci-publish.sh
   build:
     docker: # run the steps with Docker
       - image: circleci/python:3.6.4
@@ -29,3 +45,16 @@ jobs:
       - store_artifacts: # Upload test summary for display in Artifacts: https://circleci.com/docs/2.0/artifacts/
           path: test-results
           destination: tr1
+
+workflows:
+  version: 2
+  build_and_test_and_publish:
+    jobs:
+      - build
+      - publish:
+          filters:
+            branches:
+              only: master
+          context: pypi
+          requires:
+            - build

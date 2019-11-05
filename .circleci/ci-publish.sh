@@ -12,4 +12,4 @@ git config user.email "$GITHUB_EMAIL"
 
 semantic-release version --patch
 
-# semantic-release publish
+semantic-release publish

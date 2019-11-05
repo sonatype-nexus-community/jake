@@ -10,6 +10,4 @@ chmod 400 ~/.ssh/id_rsa # prevents "UNPROTECTED PRIVATE KEY FILE" error
 git config user.name "$GITHUB_USERNAME"
 git config user.email "$GITHUB_EMAIL"
 
-semantic-release version --patch
-
-semantic-release publish
+semantic-release publish --patch

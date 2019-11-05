@@ -1,3 +1,4 @@
+"""parse.py parses dependencies and converts them to purls"""
 # Copyright 2019 Sonatype Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,62 +17,71 @@ from shutil import which
 
 from jake.types.coordinates import Coordinates
 
-class Parse(object):
-    def __init__(self):
-        self._log = logging.getLogger('jake')
+class Parse():
+  """parse.py parses dependencies and converts them to purls"""
+  def __init__(self):
+    self._log = logging.getLogger('jake')
 
-    def getDependencies(self, run_command_list):
-        if self.checkIfCondaExists():
-            return self.reallyGetCondaDependencies(run_command_list)
-        else:
-            return None
+  def get_dependencies(self, run_command_list):
+    """checks if conda exists and then gets a list of conda dependencies from stdout"""
+    if self.check_if_conda_exists():
+      return self.really_get_conda_dependencies(run_command_list)
+    return None
 
-    def getDependenciesFromStdin(self, stdin):
-        return self.parseCondaDependenciesIntoPurls(stdin)
+  def get_dependencies_from_stdin(self, stdin):
+    """gets depdencies from stdin"""
+    return self.parse_conda_dependencies_into_purls(stdin)
 
-    def checkIfCondaExists(self):
-        self._log.debug(which("python"))
-        condaExists = which("conda")
+  def check_if_conda_exists(self):
+    """checks to see if user installed conda"""
+    self._log.debug(which("python"))
+    conda_exists = which("conda")
 
-        self._log.debug(condaExists)
+    self._log.debug(conda_exists)
 
-        if condaExists is not None:
-            return True
-        else:
-            return False
+    if conda_exists is not None:
+      return True
 
-    def reallyGetCondaDependencies(self, run_command_list):
-        results = self.runCondaListCommand(run_command_list)
+    return False
 
-        length = len(results)
+  def really_get_conda_dependencies(self, run_command_list):
+    """gets a list of installed conda dependencies"""
+    results = self.run_conda_list_command(run_command_list)
 
-        if results[length-1] == 0:
-            return self.parseCondaDependenciesIntoPurls(results)
-        else:
-            return None
+    length = len(results)
 
-    def runCondaListCommand(self, run_command_list):
-        return run_command_list
+    if results[length-1] == 0:
+      return self.parse_conda_dependencies_into_purls(results)
 
-    def parseCondaDependenciesIntoPurls(self, stdin):
-        purls = Coordinates()
-        self._log.debug("Starting to parse results")
-        for line in stdin:
-            if "#" in line:
-                self._log.debug("Skipping line")
-            else:
-                purl = self.parseLineIntoPurl(line)
-                if purl is not None:
-                    purls.add_coordinate(self.parseLineIntoPurl(line))
-        if len(purls.get_coordinates()) == 0:
-            return None
-        else:
-            return purls
+    return None
 
-    def parseLineIntoPurl(self, line):
-        lineArray = line.split()
-        template = "pkg:conda/{}@{}"
-        if len(lineArray) is not 0:
-            return template.format(lineArray[0], lineArray[1])
-        else:
-            return None
+  @classmethod
+  def run_conda_list_command(cls, run_command_list):
+    """checks stdout to see if user installed conda"""
+    return run_command_list
+
+  def parse_conda_dependencies_into_purls(self, stdin):
+    """converts list of dependencies from stdin into purl coordinates"""
+    purls = Coordinates()
+    self._log.debug("Starting to parse results")
+    for line in stdin:
+      if "#" in line:
+        self._log.debug("Skipping line")
+      else:
+        purl = self.parse_line_into_purl(line)
+        if purl is not None:
+          purls.add_coordinate(self.parse_line_into_purl(line))
+    if len(purls.get_coordinates()) == 0:
+      return None
+
+    return purls
+
+  @classmethod
+  def parse_line_into_purl(cls, line):
+    """formats list of purls for logging"""
+    line_array = line.split()
+    template = "pkg:conda/{}@{}"
+    if len(line_array) != 0:
+      return template.format(line_array[0], line_array[1])
+
+    return None

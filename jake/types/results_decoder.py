@@ -1,3 +1,5 @@
+"""results_decoder.py takes the JSON results from a call to OSSIndex and
+ turns them into CoordinateResults or Vulnerabilities type objects"""
 # Copyright 2019 Sonatype Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,26 +18,33 @@ import json
 from jake.types.coordinateresults import CoordinateResults
 from jake.types.vulnerabilities import Vulnerabilities
 
+
 class ResultsDecoder(json.JSONDecoder):
+  """ResultsDecoder takes the JSON results from a call to OSSIndex and
+ turns them into CoordinateResults or Vulnerabilities type objects"""
   def __init__(self):
     json.JSONDecoder.__init__(self, object_hook=self.dict_to_object)
-  
-  def dict_to_object(self, dictionary):
+
+  @classmethod
+  def dict_to_object(cls, dictionary):
+    """checks to see if dictionary item has coordinates key then if it does
+ converts item into CoordinateResults, if it doesnt converts it to
+ Vulnerabilities """
     if dictionary.get('coordinates') is not None:
       item = CoordinateResults()
-      item.setCoordinates(dictionary.get("coordinates"))
-      item.setReference(dictionary.get("reference"))
-      item.setVulnerabilities(dictionary.get("vulnerabilities"))
+      item.set_coordinates(dictionary.get("coordinates"))
+      item.set_reference(dictionary.get("reference"))
+      item.set_vulnerabilities(dictionary.get("vulnerabilities"))
 
       return item
-    else:
-      vulnerability = Vulnerabilities()
-      vulnerability.add_id(dictionary.get("id"))
-      vulnerability.add_title(dictionary.get("title"))
-      vulnerability.add_description(dictionary.get("description"))
-      vulnerability.add_cvssScore(dictionary.get("cvssScore"))
-      vulnerability.add_cvssVector(dictionary.get('cvssVector'))
-      vulnerability.add_cve(dictionary.get("cve"))
-      vulnerability.add_reference(dictionary.get("reference"))
 
-      return vulnerability
+    vulnerability = Vulnerabilities()
+    vulnerability.set_id(dictionary.get("id"))
+    vulnerability.set_title(dictionary.get("title"))
+    vulnerability.set_description(dictionary.get("description"))
+    vulnerability.set_cvss_score(dictionary.get("cvssScore"))
+    vulnerability.set_cvss_vector(dictionary.get('cvssVector'))
+    vulnerability.set_cve(dictionary.get("cve"))
+    vulnerability.set_reference(dictionary.get("reference"))
+
+    return vulnerability

@@ -1,3 +1,4 @@
+""" audit.py for all your audit py needs """
 # Copyright 2019 Sonatype Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,39 +19,63 @@ from typing import List
 from jake.types.coordinateresults import CoordinateResults
 from jake.types.vulnerabilities import Vulnerabilities
 
-class Audit(object):
-    def __init__(self):
-        self._log = logging.getLogger('jake')
+class Audit():
+  """ Audit does the business, it prints results from OSS Index to the standard out """
+  def __init__(self):
+    self._log = logging.getLogger('jake')
 
-    def auditResults(self, results: List[CoordinateResults]):
-        self._log.debug("Results recieved, %s total results", len(results))
+  def audit_results(self, results: List[CoordinateResults]):
+    """
+    audit_results is the ingest point for the results from OSS Index,
+    and handles control flow
+    """
+    self._log.debug("Results recieved, %s total results", len(results))
 
-        totalVulns = 0
-        pkgNum = 0
+    total_vulns = 0
+    pkg_num = 0
 
-        for coordinate in results:
-            pkgNum += 1
-            totalVulns += self.printResult(coordinate, pkgNum, len(results))
+    for coordinate in results:
+      pkg_num += 1
+      total_vulns += self.print_result(coordinate, pkg_num, len(results))
 
-        return totalVulns
+    return total_vulns
 
-    def printResult(self, coordinate: CoordinateResults, number, length):
-        if len(coordinate.getVulnerabilities()) == 0:
-            print("[{}/{}] - {} - no known vulnerabilities for this version".format(number, length, coordinate.getCoordinates()))
-            return len(coordinate.getVulnerabilities())
-        else:
-            print("[{}/{}] - {} [VULNERABLE] {} known vulnerabilities for this version".format(number, length, coordinate.getCoordinates(), len(coordinate.getVulnerabilities())))
-            for vulnerability in coordinate.getVulnerabilities():
-                self.printVulnerability(vulnerability)
-            return len(coordinate.getVulnerabilities())
+  def print_result(self, coordinate: CoordinateResults, number, length):
+    """
+    print_results takes a coordinate, the index of the coordinate in a list,
+    and the length, and handles printing it in different formats if a
+    vulnerability exists
+    """
+    if len(coordinate.get_vulnerabilities()) == 0:
+      print("[{}/{}] - {} - no known vulnerabilities for this version"
+            .format(
+                number,
+                length,
+                coordinate.get_coordinates()))
+      return len(coordinate.get_vulnerabilities())
 
-    def printVulnerability(self, vulnerability: Vulnerabilities):
-        print("ID: {}".format(vulnerability.get_id()))
-        print("Title: {}".format(vulnerability.get_title()))
-        print("Description: {}".format(vulnerability.get_description()))
-        print("CVSS Score: {}".format(vulnerability.get_cvssScore()))
-        if vulnerability.get_cvssVector() is not None: 
-            print("CVSS Vector: {}".format(vulnerability.get_cvssVector()))
-        print("CVE: {}".format(vulnerability.get_cve()))
-        print("Reference: {}".format(vulnerability.get_reference()))
-        print("----------------------------------------------------")
+    print(("[{}/{}] - {} [VULNERABLE] {} known vulnerabilities for"
+           "this version")
+          .format(
+              number,
+              length,
+              coordinate.get_coordinates(),
+              len(coordinate.get_vulnerabilities())))
+    for vulnerability in coordinate.get_vulnerabilities():
+      self.print_vulnerability(vulnerability)
+    return len(coordinate.get_vulnerabilities())
+
+  @classmethod
+  def print_vulnerability(cls, vulnerability: Vulnerabilities):
+    """
+    print_vulnerability takes a vulnerability, and well, it prints it
+    """
+    print("ID: {}".format(vulnerability.get_id()))
+    print("Title: {}".format(vulnerability.get_title()))
+    print("Description: {}".format(vulnerability.get_description()))
+    print("CVSS Score: {}".format(vulnerability.get_cvss_score()))
+    if vulnerability.get_cvss_vector() is not None:
+      print("CVSS Vector: {}".format(vulnerability.get_cvss_vector()))
+    print("CVE: {}".format(vulnerability.get_cve()))
+    print("Reference: {}".format(vulnerability.get_reference()))
+    print("----------------------------------------------------")

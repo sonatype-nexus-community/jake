@@ -1,3 +1,4 @@
+""" test_audit.py , for all your testing of audit py needs """
 # Copyright 2019 Sonatype Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,17 +15,28 @@
 import unittest
 import json
 
+from pathlib import Path
+
 from jake.audit.audit import Audit
 from jake.types.results_decoder import ResultsDecoder
 
 class TestAudit(unittest.TestCase):
-    results = json.loads("[{'coordinates': 'pkg:conda/astroid@2.3.1', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/astroid@2.3.1', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/blas@1.0', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/blas@1.0', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/ca-certificates@2019.8.28', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/ca-certificates@2019.8.28', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/certifi@2019.9.11', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/certifi@2019.9.11', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/chardet@3.0.4', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/chardet@3.0.4', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/conda@4.3.16', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/conda@4.3.16', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/cytoolz@0.10.0', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/cytoolz@0.10.0', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/idna@2.8', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/idna@2.8', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/intel-openmp@2019.4', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/intel-openmp@2019.4', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/isort@4.3.21', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/isort@4.3.21', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/lazy-object-proxy@1.4.2', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/lazy-object-proxy@1.4.2', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/libcxx@4.0.1', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/libcxx@4.0.1', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/libcxxabi@4.0.1', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/libcxxabi@4.0.1', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/libedit@3.1.20181209', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/libedit@3.1.20181209', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/libffi@3.2.1', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/libffi@3.2.1', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/libgfortran@3.0.1', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/libgfortran@3.0.1', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/mccabe@0.6.1', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/mccabe@0.6.1', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/mkl@2019.4', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/mkl@2019.4', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/mkl-service@2.3.0', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/mkl-service@2.3.0', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/mkl_fft@1.0.14', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/mkl_fft@1.0.14', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/mkl_random@1.1.0', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/mkl_random@1.1.0', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/ncurses@6.1', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/ncurses@6.1', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/numpy@1.17.2', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/numpy@1.17.2', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/numpy-base@1.17.2', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/numpy-base@1.17.2', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/openssl@1.1.1d', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/openssl@1.1.1d', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/pip@19.2.3', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/pip@19.2.3', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/pycosat@0.6.3', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/pycosat@0.6.3', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/pylint@2.4.2', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/pylint@2.4.2', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/python@3.7.4', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/python@3.7.4', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/readline@7.0', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/readline@7.0', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/requests@2.22.0', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/requests@2.22.0', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/ruamel.yaml@0.16.5', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/ruamel.yaml@0.16.5', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/ruamel.yaml.clib@0.2.0', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/ruamel.yaml.clib@0.2.0', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/setuptools@41.4.0', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/setuptools@41.4.0', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/six@1.12.0', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/six@1.12.0', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/sqlite@3.30.0', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/sqlite@3.30.0', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/tk@8.6.8', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/tk@8.6.8', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/toolz@0.10.0', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/toolz@0.10.0', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/typed-ast@1.4.0', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/typed-ast@1.4.0', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/urllib3@1.25.6', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/urllib3@1.25.6', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/wheel@0.33.6', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/wheel@0.33.6', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/wrapt@1.11.2', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/wrapt@1.11.2', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/xz@5.2.4', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/xz@5.2.4', 'vulnerabilities': []}, {'coordinates': 'pkg:conda/zlib@1.2.11', 'reference': 'https://ossindex.sonatype.org/component/pkg:conda/zlib@1.2.11', 'vulnerabilities': []}]".replace("'", '"'), cls=ResultsDecoder)
+  """ TestAudit is responsible for testing the Audit class """
+  def setUp(self):
+    self.func = Audit()
 
-    def setUp(self):
-        self.func = Audit()
-    
-    def test_callauditResultsPrintsOutput(self):
-        self.assertEqual(self.func.auditResults(self.results), self.expectedResults())
+  def test_call_audit_results_prints_output(self):
+    """ test_call_audit_results_prints_output ensures that when called with
+    a valid result, audit_results returns the number of vulnerabilities found """
+    filename = Path(__file__).parent / "ossindexresponse.txt"
+    with open(filename, "r") as stdin:
+      response = json.loads(
+          stdin.read(),
+          cls=ResultsDecoder)
+    self.assertEqual(self.func.audit_results(response),
+                     self.expected_results())
 
-    def expectedResults(self):
-        return 0
+  @staticmethod
+  def expected_results():
+    """ Weeee, I'm helping! """
+    return 3

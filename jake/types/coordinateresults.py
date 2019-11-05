@@ -1,3 +1,4 @@
+"""coordinateresults.py creates a CoordinateResults type object"""
 # Copyright 2019 Sonatype Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,29 +14,37 @@
 # limitations under the License.
 import json
 
-class CoordinateResults(object):
+class CoordinateResults():
+  """CoordinateResults creates a CoordinateResults type object"""
   def __init__(self):
     self.coordinates = ""
     self.reference = ""
     self.vulnerabilities = []
-  
-  def setCoordinates(self, coordinate):
+
+  def set_coordinates(self, coordinate):
+    """sets coordinates for CoordinateResults obj"""
     self.coordinates = coordinate
 
-  def getCoordinates(self):
+  def get_coordinates(self):
+    """gets coordinates for CoordinateResults obj"""
     return self.coordinates
-  
-  def setReference(self, reference):
+
+  def set_reference(self, reference):
+    """sets reference for CoordinateResults obj"""
     self.reference = reference
 
-  def getReference(self):
+  def get_reference(self):
+    """get reference for CoordinateResults obj"""
     return self.reference
 
-  def setVulnerabilities(self, vulnerabilities):
+  def set_vulnerabilities(self, vulnerabilities):
+    """sets vulnerabilities for CoordinateResults obj"""
     self.vulnerabilities = vulnerabilities
 
-  def getVulnerabilities(self):
+  def get_vulnerabilities(self):
+    """sets vulnerabilities for CoordinateResults obj"""
     return self.vulnerabilities
 
-  def toJSON(self):
+  def to_json(self):
+    """converts CoordinateResults obj to JSON"""
     return json.dumps(self.__dict__, default=lambda o: o.__dict__)

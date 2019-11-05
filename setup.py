@@ -11,18 +11,26 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from jake._version import __version__
 from setuptools import setup
 
+from jake._version import __version__
+
+with open("README.md", "r") as fh:
+  LONG_DESCRIPTION = fh.read()
+
 setup(
-    name = 'jake',
-    version = __version__,
-    packages = ['jake'],
+    name='jake',
+    version=__version__,
+    packages=['jake'],
     url="https://github.com/sonatype-nexus-community/jake",
     author="Sonatype Community",
     author_email="community-group@sonatype.com",
+    description="An OSS Index integration to check for vulnerabilities in your Conda environments",
+    long_description=LONG_DESCRIPTION,
+    long_description_content_type="text/markdown",
     license="Apache-2.0",
-    entry_points = {
+    python_requires='>=3.6',
+    entry_points={
         'console_scripts': [
             'jake = jake.__main__:main'
         ]

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-git config user.name "$GITHUB_USERNAME"
-git config user.email "$GITHUB_EMAIL"
+git config --global user.name "semantic-release (via CircleCI)"
+git config --global user.email "semantic-release@circle"
 
 semantic-release version --patch
 

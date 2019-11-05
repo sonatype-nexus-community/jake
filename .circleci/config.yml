@@ -1,5 +1,23 @@
 version: 2.1
+
+workflows:
+  version: 2
+  build_and_test_and_publish:
+    jobs:
+      - build
+      - publish:
+        context: pypi
+        requires:
+          - build
+
 jobs:
+  publish:
+    docker: # run the steps with Docker
+      - image: circleci/python:3.6.4
+        environment: # environment variables for primary container
+          PIPENV_VENV_IN_PROJECT: true 
+    steps:
+      - .circleci/ci-publish.sh
   build:
     docker: # run the steps with Docker
       - image: circleci/python:3.6.4
@@ -24,9 +42,6 @@ jobs:
       - run:
           command: |
             .circleci/ci-run.sh
-      - run:
-          command: |
-            .circleci/ci-publish.sh
       - store_test_results: # Upload test results for display in Test Summary: https://circleci.com/docs/2.0/collect-test-data/
           path: test-results
       - store_artifacts: # Upload test summary for display in Artifacts: https://circleci.com/docs/2.0/artifacts/

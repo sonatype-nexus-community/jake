@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-git config --global user.name "semantic-release (via CircleCI)"
-git config --global user.email "semantic-release@circle"
-
 # Configure GIT with host fingerprint, user info and SSH key for pushing
 mkdir -p ~/.ssh
 echo "Adding github.com as known host..."

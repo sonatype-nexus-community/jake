@@ -27,7 +27,7 @@ jobs:
             git config user.email "$GITHUB_EMAIL"
       - run:
           command: |
-            semantic-release publish --patch
+            semantic-release publish --patch --verbose
   build:
     docker: # run the steps with Docker
       - image: circleci/python:3.6.4

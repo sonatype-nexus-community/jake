@@ -18,7 +18,7 @@ jobs:
             pip install -r requirements.txt
       - run:
           command: |
-            pip install --upgrade setuptools
+            pip install --upgrade setuptools twine wheel
       - run:
           command: |
             git config user.name "$GITHUB_USERNAME"

@@ -18,7 +18,13 @@ jobs:
             pip install -r requirements.txt
       - run:
           command: |
-            .circleci/ci-publish.sh
+            git config user.name "$GITHUB_USERNAME"
+      - run:
+          command: |
+            git config user.email "$GITHUB_EMAIL"
+      - run:
+          command: |
+            SET DEBUG=* && semantic-release publish --patch
   build:
     docker: # run the steps with Docker
       - image: circleci/python:3.6.4

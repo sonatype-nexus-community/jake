@@ -18,6 +18,10 @@ setup(
     name = 'jake',
     version = __version__,
     packages = ['jake'],
+    url="https://github.com/sonatype-nexus-community/jake",
+    author="Sonatype Community",
+    author_email="community-group@sonatype.com",
+    license="Apache-2.0",
     entry_points = {
         'console_scripts': [
             'jake = jake.__main__:main'

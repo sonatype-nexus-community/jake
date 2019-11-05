@@ -2,4 +2,6 @@
 
 source .venv/bin/activate
 
-semantic-release publish --patch
+semantic-release version --patch
+
+# semantic-release publish

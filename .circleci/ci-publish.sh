@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-source .venv/bin/activate
+git config --global user.name "semantic-release (via CircleCI)"
+git config --global user.email "semantic-release@circle"
 
 # Configure GIT with host fingerprint, user info and SSH key for pushing
 mkdir -p ~/.ssh

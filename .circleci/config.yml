@@ -44,6 +44,6 @@ workflows:
     jobs:
       - build
       - publish:
-        context: pypi
-        requires:
-          - build
+          context: pypi
+          requires:
+            - build

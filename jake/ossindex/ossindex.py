@@ -1,3 +1,4 @@
+"""ossindex.py makes a request to OSSIndex"""
 # Copyright 2019 Sonatype Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,127 +12,169 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import requests
 import logging
 import json
 
 from typing import List
 from datetime import datetime, timedelta
+from pathlib import Path
 from dateutil.parser import parse
 from tinydb import TinyDB, Query
-from pathlib import Path
+
+import requests
+
 from jake.types.coordinates import Coordinates
 from jake.types.results_decoder import ResultsDecoder
 from jake.types.coordinateresults import CoordinateResults
+from jake.config.config import Config
 
-class OssIndex(object):
-    def __init__(self, url='https://ossindex.sonatype.org/api/v3/component-report', headers={'Content-type': 'application/vnd.ossindex.component-report-request.v1+json', 'User-Agent': 'jake'}, cache_location=''):
-        self._url = url
-        self._headers = headers
-        self._log = logging.getLogger('jake')
-        self._maxcoords = 128
-        if cache_location == '':
-            home = str(Path.home())
-            dir_oss = home + "/.ossindex/"
-        else:
-            dir_oss = cache_location + "/.ossindex/"
-        if not Path(dir_oss).exists():
-            Path(dir_oss).mkdir(parents=True, exist_ok=True)
-        self._db = TinyDB(dir_oss + "jake.json")
+DEFAULT_HEADERS = {
+    'Content-type': 'application/vnd.ossindex.component-report-request.v1+json',
+    'User-Agent': 'jake'}
 
-    def get_url(self):
-        return self._url
+class OssIndex():
+  """ossindex.py makes a request to OSSIndex"""
+  def __init__(self,
+               url='https://ossindex.sonatype.org/api/v3/component-report',
+               cache_location=''):
+    self._url = url
+    self._headers = DEFAULT_HEADERS
+    self._log = logging.getLogger('jake')
+    self._maxcoords = 128
+    if cache_location == '':
+      home = str(Path.home())
+      dir_oss = home + "/.ossindex/"
+    else:
+      dir_oss = cache_location + "/.ossindex/"
+    if not Path(dir_oss).exists():
+      Path(dir_oss).mkdir(parents=True, exist_ok=True)
+    self._db = TinyDB(dir_oss + "jake.json")
 
-    def get_headers(self):
-        return self._headers
+  def get_url(self):
+    """gets url to use for OSSIndex request"""
+    return self._url
 
-    def chunk(self, purls):
-        chunks = []
-        divided = []
-        length = len(purls.get_coordinates())
-        num_chunks = length // self._maxcoords
-        if length % self._maxcoords > 0:
-            num_chunks += 1
-        start_index = 0
-        end_index = self._maxcoords
-        for i in range(0, num_chunks):
-            if i == (num_chunks - 1):
-                divided = purls.get_coordinates()[start_index:length]
-            else:    
-                divided = purls.get_coordinates()[start_index:end_index]
-                start_index = end_index
-                end_index += end_index
-            chunks.append(divided)
-        return chunks
+  def get_headers(self):
+    """gets headers to use for OSSIndex request"""
+    return self._headers
 
-    def callOSSIndex(self, purls: Coordinates):
-        self._log.debug("Purls received, total purls before chunk: %s", len(purls.get_coordinates()))
+  def chunk(self, purls):
+    """chunks up purls array into 128-purl subarrays"""
+    chunks = []
+    divided = []
+    length = len(purls.get_coordinates())
+    num_chunks = length // self._maxcoords
+    if length % self._maxcoords > 0:
+      num_chunks += 1
+    start_index = 0
+    end_index = self._maxcoords
+    for i in range(0, num_chunks):
+      if i == (num_chunks - 1):
+        divided = purls.get_coordinates()[start_index:length]
+      else:
+        divided = purls.get_coordinates()[start_index:end_index]
+        start_index = end_index
+        end_index += end_index
+      chunks.append(divided)
+    return chunks
 
-        (purls, results) = self.getPurlsAndResultsFromCache(purls)
+  def call_ossindex(self, purls: Coordinates):
+    """makes a request to OSSIndex"""
+    self._log.debug("Purls received, total purls before chunk: %s",
+                    len(purls.get_coordinates()))
 
-        self._log.debug("Purls checked against cache, total purls remaining to call OSS Index: %s", len(purls.get_coordinates()))
+    (purls, results) = self.get_purls_and_results_from_cache(purls)
 
-        chunk_purls = self.chunk(purls)
-        for purls in chunk_purls:
-            data = {}
-            data["coordinates"] = purls
-            response = requests.post(self.get_url(), data=json.dumps(data), headers=self.get_headers())
-            if response.status_code == 200:
-                self._log.debug(response.headers)
-                first_results = json.loads(response.text, cls=ResultsDecoder)
-            else:
-                self._log.debug("Response failed, status: %s", response.status_code)
-                self._log.debug("Failure reason if any: %s", response.reason)
-                self._log.debug("Failure text if any: %s", response.text)
-                return None
-            results.extend(first_results)
+    self._log.debug("Purls checked against cache, total purls remaining to"
+                    "call OSS Index: %s",
+                    len(purls.get_coordinates()))
 
-        (cached, num_cached) = self.maybeInsertIntoCache(results)
-        self._log.debug("Cached: " + str(cached) + " num_cached: " + str(num_cached))
-        return results
+    chunk_purls = self.chunk(purls)
+    for purls_chunk in chunk_purls:
+      data = {}
+      data["coordinates"] = purls_chunk
+      config_file = Config()
+      if config_file.check_if_config_exists() is False:
+        response = requests.post(self.get_url(), data=json.dumps(
+            data), headers=self.get_headers())
+      else:
+        (username, password) = config_file.get_config_from_file()
+        response = requests.post(self.get_url(),
+                                 data=json.dumps(data),
+                                 headers=self.get_headers(),
+                                 auth=(username, password))
+      if response.status_code == 200:
+        self._log.debug(response.headers)
+        first_results = json.loads(response.text, cls=ResultsDecoder)
+      else:
+        self._log.debug("Response failed, status: %s",
+                        response.status_code)
+        self._log.debug("Failure reason if any: %s", response.reason)
+        self._log.debug("Failure text if any: %s", response.text)
+        return None
+      results.extend(first_results)
 
-    def maybeInsertIntoCache(self, results: List[CoordinateResults]):
-        Coordinate = Query()
-        num_cached = 0
-        cached = False
-        for coordinate in results:
-            mydatetime = datetime.now()
-            twelvelater = mydatetime + timedelta(hours=12)
-            result = self._db.search(Coordinate.purl == coordinate.getCoordinates())
-            if len(result) is 0:
-                self._db.insert({'purl': coordinate.getCoordinates(), 'response': coordinate.toJSON(), 'ttl': twelvelater.isoformat()})
-                self._log.debug("Coordinate inserted into cache: <%s>", coordinate.getCoordinates())
-                num_cached += 1
-                cached = True
-            else:
-                timetolive = parse(result[0]['ttl'])
-                if mydatetime > timetolive:
-                    self._db.update({'response': coordinate.toJSON(), 'ttl': twelvelater.isoformat()}, doc_ids=[result[0].doc_id])
-                    self._log.debug("Coordinate: <%s> updated in cache because TTL expired", coordinate.getCoordinates())
-                    num_cached += 1
-                    cached = True
+    (cached, num_cached) = self.maybe_insert_into_cache(results)
+    self._log.debug("Cached: <%s> num_cached: <%s>", cached, num_cached)
+    return results
 
-        return (cached, num_cached)
+  def maybe_insert_into_cache(self, results: List[CoordinateResults]):
+    """checks to see if result is in cache and if not, stores it"""
+    coordinate_query = Query()
+    num_cached = 0
+    cached = False
+    for coordinate in results:
+      mydatetime = datetime.now()
+      twelvelater = mydatetime + timedelta(hours=12)
+      result = self._db.search(
+          coordinate_query.purl == coordinate.get_coordinates())
+      if len(result) == 0:
+        self._db.insert({'purl': coordinate.get_coordinates(),
+                         'response': coordinate.to_json(),
+                         'ttl': twelvelater.isoformat()})
+        self._log.debug(
+            "Coordinate inserted into cache: <%s>",
+            coordinate.get_coordinates())
+        num_cached += 1
+        cached = True
+      else:
+        timetolive = parse(result[0]['ttl'])
+        if mydatetime > timetolive:
+          self._db.update({'response': coordinate.to_json(),
+                           'ttl': twelvelater.isoformat()},
+                          doc_ids=[result[0].doc_id])
+          self._log.debug(
+              "Coordinate: <%s> updated in cache because TTL"
+              "expired",
+              coordinate.get_coordinates())
+          num_cached += 1
+          cached = True
 
-    def getPurlsAndResultsFromCache(self, purls: Coordinates):
-        valid = isinstance(purls, Coordinates)
-        if not valid:
-            return (None, None)
-        new_purls = Coordinates()
-        results = []
-        Coordinate = Query()
-        for purl in purls.get_coordinates():
-            mydatetime = datetime.now()
-            result = self._db.search(Coordinate.purl == purl)
-            if len(result) is 0 or parse(result[0]['ttl']) < mydatetime:
-                new_purls.add_coordinate(purl)
-            else:
-                results.append(json.loads(result[0]['response'], cls=ResultsDecoder))
-        return (new_purls, results)
+    return (cached, num_cached)
 
-    def cleanCache(self):
-        self._db.purge()
-        return True
+  def get_purls_and_results_from_cache(self, purls: Coordinates):
+    """get cached purls and results from cache"""
+    valid = isinstance(purls, Coordinates)
+    if not valid:
+      return (None, None)
+    new_purls = Coordinates()
+    results = []
+    coordinate_query = Query()
+    for purl in purls.get_coordinates():
+      mydatetime = datetime.now()
+      result = self._db.search(coordinate_query.purl == purl)
+      if len(result) == 0 or parse(result[0]['ttl']) < mydatetime:
+        new_purls.add_coordinate(purl)
+      else:
+        results.append(json.loads(
+            result[0]['response'], cls=ResultsDecoder))
+    return (new_purls, results)
 
-    def closeDB(self):
-        self._db.close()
+  def clean_cache(self):
+    """removes all documents from the table"""
+    self._db.purge()
+    return True
+
+  def close_db(self):
+    """closes connection to TinyDB"""
+    self._db.close()

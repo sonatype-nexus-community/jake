@@ -1,3 +1,4 @@
+"""test_parse.py adits the Parse class"""
 # Copyright 2019 Sonatype Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,16 +17,20 @@ import pathlib
 
 from jake.parse.parse import Parse
 
-class TestParse(unittest.TestCase):
-    def setUp(self):
-        self.func = Parse()
 
-    def test_callGetDependenciesReturnsPurls(self):
-        fn = pathlib.Path(__file__).parent / "condalistoutput.txt"
-        with open(fn, "r") as stdin:
-            actual = self.func.getDependenciesFromStdin(stdin)
-            output = actual.get_coordinates()
-        self.assertEqual(len(output), 262)
-        self.assertEqual(output[0], "pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0")
-        self.assertEqual(output[131], "pkg:conda/mkl_fft@1.0.12")
-        self.assertEqual(output[261], "pkg:conda/zstd@1.3.7")
+class TestParse(unittest.TestCase):
+  """TestParse adits the Parse class"""
+  def setUp(self):
+    self.func = Parse()
+
+  def test_call_get_dependencies_returns_purls(self):
+    """test_call_get_dependencies_returns_purls ensures that calls to
+    Parse.get_coordinates() returns a list of purls"""
+    file = pathlib.Path(__file__).parent / "condalistoutput.txt"
+    with open(file, "r") as stdin:
+      actual = self.func.get_dependencies_from_stdin(stdin)
+      output = actual.get_coordinates()
+    self.assertEqual(len(output), 262)
+    self.assertEqual(output[0], "pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0")
+    self.assertEqual(output[131], "pkg:conda/mkl_fft@1.0.12")
+    self.assertEqual(output[261], "pkg:conda/zstd@1.3.7")

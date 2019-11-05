@@ -8,7 +8,12 @@ jobs:
           PIPENV_VENV_IN_PROJECT: true 
     steps:
       - checkout
-      - .circleci/ci-publish.sh
+      - run:
+          command: |
+            pip install -r requirements.txt
+      - run:
+          command: |
+            .circleci/ci-publish.sh
   build:
     docker: # run the steps with Docker
       - image: circleci/python:3.6.4

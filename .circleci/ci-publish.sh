@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-source .venv/bin/activate
+git config user.name "$GITHUB_USERNAME"
+git config user.email "$GITHUB_EMAIL"
 
 semantic-release version --patch
 

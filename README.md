@@ -49,7 +49,7 @@ TBD
 * Ensure pip is installed (it should be)
 * Run `python3 venv .venv` (or whatever virtual environment you prefer)
 * Run `source .venv/bin/activate`
-* Run `pip install -r requirements`
+* Run `pip install -r requirements.txt`
 * Run `pip install -e .`
 
 Once you've done this, you should have `jake` available to test with fairly globally, pointed at the local source you've cloned.
@@ -60,7 +60,7 @@ Once you've done this, you should have `jake` available to test with fairly glob
 
 This project also uses `pip` for dependencies, so you will need to download make sure you have `pip`.
 
-Follow instructions in Build from source.
+Follow instructions in [Build from source](#build-from-source).
 
 Tests can be run with `python3 -m unittest discover`
 

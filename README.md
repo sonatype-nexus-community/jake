@@ -43,7 +43,7 @@ Jake The Snake was scared of Snakes. The finishing move was DDT. He finishes the
 
 ### Download from PyPI
 
-TBD
+`pip3 install jake`
 
 ### Build from source
 

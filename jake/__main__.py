@@ -45,6 +45,7 @@ def main():
   parser.add_argument(
       '-C', '--clean', help="wipe out jake cache", action='store_true')
   args = parser.parse_args()
+  logging.basicConfig(level=logging.NOTSET)
   log = logging.getLogger('jake')
 
   if args.snake:

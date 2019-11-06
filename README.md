@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://github.com/sonatype-nexus-community/jake/blob/master/docs/images/jake.png" width="350"/>
+    <img src="https://github.com/sonatype-nexus-community/jake/blob/master/docs/images/SON_Jake_the_Snake_Logo_v3@2x.png" width="350"/>
 </p>
 
 # Jake

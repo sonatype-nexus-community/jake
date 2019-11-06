@@ -21,7 +21,6 @@ with open("README.md", "r") as fh:
 setup(
     name='jake',
     version=__version__,
-    packages=['jake'],
     url="https://github.com/sonatype-nexus-community/jake",
     author="Sonatype Community",
     author_email="community-group@sonatype.com",

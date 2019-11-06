@@ -18,6 +18,9 @@ from jake._version import __version__
 with open("README.md", "r") as fh:
   LONG_DESCRIPTION = fh.read()
 
+with open('requirements.txt') as requirements:
+    required = requirements.read().splitlines()
+
 setup(
     name='jake',
     version=__version__,
@@ -28,8 +31,9 @@ setup(
     long_description=LONG_DESCRIPTION,
     long_description_content_type="text/markdown",
     license="Apache-2.0",
-    packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
+    packages=find_packages(exclude=["jake/tests/*", "jake/tests/"]),
     python_requires='>=3.6',
+    install_requires=required,
     entry_points={
         'console_scripts': [
             'jake = jake.__main__:main'

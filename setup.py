@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from setuptools import setup
+from setuptools import setup, find_packages
 
 from jake._version import __version__
 
@@ -29,6 +29,7 @@ setup(
     long_description=LONG_DESCRIPTION,
     long_description_content_type="text/markdown",
     license="Apache-2.0",
+    packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
     python_requires='>=3.6',
     entry_points={
         'console_scripts': [

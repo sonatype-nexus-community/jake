@@ -2,7 +2,7 @@
 
 source .venv/bin/activate
 
-pip install pylint
+pip3 install pylint
 
 pylint jake
 

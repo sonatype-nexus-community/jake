@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://github.com/sonatype-nexus-community/snek/blob/master/docs/images/nothing.png" width="350"/>
+    <img src="https://github.com/sonatype-nexus-community/snek/blob/master/docs/images/jake.png" width="350"/>
 </p>
 
 # Jake

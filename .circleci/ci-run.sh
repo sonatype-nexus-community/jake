@@ -2,8 +2,6 @@
 
 source .venv/bin/activate
 
-pip3 install pylint
-
 pylint jake
 
 LINTER_STATUS=$?

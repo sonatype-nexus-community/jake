@@ -1,5 +1,4 @@
 """jake entry point"""
-# forcing CI to run
 # Copyright 2019 Sonatype Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

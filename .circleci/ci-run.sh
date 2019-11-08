@@ -1,13 +1,8 @@
 #!/usr/bin/env bash
+set -e
 
 source .venv/bin/activate
 
 pylint jake
-
-LINTER_STATUS=$?
-if [ $LINTER_STATUS -ne 0 ]; then
-  echo “failed linter status: $status”
-  exit 1
-fi
 
 python3 -m unittest discover

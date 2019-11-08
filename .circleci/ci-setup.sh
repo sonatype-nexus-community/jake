@@ -17,3 +17,6 @@ pip3 install python-semantic-release
 pip3 install -r requirements.txt
 
 pip3 install pylint
+
+pip3 install nose
+pip3 install coverage

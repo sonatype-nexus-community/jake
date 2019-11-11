@@ -18,5 +18,4 @@ pip3 install -r requirements.txt
 
 pip3 install pylint
 
-pip3 install nose
-pip3 install coverage
+pip3 install xmlrunner

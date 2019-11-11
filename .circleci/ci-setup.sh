@@ -18,4 +18,4 @@ pip3 install -r requirements.txt
 
 pip3 install pylint
 
-pip3 install xmlrunner
+pip3 install unittest-xml-reporting

@@ -5,4 +5,5 @@ source .venv/bin/activate
 
 pylint jake
 
-python3 -m unittest discover
+#python3 -m unittest discover
+python -m xmlrunner discover -o test-results/

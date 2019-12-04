@@ -1,3 +1,0 @@
-
-class CycloneDx11Validator:
-  

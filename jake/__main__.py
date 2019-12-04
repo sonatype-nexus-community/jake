@@ -19,6 +19,7 @@ import logging
 from os import _exit, EX_OSERR
 
 from jake.ossindex.ossindex import OssIndex
+from jake.cyclonedx.generator import CycloneDxSbomGenerator
 from jake.parse.parse import Parse
 from jake.audit.audit import Audit
 from jake.config.config import Config
@@ -85,6 +86,9 @@ def main():
 
     response = ossindex.call_ossindex(purls)
     if response is not None:
+      sbom_gen = CycloneDxSbomGenerator()
+      sbom = sbom_gen.create_and_return_sbom(response)
+      log.debug(sbom)
       code = audit.audit_results(response)
     else:
       log.error(

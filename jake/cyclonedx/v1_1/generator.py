@@ -12,6 +12,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import pathlib
+
 from lxml import etree
 
 XMLNS = "http://cyclonedx.org/schema/bom/1.1"
@@ -23,9 +25,19 @@ class CycloneDx11Generator():
   """CycloneDx11Generator is responsible for taking identifiers
   and vulnerabilities and turning them into a CycloneDX 1.1 SBOM"""
   def create_xml_from_oss_index_results(self, results):
+    """Takes the CoordinateResults list and creates an sbom in XML form"""
     xml = self.__create_root()
     xml = self.__create_component_nodes(xml, results)
     return xml
+
+  def validate_xml(self, xml):
+    """Takes the XML generated and validates it against the xsd
+    for the vulnerability"""
+    file = pathlib.Path(__file__).parent / "vuln.xsd"
+    with open(file, "r") as stdin:
+      xml_schema_d = etree.parse(stdin)
+      xml_schema = etree.XMLSchema(xml_schema_d)
+      return xml_schema.validate(xml)
 
   def __create_root(self):
     xml = etree.Element('bom', {"xmlns": XMLNS, "version": "1"}, nsmap=NSMAP)
@@ -45,7 +57,10 @@ class CycloneDx11Generator():
       components.append(node)
       if len(component.get_vulnerabilities()) > 0:
         vulnerabilities = etree.Element("{%s}vulnerabilities" % XMLNSV, nsmap=NSMAP)
-        vulnerabilities = self.__create_vulnerability_node(vulnerabilities, component.get_vulnerabilities(), component.get_coordinates())
+        vulnerabilities = self.__create_vulnerability_node(
+            vulnerabilities,
+            component.get_vulnerabilities(),
+            component.get_coordinates())
         node.append(vulnerabilities)
     xml.append(components)
     return xml

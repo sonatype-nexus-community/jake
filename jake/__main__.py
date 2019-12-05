@@ -49,6 +49,11 @@ def main():
   logging.basicConfig(level=logging.NOTSET)
   log = logging.getLogger('jake')
 
+  if args.verbose:
+    log.setLevel(logging.DEBUG)
+  else:
+    log.setLevel(logging.ERROR)
+
   if args.snake:
     config = Config()
     result = config.get_config_from_std_in()
@@ -56,11 +61,6 @@ def main():
       _exit(OSError)
     else:
       _exit(0)
-
-  if args.verbose:
-    log.setLevel(logging.DEBUG)
-  else:
-    log.setLevel(logging.ERROR)
 
   if args.version:
     print(__version__)

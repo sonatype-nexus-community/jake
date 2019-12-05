@@ -79,7 +79,10 @@ class CycloneDx11Generator():
     for vuln in vulnerability_list:
       vulnerability = etree.Element("{%s}vulnerability" % XMLNSV, {"ref": purl})
       _id = etree.SubElement(vulnerability, "{%s}id" % XMLNSV)
-      _id.text = vuln.cve
+      if vuln.get_cve() == None:
+        _id.text = "ossindex"
+      else:
+        _id.text = vuln.get_cve()
       source = etree.Element("{%s}source" % XMLNSV, {"name": "ossindex"})
       url = etree.SubElement(source, "{%s}url" % XMLNSV)
       url.text = vuln.reference

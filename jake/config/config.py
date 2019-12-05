@@ -23,7 +23,7 @@ class Config():
     self._log = logging.getLogger('jake')
 
     self._config_name = '.oss-index-config'
-    self._iq_server_config_name = '.ig-server-config'
+    self._iq_server_config_name = '.iq-server-config'
     self._old_config_name = '.jake-config'
 
     self._iq_server_location = ''
@@ -48,25 +48,16 @@ class Config():
 
   def get_config_from_std_in(self, source="ossindex"):
     """requests user to input their username and password from stdin"""
-    if source == "ossindex":
-      return self.__really_get_config_from_std_in("ossindex", "OSS Index")
-    return self.__really_get_config_from_std_in("iq-server", "IQ Server")
-
-  def __really_get_config_from_std_in(self, config_type, pretty_name):
-    """requests user to input their username and password from stdin"""
-    username = input(
-        "Please enter your email address for your {} account: ".format(pretty_name))
-    password = input(
-        "Please enter your API Key for {}: ".format(pretty_name))
-    if config_type == "iq-server":
-      iq_server_location = input(
-          "Please provide the location of your {} e.g.: http://localhost:8070/".format(pretty_name))
+    username = input("Please enter your username for your {} account: ".format(source))
+    password = input("Please enter your API Key for {}: ".format(source))
+    if source == "iq-server":
+      iq_server_location = input("Please provide the location of your IQ Server: ")
       self._iq_server_location = iq_server_location
 
     self.set_username(username)
     self.set_password(password)
 
-    result = self.save_config_to_file(config_type)
+    result = self.save_config_to_file(source)
 
     return result
 
@@ -85,17 +76,24 @@ class Config():
       self._log.error("Uh oh, an error happened: %s", str(exception))
       return False
 
-  def get_config_from_file(self):
+  def get_config_from_file(self, config_type="ossindex"):
     """get credentials from save_location/.jake-config"""
-    with open(os.path.join(self._save_location, self._config_name)) as file:
+    iq_server_location = ""
+    if config_type == 'iq-server':
+      config_name = self._iq_server_config_name
+    else:
+      config_name = self._config_name
+    with open(os.path.join(self._save_location, config_name)) as file:
       for line in file.readlines():
         line_array = line.split(" ")
         if line_array[0] == 'Username:':
           username = str(line_array[1]).rstrip()
         elif line_array[0] == 'Password:':
           password = str(line_array[1]).rstrip()
+        elif line_array[0] == 'IQ-Server-Location:':
+          iq_server_location = str(line_array[1]).rstrip().rstrip('/')
 
-    return (username, password)
+    return (username, password, iq_server_location)
 
   def check_if_config_exists(self, config_location='.oss-index-config'):
     """check to see if save_location/.jake-config exists"""

@@ -36,12 +36,11 @@ class CycloneDxSbomGenerator():
     """create_and_return_sbom is responsible for taking results in
     CoordinateResults form and turning them into a valid CycloneDX SBOM"""
     sbom = self.__generator.create_xml_from_oss_index_results(results)
-    self._log.debug(etree.tostring(sbom))
     return sbom
 
   def sbom_to_string(self, sbom):
     """sbom_to_string is responsible for turning an sbom into a string"""
-    return etree.tostring(sbom)
+    return etree.tostring(sbom, encoding="UTF-8")
 
   def validate_sbom(self, sbom):
     """validate_sbom is responsible for taking an sbom in etree Element

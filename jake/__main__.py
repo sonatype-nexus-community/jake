@@ -37,6 +37,10 @@ def main():
       help='set optional jake config',
       action='store_true')
   parser.add_argument(
+      '-P', '--python',
+      help='set optional jake IQ Server config',
+      action='store_true')
+  parser.add_argument(
       '-V', '--version',
       help='show program version and exit',
       action='store_true')
@@ -53,6 +57,7 @@ def main():
   args = parser.parse_args()
   logging.basicConfig(level=logging.NOTSET)
   log = logging.getLogger('jake')
+  config = Config()
 
   if args.verbose:
     log.setLevel(logging.DEBUG)
@@ -60,8 +65,14 @@ def main():
     log.setLevel(logging.ERROR)
 
   if args.snake:
-    config = Config()
-    result = config.get_config_from_std_in()
+    result = config.get_config_from_std_in("ossindex")
+    if result is False:
+      _exit(OSError)
+    else:
+      _exit(0)
+
+  if args.python:
+    result = config.get_config_from_std_in("iq-server")
     if result is False:
       _exit(OSError)
     else:
@@ -95,14 +106,19 @@ def main():
         sbom_gen = CycloneDxSbomGenerator()
         sbom = sbom_gen.create_and_return_sbom(response)
         log.debug(args.application)
+        if config.check_if_config_exists('.iq-server-config') is False:
+          print("No IQ server config supplied, please run jake ddt -P to set your config")
+          _exit(311)
         iq = IQ(args.application)
         iq.get_internal_application_id_from_iq_server()
         iq.submit_sbom_to_third_party_api(sbom_gen.sbom_to_string(sbom))
         iq.poll_for_results()
         print("Your IQ Server Report is available here: {}".format(iq.get_report_url()))
         if iq.get_policy_action() is not None:
-          _exit(OSError)
+          print("Your build has failed, please check your IQ Server Report for more information")
+          _exit(1)
         else:
+          print("All good to go! Smooth sailing for you! No policy violations reported by IQ Server")
           _exit(0)
       else:
         code = audit.audit_results(response)

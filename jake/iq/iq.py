@@ -18,21 +18,23 @@ import logging
 import requests
 import polling
 
+from jake.config.config import Config
+
 DEFAULT_HEADERS = {
     'User-Agent': 'jake'}
 
 class IQ():
   def __init__(self, public_application_id, iq_server_base_url='http://localhost:8070/'):
     self._log = logging.getLogger('jake')
-    self._iq_server_base_url = iq_server_base_url
+    self._iq_server_base_url = iq_server_base_url.rstrip('/')
     self._public_application_id = public_application_id
     self._headers = DEFAULT_HEADERS
     self._internal_application_id = ''
-    self._user = 'admin'
-    self._password = 'admin123'
     self._status_url = ''
     self._report_url = ''
     self._policy_action = None
+    config = Config()
+    self._user, self._password, self._iq_server_base_url = config.get_config_from_file("iq-server")
 
   def get_url(self):
     """gets url to use for IQ Server request"""
@@ -61,7 +63,7 @@ class IQ():
 
   def get_internal_application_id_from_iq_server(self):
     response = requests.get(
-        '{}api/v2/applications?publicId={}'.format(
+        '{0}/api/v2/applications?publicId={1}'.format(
             self.get_url(),
             self.get_public_application_id()),
         self.get_headers(),
@@ -74,13 +76,14 @@ class IQ():
       raise ValueError(response.text)
 
   def submit_sbom_to_third_party_api(self, sbom):
+    self
     headers = self.get_headers()
     headers['Content-Type'] = 'application/xml'
     response = requests.post(
-        '{0}api/v2/scan/applications/{1}/sources/ossindex'.format(
+        '{0}/api/v2/scan/applications/{1}/sources/jake'.format(
             self.get_url(),
             self.get_application_internal_id()),
-        data=sbom,
+        data=sbom.decode('UTF-8'),
         headers=headers,
         auth=(self._user, self._password))
     if response.ok:
@@ -93,7 +96,7 @@ class IQ():
   def poll_for_results(self):
     polling.poll(
         lambda: requests.get(
-            '{0}{1}'.format(self._iq_server_base_url, self._status_url),
+            '{0}/{1}'.format(self._iq_server_base_url, self._status_url),
             auth=(self._user, self._password)).text,
         check_success=self.__handle_response,
         step=1,

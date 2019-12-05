@@ -19,6 +19,7 @@ import logging
 from os import _exit, EX_OSERR
 
 from jake.ossindex.ossindex import OssIndex
+from jake.iq.iq import IQ
 from jake.cyclonedx.generator import CycloneDxSbomGenerator
 from jake.parse.parse import Parse
 from jake.audit.audit import Audit
@@ -43,6 +44,10 @@ def main():
       '-VV', '--verbose',
       help="set verbosity level to debug",
       action='store_true')
+  parser.add_argument(
+      '-A', '--application',
+      help="supply an IQ Server Public Application ID"
+  )
   parser.add_argument(
       '-C', '--clean', help="wipe out jake cache", action='store_true')
   args = parser.parse_args()
@@ -86,10 +91,21 @@ def main():
 
     response = ossindex.call_ossindex(purls)
     if response is not None:
-      sbom_gen = CycloneDxSbomGenerator()
-      sbom = sbom_gen.create_and_return_sbom(response)
-      log.debug(sbom)
-      code = audit.audit_results(response)
+      if args.application:
+        sbom_gen = CycloneDxSbomGenerator()
+        sbom = sbom_gen.create_and_return_sbom(response)
+        log.debug(args.application)
+        iq = IQ(args.application)
+        iq.get_internal_application_id_from_iq_server()
+        iq.submit_sbom_to_third_party_api(sbom_gen.sbom_to_string(sbom))
+        iq.poll_for_results()
+        print("Your IQ Server Report is available here: {}".format(iq.get_report_url()))
+        if iq.get_policy_action() is not None:
+          _exit(OSError)
+        else:
+          _exit(0)
+      else:
+        code = audit.audit_results(response)
     else:
       log.error(
           "Something went horribly wrong, please rerun with -VV to see"

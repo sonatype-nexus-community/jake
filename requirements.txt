@@ -3,9 +3,11 @@ certifi==2019.9.11
 chardet==3.0.4
 idna==2.8
 isort==4.3.21
+-e git+git@github.com:sonatype-nexus-community/jake.git@c3fb81e34c902ffde509cf7ab4806c9091af752d#egg=jake
 lazy-object-proxy==1.4.3
 lxml==4.4.2
 mccabe==0.6.1
+polling==0.3.1
 pylint==2.4.4
 python-dateutil==2.8.1
 requests==2.22.0

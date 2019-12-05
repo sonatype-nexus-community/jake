@@ -42,8 +42,8 @@ class ResultsDecoder(json.JSONDecoder):
     vulnerability.set_id(dictionary.get("id"))
     vulnerability.set_title(dictionary.get("title"))
     vulnerability.set_description(dictionary.get("description"))
-    vulnerability.set_cvss_score(dictionary.get("cvssScore"))
-    vulnerability.set_cvss_vector(dictionary.get('cvssVector'))
+    vulnerability.set_cvss_score(dictionary.get("cvss_score"))
+    vulnerability.set_cvss_vector(dictionary.get('cvss_vector'))
     vulnerability.set_cve(dictionary.get("cve"))
     vulnerability.set_reference(dictionary.get("reference"))
 

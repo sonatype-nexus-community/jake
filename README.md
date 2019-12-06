@@ -12,17 +12,20 @@
 
 ```
 $ jake --help
-usage: jake {ddt} [-h] [-V] [-VV] [-C] [-S]
+usage: jake [-h] [-S] [-P] [-V] [-VV] [-A APPLICATION] [-C] {ddt}
 
 positional arguments:
-  {ddt}           run jake
+  {ddt}                 run jake
 
 optional arguments:
-  -h, --help      show this help message and exit
-  -V, --version   show program version and exit
-  -VV, --verbose  set verbosity level to debug
-  -C, --clean     wipe out jake cache
-  -S, --snake     set optional jake config
+  -h, --help            show this help message and exit
+  -S, --snake           set optional jake config
+  -P, --python          set optional jake IQ Server config
+  -V, --version         show program version and exit
+  -VV, --verbose        set verbosity level to debug
+  -A APPLICATION, --application APPLICATION
+                        supply an IQ Server Public Application ID
+  -C, --clean           wipe out jake cache
 ```
 
 Typical usage of `jake` is to run it like so: `conda list | jake ddt`, which will feed your Conda dependencies in your current Conda environment to `jake`, which will then reach out and check OSS Index to see if they are vulnerable!
@@ -33,7 +36,15 @@ You may also run `jake ddt` with `-VV` for a slew of debug data, in case you are
 
 You can also run `jake ddt -C` to clean out your local cache if desired. We cache results from OSS Index for 12 hours to prevent you from potentially getting rate limited (as your dependencies likely won't change super often). 
 
-You can also run `jake ddt snake` to set optional configuration of your OSS Index username and API Key so that you can run more requests without getting rate limited. You may register for an account [at this link](https://ossindex.sonatype.org/user/register), and see [the information provided here](https://ossindex.sonatype.org/doc/rest) on Rate Limiting for why this is useful.
+You can also run `jake ddt -S` to set optional configuration of your OSS Index username and API Key so that you can run more requests without getting rate limited. You may register for an account [at this link](https://ossindex.sonatype.org/user/register), and see [the information provided here](https://ossindex.sonatype.org/doc/rest) on Rate Limiting for why this is useful.
+
+#### Usage with Nexus IQ Server
+
+`jake` can be used against Nexus IQ Server, to audit your application using your organizations policy.
+
+You can run `jake ddt -P` to set configuration of your IQ Server username and token.
+
+Once you've configured `jake` with proper credentials, you can run `jake ddt -A application-id`, replacing `application-id` with the public ID of your application in IQ Server. If there is a policy action required after submitting to IQ Server, `jake` will exit with a non zero code, allowing you to fail builds based on needed policy actions. The IQ Server Report URL will be provided as well.
 
 ## Why Jake?
 

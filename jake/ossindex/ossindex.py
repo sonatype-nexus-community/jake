@@ -149,7 +149,7 @@ class OssIndex():
                           doc_ids=[result[0].doc_id])
           self._log.debug(
               "Coordinate: <%s> updated in cache because TTL"
-              "expired",
+              " expired",
               coordinate.get_coordinates())
           num_cached += 1
           cached = True

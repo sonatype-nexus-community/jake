@@ -19,18 +19,32 @@ import json
 from lxml import etree
 
 from jake.types.results_decoder import ResultsDecoder
-from jake.cyclonedx.v1_1.generator import CycloneDx11Generator
+from jake.cyclonedx.generator import CycloneDxSbomGenerator
 
 class TestSbomGenerator(unittest.TestCase):
-  """TestSbomGenerator audits the cyclonedx/1_1/CycloneDx11Generator class"""
+  """TestSbomGenerator audits the cyclonedx/CycloneDxSbomGenerator class"""
   def setUp(self):
-    self.func = CycloneDx11Generator()
+    self.func = CycloneDxSbomGenerator()
 
   def test_can_create_valid_root_element(self):
     """test_can_create_valid_root_element tests if an sbom can be created
-    using the cyclonedx/1_1/CycloneDx11Generator class"""
-    file = pathlib.Path(__file__).parent / "ossindexvulnerableresponse.txt"
+    using the cyclonedx/CycloneDxSbomGenerator class"""
+    file = pathlib.Path(__file__).parent / "ossindexvulnerablesnipresponse.txt"
     with open(file, "r") as stdin:
       result = json.loads(stdin.read(), cls=ResultsDecoder)
-    results = self.func.create_xml_from_oss_index_results(result)
-    print(etree.tostring(results, pretty_print=True))
+    results = self.func.create_and_return_sbom(result)
+    # Assert that it has a <bom>
+    self.assertIsNotNone(results)
+    self.assertIsInstance(results, etree._Element)
+    self.assertEqual(results.tag, 'bom')
+    # Assert that it has a <components>
+    self.assertIs(results.__len__(), 1, results.__len__())
+    item = results.__getitem__(0)
+    self.assertIsNotNone(item)
+    self.assertEqual(item.tag, "components")
+    self.assertIs(item.__len__(), 15)
+    component = item.__getitem__(0)
+    self.assertIsNotNone(component)
+    self.assertEqual(component.tag, "component")
+    vulnerable_component = item.__getitem__(14)
+    self.assertIsNotNone(vulnerable_component)

@@ -35,7 +35,7 @@ class TestConfig(unittest.TestCase):
     self.func.set_username("test@me.com")
     self.func.save_config_to_file()
 
-    (username, password) = self.func.get_config_from_file()
+    (username, password, _) = self.func.get_config_from_file()
     self.assertEqual(username, "test@me.com")
     self.assertEqual(password, "password")
 

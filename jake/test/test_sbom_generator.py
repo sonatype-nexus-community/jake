@@ -35,7 +35,7 @@ class TestSbomGenerator(unittest.TestCase):
     results = self.func.create_and_return_sbom(result)
     # Assert that it has a <bom>
     self.assertIsNotNone(results)
-    self.assertIsInstance(results, etree._Element)
+    self.assertEqual(etree.iselement(results), True)
     self.assertEqual(results.tag, 'bom')
     # Assert that it has a <components>
     self.assertIs(results.__len__(), 1, results.__len__())

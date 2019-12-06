@@ -38,7 +38,8 @@ class CycloneDxSbomGenerator():
     sbom = self.__generator.create_xml_from_oss_index_results(results)
     return sbom
 
-  def sbom_to_string(self, sbom):
+  @staticmethod
+  def sbom_to_string(sbom):
     """sbom_to_string is responsible for turning an sbom into a string"""
     return etree.tostring(sbom, encoding="UTF-8")
 

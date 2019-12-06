@@ -6,7 +6,7 @@
 
 [![CircleCI](https://circleci.com/gh/sonatype-nexus-community/jake.svg?style=svg)](https://circleci.com/gh/sonatype-nexus-community/jake) 
 
-`jake` is a tool to check for vulnerabilities in your Conda environments, powered by [Sonatype OSS Index](https://ossindex.sonatype.org/).
+`jake` is a tool to check for vulnerabilities in your Conda environments, powered by [Sonatype OSS Index](https://ossindex.sonatype.org/), that can also be used with [Sonatype's Nexus IQ Server](https://www.sonatype.com/product-nexus-lifecycle).
 
 ### Usage
 

@@ -15,6 +15,8 @@
 import json
 import logging
 
+from json import JSONDecodeError
+
 import requests
 import polling
 
@@ -24,6 +26,7 @@ DEFAULT_HEADERS = {
     'User-Agent': 'jake'}
 
 class IQ():
+  """IQ handles requests to IQ Server"""
   def __init__(self, public_application_id, iq_server_base_url='http://localhost:8070/'):
     self._log = logging.getLogger('jake')
     self._iq_server_base_url = iq_server_base_url.rstrip('/')
@@ -53,15 +56,20 @@ class IQ():
     return self._headers
 
   def get_public_application_id(self):
+    """gets public application id to use for IQ Server request"""
     return self._public_application_id
 
   def set_application_internal_id(self, _id):
+    """sets internal application id to use for IQ Server request"""
     self._internal_application_id = _id
-  
+
   def get_application_internal_id(self):
+    """gets internal application id to use for IQ Server request"""
     return self._internal_application_id
 
   def get_internal_application_id_from_iq_server(self):
+    """gets internal application id from IQ Server using the public
+    application id"""
     response = requests.get(
         '{0}/api/v2/applications?publicId={1}'.format(
             self.get_url(),
@@ -76,7 +84,9 @@ class IQ():
       raise ValueError(response.text)
 
   def submit_sbom_to_third_party_api(self, sbom):
-    self
+    """submits sbom (in str form) to IQ server, valid sbom should get
+    202 response. On valid response, sets status url for later polling"""
+    self._log.debug(sbom)
     headers = self.get_headers()
     headers['Content-Type'] = 'application/xml'
     response = requests.post(
@@ -94,6 +104,8 @@ class IQ():
       raise ValueError(response.text)
 
   def poll_for_results(self):
+    """polls status url once a second until it gets a 200 response
+    , and times out after one minute"""
     polling.poll(
         lambda: requests.get(
             '{0}/{1}'.format(self._iq_server_base_url, self._status_url),
@@ -112,6 +124,6 @@ class IQ():
         self._policy_action = res['policyAction']
       self._report_url = res['reportHtmlUrl']
       return True
-    except Exception as e:
-      self._log.debug(e)
+    except JSONDecodeError as json_decode_error:
+      self._log.debug(json_decode_error.msg)
       return False

@@ -98,7 +98,7 @@ class OssIndex():
         response = requests.post(self.get_url(), data=json.dumps(
             data), headers=self.get_headers())
       else:
-        (username, password) = config_file.get_config_from_file()
+        (username, password, _) = config_file.get_config_from_file()
         response = requests.post(self.get_url(),
                                  data=json.dumps(data),
                                  headers=self.get_headers(),

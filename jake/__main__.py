@@ -30,24 +30,14 @@ from ._version import __version__
 def main():
   """jake entry point"""
   args = __add_parser_args_and_return()
-  log = setup_logger(args.verbose)
+  log = __setup_logger(args.verbose)
   config = Config()
 
   if args.snake:
-    result = config.get_config_from_std_in("ossindex")
-    if result is False:
-      _exit(OSError)
-    else:
-      _exit(0)
-
-  if args.python:
-    result = config.get_config_from_std_in("iq-server")
-    if result is False:
-      _exit(OSError)
-    else:
-      _exit(0)
-
-  if args.version:
+    __get_config_from_std_in("ossindex", config)
+  elif args.python:
+    __get_config_from_std_in("iq-server", config)
+  elif args.version:
     print(__version__)
     _exit(0)
 
@@ -111,7 +101,7 @@ def __add_parser_args_and_return():
 
   return parser.parse_args()
 
-def setup_logger(verbose):
+def __setup_logger(verbose):
   logging.basicConfig(level=logging.NOTSET)
   log = logging.getLogger('jake')
 
@@ -142,6 +132,13 @@ def __handle_iq_server(application_id, response, log, config: Config):
   else:
     print(
         "All good to go! Smooth sailing for you! No policy violations reported by IQ Server")
+    _exit(0)
+
+def __get_config_from_std_in(config_type: str, config: Config):
+  result = config.get_config_from_std_in(config_type)
+  if result is False:
+    _exit(OSError)
+  else:
     _exit(0)
 
 if __name__ == '__main__':

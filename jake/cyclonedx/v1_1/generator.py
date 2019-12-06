@@ -43,7 +43,7 @@ class CycloneDx11Generator():
       xml_schema_d = etree.parse(stdin)
       xml_schema = etree.XMLSchema(xml_schema_d)
       self._log.debug(etree.tostring(self.__xml))
-      return xml_schema.assertValid(self.__xml)
+      return xml_schema.assertValid(self.__xml) if xml is None else xml_schema.assertValid(xml)
 
   def __create_root(self):
     self.__xml = etree.Element('bom', {"xmlns": XMLNS, "version": "1"}, nsmap=NSMAP)
@@ -62,7 +62,7 @@ class CycloneDx11Generator():
       components.append(node)
       if len(component.get_vulnerabilities()) > 0:
         vulnerabilities = etree.Element("{%s}vulnerabilities" % XMLNSV, nsmap=NSMAP)
-        self.__create_vulnerability_node(
+        __create_vulnerability_node(
             component.get_vulnerabilities(),
             component.get_coordinates(),
             vulnerabilities,
@@ -75,27 +75,27 @@ class CycloneDx11Generator():
     second_split = split_list[1].split("@")
     return (second_split[0], second_split[1])
 
-  def __create_vulnerability_node(self, vulnerability_list, purl, vulnerabilities, node):
-    for vuln in vulnerability_list:
-      vulnerability = etree.Element("{%s}vulnerability" % XMLNSV, {"ref": purl})
-      _id = etree.SubElement(vulnerability, "{%s}id" % XMLNSV)
-      if vuln.get_cve() == None:
-        _id.text = "ossindex"
-      else:
-        _id.text = vuln.get_cve()
-      source = etree.Element("{%s}source" % XMLNSV, {"name": "ossindex"})
-      url = etree.SubElement(source, "{%s}url" % XMLNSV)
-      url.text = vuln.reference
-      vulnerability.append(source)
-      ratings = etree.Element("{%s}ratings" % XMLNSV)
-      rating = etree.SubElement(ratings, "{%s}rating" % XMLNSV)
-      score = etree.SubElement(rating, "{%s}score" % XMLNSV)
-      base = etree.SubElement(score, "{%s}base" % XMLNSV)
-      base.text = str(vuln.get_cvss_score())
-      vector = etree.SubElement(rating, "{%s}vector" % XMLNSV)
-      vector.text = vuln.get_cvss_vector()
-      vulnerability.append(ratings)
-      description = etree.SubElement(vulnerability, "{%s}description" % XMLNSV)
-      description.text = vuln.description
-      vulnerabilities.append(vulnerability)
-    node.append(vulnerabilities)
+def __create_vulnerability_node(vulnerability_list, purl, vulnerabilities, node):
+  for vuln in vulnerability_list:
+    vulnerability = etree.Element("{%s}vulnerability" % XMLNSV, {"ref": purl})
+    _id = etree.SubElement(vulnerability, "{%s}id" % XMLNSV)
+    if vuln.get_cve() is None:
+      _id.text = "ossindex"
+    else:
+      _id.text = vuln.get_cve()
+    source = etree.Element("{%s}source" % XMLNSV, {"name": "ossindex"})
+    url = etree.SubElement(source, "{%s}url" % XMLNSV)
+    url.text = vuln.reference
+    vulnerability.append(source)
+    ratings = etree.Element("{%s}ratings" % XMLNSV)
+    rating = etree.SubElement(ratings, "{%s}rating" % XMLNSV)
+    score = etree.SubElement(rating, "{%s}score" % XMLNSV)
+    base = etree.SubElement(score, "{%s}base" % XMLNSV)
+    base.text = str(vuln.get_cvss_score())
+    vector = etree.SubElement(rating, "{%s}vector" % XMLNSV)
+    vector.text = vuln.get_cvss_vector()
+    vulnerability.append(ratings)
+    description = etree.SubElement(vulnerability, "{%s}description" % XMLNSV)
+    description.text = vuln.description
+    vulnerabilities.append(vulnerability)
+  node.append(vulnerabilities)

@@ -23,10 +23,7 @@ class Config():
     self._log = logging.getLogger('jake')
 
     self._config_name = '.oss-index-config'
-    self._iq_server_config_name = '.iq-server-config'
     self._old_config_name = '.jake-config'
-
-    self._iq_server_location = ''
 
     self._username = ""
     self._password = ""
@@ -46,57 +43,46 @@ class Config():
     """set username for OSSIndex request"""
     self._username = username
 
-  def get_config_from_std_in(self, source="ossindex"):
+  def get_config_from_std_in(self):
     """requests user to input their username and password from stdin"""
-    username = input("Please enter your username for your {} account: ".format(source))
-    password = input("Please enter your API Key for {}: ".format(source))
-    if source == "iq-server":
-      iq_server_location = input("Please provide the location of your IQ Server: ")
-      self._iq_server_location = iq_server_location
+    username = input("Please enter your username for your OSS Index account: ")
+    password = input("Please enter your API Key for OSS Index: ")
 
     self.set_username(username)
     self.set_password(password)
 
-    result = self.save_config_to_file(source)
+    result = self.save_config_to_file(
+        {"Username": self._username,
+         "Password": self._password},
+        self._config_name)
 
     return result
 
-  def save_config_to_file(self, config_type="ossindex"):
+  def save_config_to_file(self, fields, config_name):
     """save stdin to save_location/.oss-index-config or .iq-server-config"""
-    config_name = self._config_name if config_type == "ossindex" else self._iq_server_config_name
-
     try:
       with open(os.path.join(self._save_location, config_name), "w+") as file:
-        file.write("Username: " + self._username + "\n")
-        file.write("Password: " + self._password + "\n")
-        if config_type != "ossindex":
-          file.write("IQ-Server-Location: " + self._iq_server_location + "\n")
+        for key, value in fields.items():
+          file.write("{}: {}\n".format(key, value))
         return True
     except FileNotFoundError as exception:
       self._log.error("Uh oh, an error happened: %s", str(exception))
       return False
 
-  def get_config_from_file(self, config_type="ossindex"):
+  def get_config_from_file(self, fields, config_name):
     """get credentials from save_location/.jake-config"""
-    iq_server_location = ""
-    if config_type == 'iq-server':
-      config_name = self._iq_server_config_name
-    else:
-      config_name = self._config_name
     with open(os.path.join(self._save_location, config_name)) as file:
+      results = {}
       for line in file.readlines():
         line_array = line.split(" ")
-        if line_array[0] == 'Username:':
-          username = str(line_array[1]).rstrip()
-        elif line_array[0] == 'Password:':
-          password = str(line_array[1]).rstrip()
-        elif line_array[0] == 'IQ-Server-Location:':
-          iq_server_location = str(line_array[1]).rstrip().rstrip('/')
+        for key in fields:
+          if line_array[0].rstrip(":") == key:
+            results[key] = str(line_array[1]).rstrip()
 
-    return (username, password, iq_server_location)
+    return results
 
   def check_if_config_exists(self, config_location='.oss-index-config'):
-    """check to see if save_location/.jake-config exists"""
+    """check to see if config exists at save_location/config_location"""
     config_location = Path(os.path.join(self._save_location, config_location))
     return config_location.exists()
 

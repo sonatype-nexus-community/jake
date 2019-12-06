@@ -20,7 +20,7 @@ from json import JSONDecodeError
 import requests
 import polling
 
-from jake.config.config import Config
+from jake.config.iq_config import IQConfig
 
 DEFAULT_HEADERS = {
     'User-Agent': 'jake'}
@@ -35,8 +35,16 @@ class IQ():
     self._headers = DEFAULT_HEADERS
     self._report_url = ''
     self._policy_action = None
-    config = Config()
-    self._user, self._password, self._iq_server_base_url = config.get_config_from_file("iq-server")
+    config = IQConfig()
+    results = config.get_config_from_file(
+        {"Username",
+         "Password",
+         "IQ-Server-Location"},
+        ".iq-server-config")
+
+    self._user = results['Username']
+    self._password = results['Password']
+    self._iq_server_base_url = results['IQ-Server-Location']
 
   def get_url(self):
     """gets url to use for IQ Server request"""

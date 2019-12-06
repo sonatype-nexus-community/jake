@@ -25,15 +25,14 @@ from jake.config.config import Config
 DEFAULT_HEADERS = {
     'User-Agent': 'jake'}
 
+LOG = logging.getLogger('jake')
+
 class IQ():
   """IQ handles requests to IQ Server"""
   def __init__(self, public_application_id, iq_server_base_url='http://localhost:8070/'):
-    self._log = logging.getLogger('jake')
     self._iq_server_base_url = iq_server_base_url.rstrip('/')
     self._public_application_id = public_application_id
     self._headers = DEFAULT_HEADERS
-    self._internal_application_id = ''
-    self._status_url = ''
     self._report_url = ''
     self._policy_action = None
     config = Config()
@@ -59,14 +58,6 @@ class IQ():
     """gets public application id to use for IQ Server request"""
     return self._public_application_id
 
-  def set_application_internal_id(self, _id):
-    """sets internal application id to use for IQ Server request"""
-    self._internal_application_id = _id
-
-  def get_application_internal_id(self):
-    """gets internal application id to use for IQ Server request"""
-    return self._internal_application_id
-
   def get_internal_application_id_from_iq_server(self):
     """gets internal application id from IQ Server using the public
     application id"""
@@ -78,37 +69,35 @@ class IQ():
         auth=(self._user, self._password))
     if response.ok:
       res = json.loads(response.text)
-      self._log.debug(res['applications'][0]['id'])
-      self._internal_application_id = res['applications'][0]['id']
-    else:
-      raise ValueError(response.text)
+      LOG.debug(res['applications'][0]['id'])
+      return res['applications'][0]['id']
+    raise ValueError(response.text)
 
-  def submit_sbom_to_third_party_api(self, sbom):
+  def submit_sbom_to_third_party_api(self, sbom: str, internal_id: str):
     """submits sbom (in str form) to IQ server, valid sbom should get
     202 response. On valid response, sets status url for later polling"""
-    self._log.debug(sbom)
+    LOG.debug(sbom)
     headers = self.get_headers()
     headers['Content-Type'] = 'application/xml'
     response = requests.post(
         '{0}/api/v2/scan/applications/{1}/sources/jake'.format(
             self.get_url(),
-            self.get_application_internal_id()),
-        data=sbom.decode('UTF-8'),
+            internal_id),
+        data=sbom,
         headers=headers,
         auth=(self._user, self._password))
     if response.ok:
       res = json.loads(response.text)
-      self._status_url = res['statusUrl']
-      self._log.debug(self._status_url)
-    else:
-      raise ValueError(response.text)
+      LOG.debug(res['statusUrl'])
+      return res['statusUrl']
+    raise ValueError(response.text)
 
-  def poll_for_results(self):
+  def poll_for_results(self, status_url: str):
     """polls status url once a second until it gets a 200 response
     , and times out after one minute"""
     polling.poll(
         lambda: requests.get(
-            '{0}/{1}'.format(self._iq_server_base_url, self._status_url),
+            '{0}/{1}'.format(self._iq_server_base_url, status_url),
             auth=(self._user, self._password)).text,
         check_success=self.__handle_response,
         step=1,
@@ -117,13 +106,13 @@ class IQ():
   def __handle_response(self, response):
     try:
       res = json.loads(response)
-      self._log.debug(res)
+      LOG.debug(res)
       if res['policyAction'] == 'None':
-        self._log.debug("No policy issues, whew!")
+        LOG.debug("No policy issues, whew!")
       else:
         self._policy_action = res['policyAction']
       self._report_url = res['reportHtmlUrl']
       return True
     except JSONDecodeError as json_decode_error:
-      self._log.debug(json_decode_error.msg)
+      LOG.debug(json_decode_error.msg)
       return False

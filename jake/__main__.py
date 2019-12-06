@@ -120,9 +120,9 @@ def __handle_iq_server(application_id, response, log, config: Config):
     print("No IQ server config supplied, please run jake ddt -P to set your config")
     _exit(311)
   iq_server = IQ(application_id)
-  iq_server.get_internal_application_id_from_iq_server()
-  iq_server.submit_sbom_to_third_party_api(sbom_gen.sbom_to_string(sbom))
-  iq_server.poll_for_results()
+  _id = iq_server.get_internal_application_id_from_iq_server()
+  status_url = iq_server.submit_sbom_to_third_party_api(sbom_gen.sbom_to_string(sbom), _id)
+  iq_server.poll_for_results(status_url)
   print(
       "Your IQ Server Report is available here: {}".format(iq_server.get_report_url()))
   if iq_server.get_policy_action() is not None:

@@ -50,7 +50,7 @@ Jake The Snake was scared of Snakes. The finishing move was DDT. He finishes the
 * Clone the repo
 * Install Python 3.7 or higher
 * Ensure pip is installed (it should be)
-* Run `python3 venv .venv` (or whatever virtual environment you prefer)
+* Run `python3 -m venv .venv` (or whatever virtual environment you prefer)
 * Run `source .venv/bin/activate`
 * Run `pip install -r requirements.txt`
 * Run `pip install -e .`

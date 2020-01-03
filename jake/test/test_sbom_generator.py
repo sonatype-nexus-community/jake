@@ -26,6 +26,10 @@ class TestSbomGenerator(unittest.TestCase):
   def setUp(self):
     self.func = CycloneDxSbomGenerator()
 
+  def test_invalid_bom_version(self):
+    """test_invalid_bom_version verifies using a non-implemented bom version fails"""
+    self.assertRaises(NotImplementedError, CycloneDxSbomGenerator, "1.0")
+
   def test_can_create_valid_root_element(self):
     """test_can_create_valid_root_element tests if an sbom can be created
     using the cyclonedx/CycloneDxSbomGenerator class"""

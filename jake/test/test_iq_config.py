@@ -30,8 +30,8 @@ class TestIQConfig(unittest.TestCase):
   def test_get_config_from_std_in(self):
     """test_get_config_from_std_in verifies the IQConfig class"""
     testinput = """test@me.com
-    password
-    http://localhost:8070/"""
+password
+http://localhost:8070/"""
     sys.stdin = io.StringIO(testinput)
     result = self.func.get_config_from_std_in()
     self.assertEqual(result, True)

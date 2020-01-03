@@ -98,11 +98,15 @@ class OssIndex():
         response = requests.post(self.get_url(), data=json.dumps(
             data), headers=self.get_headers())
       else:
-        (username, password) = config_file.get_config_from_file()
+        auth = config_file.get_config_from_file(
+            {"Username",
+             "Password"},
+            ".oss-index-config")
+
         response = requests.post(self.get_url(),
                                  data=json.dumps(data),
                                  headers=self.get_headers(),
-                                 auth=(username, password))
+                                 auth=(auth["Username"], auth["Password"]))
       if response.status_code == 200:
         self._log.debug(response.headers)
         first_results = json.loads(response.text, cls=ResultsDecoder)
@@ -145,7 +149,7 @@ class OssIndex():
                           doc_ids=[result[0].doc_id])
           self._log.debug(
               "Coordinate: <%s> updated in cache because TTL"
-              "expired",
+              " expired",
               coordinate.get_coordinates())
           num_cached += 1
           cached = True

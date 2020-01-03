@@ -19,7 +19,7 @@ from jake.parse.parse import Parse
 
 
 class TestParse(unittest.TestCase):
-  """TestParse adits the Parse class"""
+  """TestParse audits the Parse class"""
   def setUp(self):
     self.func = Parse()
 

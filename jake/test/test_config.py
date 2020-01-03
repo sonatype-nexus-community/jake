@@ -24,24 +24,24 @@ class TestConfig(unittest.TestCase):
 
   def test_config_object_saves_config_file(self):
     """test_config_object_saves_config_file ensures config objs are being written to file"""
-    self.func.set_password("password")
-    self.func.set_username("test@me.com")
-    result = self.func.save_config_to_file()
+    result = self.func.save_config_to_file(
+        {"Username": "test@me.com", "Password": "password"},
+        ".oss-index-config")
     self.assertEqual(result, True)
 
   def test_get_config_from_file(self):
     """test_config_object_saves_config_file ensures config objs are being written to file"""
-    self.func.set_password("password")
-    self.func.set_username("test@me.com")
-    self.func.save_config_to_file()
+    self.func.save_config_to_file(
+        {"Username": "test@me.com", "Password": "password"},
+        ".oss-index-config")
 
-    (username, password) = self.func.get_config_from_file()
-    self.assertEqual(username, "test@me.com")
-    self.assertEqual(password, "password")
+    results = self.func.get_config_from_file({"Username", "Password"}, ".oss-index-config")
+    self.assertEqual(results["Username"], "test@me.com")
+    self.assertEqual(results["Password"], "password")
 
   def test_return_true_when_config_exists(self):
     """test_config_object_saves_config_file ensures config objs are being written to file"""
-    self.func.set_password("password")
-    self.func.set_username("test@me.com")
-    self.func.save_config_to_file()
+    self.func.save_config_to_file(
+        {"Username": "test@me.com", "Password": "password"},
+        ".oss-index-config")
     self.assertEqual(self.func.check_if_config_exists(), True)

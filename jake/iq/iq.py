@@ -36,11 +36,7 @@ class IQ():
     self._report_url = ''
     self._policy_action = None
     config = IQConfig()
-    results = config.get_config_from_file(
-        {"Username",
-         "Password",
-         "IQ-Server-Location"},
-        ".iq-server-config")
+    results = config.get_config_from_file(".iq-server-config")
 
     self._user = results['Username']
     self._password = results['Password']

@@ -14,9 +14,10 @@
 # limitations under the License.
 import logging
 import os
-import yaml
 
 from pathlib import Path
+
+import yaml
 
 class Config():
   """config.py handles getting credentials for OSSIndex or setting them"""
@@ -69,7 +70,7 @@ class Config():
       self._log.error("Uh oh, an error happened: %s", str(exception))
       return False
 
-  def get_config_from_file(self, fields, config_name):
+  def get_config_from_file(self, config_name):
     """get credentials from save_location/.jake-config"""
     with open(os.path.join(self._save_location, config_name)) as file:
       doc = yaml.full_load(file)

@@ -99,8 +99,6 @@ class OssIndex():
             data), headers=self.get_headers())
       else:
         auth = config_file.get_config_from_file(
-            {"Username",
-             "Password"},
             ".oss-index-config")
 
         response = requests.post(self.get_url(),

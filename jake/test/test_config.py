@@ -35,7 +35,7 @@ class TestConfig(unittest.TestCase):
         {"Username": "test@me.com", "Password": "password"},
         ".oss-index-config")
 
-    results = self.func.get_config_from_file({"Username", "Password"}, ".oss-index-config")
+    results = self.func.get_config_from_file(".oss-index-config")
     self.assertEqual(results["Username"], "test@me.com")
     self.assertEqual(results["Password"], "password")
 

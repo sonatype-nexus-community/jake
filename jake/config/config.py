@@ -14,12 +14,13 @@
 # limitations under the License.
 import logging
 import os
+import yaml
 
 from pathlib import Path
 
 class Config():
   """config.py handles getting credentials for OSSIndex or setting them"""
-  def __init__(self, save_location=''):
+  def __init__(self, save_location='', config_foler='.ossindex'):
     self._log = logging.getLogger('jake')
 
     self._config_name = '.oss-index-config'
@@ -31,7 +32,7 @@ class Config():
     if save_location != '':
       self._save_location = save_location
     else:
-      self._save_location = str(Path.home())
+      self._save_location = os.path.join(str(Path.home()), config_foler)
 
     self.__migrate_config_if_at_jake_location()
 
@@ -62,8 +63,7 @@ class Config():
     """save stdin to save_location/.oss-index-config or .iq-server-config"""
     try:
       with open(os.path.join(self._save_location, config_name), "w+") as file:
-        for key, value in fields.items():
-          file.write("{}: {}\n".format(key, value))
+        yaml.dump(fields, file, default_flow_style=False)
         return True
     except FileNotFoundError as exception:
       self._log.error("Uh oh, an error happened: %s", str(exception))
@@ -72,12 +72,10 @@ class Config():
   def get_config_from_file(self, fields, config_name):
     """get credentials from save_location/.jake-config"""
     with open(os.path.join(self._save_location, config_name)) as file:
+      doc = yaml.full_load(file)
       results = {}
-      for line in file.readlines():
-        line_array = line.split(" ")
-        for key in fields:
-          if line_array[0].rstrip(":") == key:
-            results[key] = str(line_array[1]).rstrip()
+      for item, doc in doc.items():
+        results[item] = doc
 
     return results
 

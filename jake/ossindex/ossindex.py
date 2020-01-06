@@ -85,7 +85,7 @@ class OssIndex():
 
     (purls, results) = self.get_purls_and_results_from_cache(purls)
 
-    self._log.debug("Purls checked against cache, total purls remaining to"
+    self._log.debug("Purls checked against cache, total purls remaining to "
                     "call OSS Index: %s",
                     len(purls.get_coordinates()))
 

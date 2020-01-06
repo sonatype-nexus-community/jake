@@ -35,10 +35,10 @@ def main():
   config = Config()
 
   if args.snake:
-    __get_config_from_std_in(config)
+    get_config_from_std_in(config)
   elif args.python:
     config = IQConfig()
-    __get_config_from_std_in(config)
+    get_config_from_std_in(config)
   elif args.version:
     print(__version__)
     _exit(0)
@@ -136,10 +136,10 @@ def __handle_iq_server(application_id, response, log, config: Config):
         "All good to go! Smooth sailing for you! No policy violations reported by IQ Server")
     _exit(0)
 
-def __get_config_from_std_in(config: Config):
+def get_config_from_std_in(config):
   result = config.get_config_from_std_in()
   if result is False:
-    _exit(OSError)
+    _exit(EX_OSERR)
   else:
     _exit(0)
 

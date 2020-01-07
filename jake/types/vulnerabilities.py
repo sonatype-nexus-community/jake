@@ -22,8 +22,8 @@ class Vulnerabilities():
     self.id = ""
     self.title = ""
     self.description = ""
-    self.cvss_score = ""
-    self.cvss_vector = None
+    self.cvssScore = ""
+    self.cvssVector = None
     self.cve = ""
     self.reference = ""
 
@@ -51,22 +51,22 @@ class Vulnerabilities():
     """gets description for Vulnerabilities object"""
     return self.description
 
-  def set_cvss_score(self, cvss_score):
+  def set_cvss_score(self, cvssScore):
     """sets cvss_score for Vulnerabilities object"""
-    self.cvss_score = cvss_score
+    self.cvssScore = cvssScore
 
   def get_cvss_score(self):
     """gets cvss_score for Vulnerabilities object"""
-    return self.cvss_score
+    return self.cvssScore
 
-  def set_cvss_vector(self, cvss_vector):
+  def set_cvss_vector(self, cvssVector):
     """sets cvss_vector Vulnerabilities object if it exists"""
-    if cvss_vector is not None:
-      self.cvss_vector = cvss_vector
+    if cvssVector is not None:
+      self.cvssVector = cvssVector
 
   def get_cvss_vector(self):
     """gets cvss_vector for Vulnerabilities object"""
-    return self.cvss_vector
+    return self.cvssVector
 
   def set_cve(self, cve):
     """sets cve for Vulnerabilities object"""

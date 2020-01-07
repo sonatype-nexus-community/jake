@@ -63,7 +63,7 @@ class Config():
   def save_config_to_file(self, fields, config_name):
     """save stdin to save_location/config_name"""
     try:
-      os.makedirs(os.path.join(self._save_location, config_name), exist_ok=True)
+      os.makedirs(os.path.join(self._save_location), exist_ok=True)
       with open(os.path.join(self._save_location, config_name), "w+") as file:
         yaml.dump(fields, file, default_flow_style=False)
         return True

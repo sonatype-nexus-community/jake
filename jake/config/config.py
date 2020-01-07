@@ -21,7 +21,7 @@ import yaml
 
 class Config():
   """config.py handles getting credentials for OSSIndex or setting them"""
-  def __init__(self, save_location='', config_foler='.ossindex'):
+  def __init__(self, config_folder='.ossindex', save_location=''):
     self._log = logging.getLogger('jake')
 
     self._config_name = '.oss-index-config'
@@ -33,7 +33,7 @@ class Config():
     if save_location != '':
       self._save_location = save_location
     else:
-      self._save_location = os.path.join(str(Path.home()), config_foler)
+      self._save_location = os.path.join(str(Path.home()), config_folder)
 
     self.__migrate_config_if_at_jake_location()
 

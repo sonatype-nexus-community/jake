@@ -32,7 +32,10 @@ def main():
   """jake entry point"""
   args = __add_parser_args_and_return()
   log = __setup_logger(args.verbose)
-  config = Config()
+  if args.application:
+    config = Config('.iqserver')
+  else:
+    config = Config()
 
   if args.snake:
     __get_config_from_std_in(config)

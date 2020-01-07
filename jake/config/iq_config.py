@@ -17,7 +17,7 @@ from jake.config.config import Config
 class IQConfig(Config):
   """does IQ specific config setting and retrieval"""
   def __init__(self, save_location=''):
-    super().__init__(save_location, config_foler='.iqserver')
+    super().__init__('.iqserver', save_location)
     self._iq_server_config_name = '.iq-server-config'
     self._iq_server_location = ''
 

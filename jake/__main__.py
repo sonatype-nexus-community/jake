@@ -33,7 +33,7 @@ def main():
   args = __add_parser_args_and_return()
   log = __setup_logger(args.verbose)
   if args.application:
-    config = Config('.iqserver')
+    config = IQConfig()
   else:
     config = Config()
 

@@ -61,8 +61,9 @@ class Config():
     return result
 
   def save_config_to_file(self, fields, config_name):
-    """save stdin to save_location/.oss-index-config or .iq-server-config"""
+    """save stdin to save_location/config_name"""
     try:
+      os.makedirs(os.path.join(self._save_location, config_name), exist_ok=True)
       with open(os.path.join(self._save_location, config_name), "w+") as file:
         yaml.dump(fields, file, default_flow_style=False)
         return True
@@ -71,7 +72,7 @@ class Config():
       return False
 
   def get_config_from_file(self, config_name):
-    """get credentials from save_location/.jake-config"""
+    """get credentials from save_location/config_name"""
     with open(os.path.join(self._save_location, config_name)) as file:
       doc = yaml.full_load(file)
       results = {}

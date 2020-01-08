@@ -46,6 +46,26 @@ You can run `jake ddt -P` to set configuration of your IQ Server username and to
 
 Once you've configured `jake` with proper credentials, you can run `jake ddt -A application-id`, replacing `application-id` with the public ID of your application in IQ Server. If there is a policy action required after submitting to IQ Server, `jake` will exit with a non zero code, allowing you to fail builds based on needed policy actions. The IQ Server Report URL will be provided as well.
 
+An example of using `jake` with the Nexus IQ Server `Sandbox Application` follows.
+
+  1. (Onetime) Configure `jake` to use your Nexus IQ Server credentials:
+  
+        ```
+        $ jake ddt -P
+        Please enter your username for your IQ Server account: admin
+        Please enter your user token for IQ Server: admin123
+        Please provide the location of your IQ Server: http://localhost:8070
+        ```
+    
+  1. Feed your Conda dependencies in your current Conda environment to `jake`, which will then reach out and check Nexus IQ Server to see if they are vulnerable:
+
+        ```
+        $ conda list | jake ddt -A sandbox-application
+        ...
+        Your IQ Server Report is available here: http://localhost:8070/ui/links/application/sandbox-application/report/fec66f75726f434cb8e94360a6c11df1
+        All good to go! Smooth sailing for you! No policy violations reported by IQ Server
+        ```
+
 ## Why Jake?
 
 Jake The Snake was scared of Snakes. The finishing move was DDT. He finishes the Snake with DDT.

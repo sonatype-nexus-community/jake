@@ -104,7 +104,7 @@ class OssIndex():
         response = requests.post(self.get_url(),
                                  data=json.dumps(data),
                                  headers=self.get_headers(),
-                                 auth=(auth["Username"], auth["Password"]))
+                                 auth=(auth["Username"], auth["Token"]))
       if response.status_code == 200:
         self._log.debug(response.headers)
         first_results = json.loads(response.text, cls=ResultsDecoder)

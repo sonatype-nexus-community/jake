@@ -32,7 +32,7 @@ class IQConfig(Config):
 
     result = self.save_config_to_file(
         {"Username": self._username,
-         "Password": self._password,
+         "Token": self._password,
          "IQ-Server-Location": self._iq_server_location},
         self._iq_server_config_name)
 

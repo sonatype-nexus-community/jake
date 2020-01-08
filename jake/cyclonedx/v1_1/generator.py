@@ -67,6 +67,7 @@ class CycloneDx11Generator():
             component.get_coordinates(),
             vulnerabilities,
             node)
+        self.validate_xml(vulnerabilities)
     self.__xml.append(components)
 
   @staticmethod

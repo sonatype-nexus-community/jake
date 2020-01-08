@@ -55,7 +55,7 @@ class Config():
 
     result = self.save_config_to_file(
         {"Username": self._username,
-         "Password": self._password},
+         "Token": self._password},
         self._config_name)
 
     return result

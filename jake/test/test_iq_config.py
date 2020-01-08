@@ -38,5 +38,5 @@ http://localhost:8070/"""
     # reread stored config
     results = self.func.get_config_from_file(".iq-server-config")
     self.assertEqual(results["Username"], "test@me.com")
-    self.assertEqual(results["Password"], "password")
-    self.assertEqual(results["IQ-Server-Location"], "http://localhost:8070")
+    self.assertEqual(results["Token"], "password")
+    self.assertEqual(results["Server"], "http://localhost:8070")

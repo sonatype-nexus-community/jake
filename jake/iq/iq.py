@@ -36,15 +36,11 @@ class IQ():
     self._report_url = ''
     self._policy_action = None
     config = IQConfig()
-    results = config.get_config_from_file(
-        {"Username",
-         "Password",
-         "IQ-Server-Location"},
-        ".iq-server-config")
+    results = config.get_config_from_file(".iq-server-config")
 
     self._user = results['Username']
-    self._password = results['Password']
-    self._iq_server_base_url = results['IQ-Server-Location']
+    self._password = results['Token']
+    self._iq_server_base_url = results['Server']
 
   def get_url(self):
     """gets url to use for IQ Server request"""

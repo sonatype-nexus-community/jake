@@ -32,7 +32,10 @@ def main():
   """jake entry point"""
   args = __add_parser_args_and_return()
   log = __setup_logger(args.verbose)
-  config = Config()
+  if args.application:
+    config = IQConfig()
+  else:
+    config = Config()
 
   if args.snake:
     __get_config_from_std_in(config)
@@ -139,7 +142,7 @@ def __handle_iq_server(application_id, response, log, config: Config):
 def __get_config_from_std_in(config: Config):
   result = config.get_config_from_std_in()
   if result is False:
-    _exit(OSError)
+    _exit(EX_OSERR)
   else:
     _exit(0)
 

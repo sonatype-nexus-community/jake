@@ -35,6 +35,15 @@ class CycloneDx11Generator():
     self.__create_component_nodes(results)
     return self.__xml
 
+  @staticmethod
+  def validate_xml_vulnerabilities(xml_vulnerabilities):
+    """Validates the given xml against the xsd for vulnerability"""
+    file = pathlib.Path(__file__).parent / "vuln.xsd"
+    with open(file, "r") as stdin:
+      xml_schema_d = etree.parse(stdin)
+      xml_schema = etree.XMLSchema(xml_schema_d)
+      return xml_schema.assertValid(xml_vulnerabilities)
+
   def validate_xml(self, xml=None):
     """Takes the XML generated and validates it against the xsd
     for the vulnerability"""
@@ -67,7 +76,7 @@ class CycloneDx11Generator():
             component.get_coordinates(),
             vulnerabilities,
             node)
-        self.validate_xml(vulnerabilities)
+        self.validate_xml_vulnerabilities(vulnerabilities)
     self.__xml.append(components)
 
   @staticmethod

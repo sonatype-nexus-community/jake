@@ -18,21 +18,19 @@ class Coordinates():
   """Coordinates creates a Coordinates type object"""
   def __init__(self):
     self._coordinates = dict()
-    self._purls = set()
     self._pypi_extension = "?extension=tar.gz"
 
   def add_coordinate(self, name, version, format):
     """adds a coordinate to the coordinates set"""
     purl = self.parse_to_purl(name, version, format)
     self._coordinates[(name, version, format)] = purl
-    self._purls.add(purl)
 
   def get_coordinates(self):
     """gets the coordinates set"""
     return self._coordinates
 
   def get_purls(self):
-    return list(self._purls)
+    return list(self._coordinates.values())
 
   def get_coordinates_as_json(self):
     """turns the coordinates array to JSON"""
@@ -46,4 +44,9 @@ class Coordinates():
     if format == "pypi":
       purl += self._pypi_extension
     return purl
+
+  def join_coords(self, coords: dict):
+    self._coordinates.update(coords)
+    return self
+
 

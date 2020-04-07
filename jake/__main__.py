@@ -61,6 +61,7 @@ def main():
       coords = pip_handler.get_dependencies()
     else:
       coords = parse.get_dependencies_from_stdin(sys.stdin)
+
     if coords is None:
       log.error(
           "No purls returned, ensure that conda list is returning"
@@ -69,7 +70,11 @@ def main():
 
     log.debug("Total purls: %s", len(coords.get_coordinates()))
 
+    if args.application:
+      coords.join_coords(Pip().get_dependencies().get_coordinates())
+
     response = ossindex.call_ossindex(coords)
+    
     if response is not None:
       if args.application:
         __handle_iq_server(args.application, response, log, config)

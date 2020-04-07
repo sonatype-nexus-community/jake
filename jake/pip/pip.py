@@ -31,7 +31,7 @@ class Pip():
 
     if len(coords.get_coordinates()) == 0:
       return None
-      
+
     return coords
 
   # @classmethod

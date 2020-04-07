@@ -59,19 +59,15 @@ def main():
     if args.snek:
       pip_handler = Pip()
       coords = pip_handler.get_dependencies()
-      purls = coords.get_purls()
     else:
-      purls = parse.get_dependencies_from_stdin(sys.stdin)
-      if args.application:
-        pip_handler = Pip()
-        purls = pip_handler.get_overwritten_conda_deps(purls)
-    if purls is None:
+      coords = parse.get_dependencies_from_stdin(sys.stdin)
+    if coords is None:
       log.error(
           "No purls returned, ensure that conda list is returning"
           "a list of dependencies")
       _exit(EX_OSERR)
 
-    log.debug("Total purls: %s", len(purls))
+    log.debug("Total purls: %s", len(coords.get_coordinates()))
 
     response = ossindex.call_ossindex(coords)
     if response is not None:

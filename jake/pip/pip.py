@@ -23,18 +23,16 @@ class Pip():
     self._log = logging.getLogger('jake')
     self._format = "pypi"
 
-  def get_dependencies(self, purls = Coordinates()):
+  def get_dependencies(self, coords = Coordinates()):
     """converts list of pkg_resource.working_set into purl coordinates"""
 
-    # pkg_resources.working_set will show as None at compile time
-    # it is populated at runtime
     for i in iter(pkg_resources.working_set):
-      purls.add_coordinate(i.project_name, i._version, self._format)
+      coords.add_coordinate(i.project_name, i._version, self._format)
 
-    return purls
-
-  def get_overwritten_conda_deps(self, conda_purls):
-    return self.get_dependencies(purls = conda_purls)  
+    if len(coords.get_coordinates()) == 0:
+      return None
+      
+    return coords
 
   # @classmethod
   # def parse_line_into_purl(cls, line):

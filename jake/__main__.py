@@ -22,6 +22,7 @@ from jake.ossindex.ossindex import OssIndex
 from jake.iq.iq import IQ
 from jake.cyclonedx.generator import CycloneDxSbomGenerator
 from jake.parse.parse import Parse
+from jake.pip.pip import Pip
 from jake.audit.audit import Audit
 from jake.config.config import Config
 from jake.config.iq_config import IQConfig
@@ -55,7 +56,11 @@ def main():
 
   if args.run == 'ddt':
     log.info('Calling OSS Index')
-    purls = parse.get_dependencies_from_stdin(sys.stdin)
+    if args.snek:
+      pip_handler = Pip()
+      purls = pip_handler.get_dependencies()
+    else:
+      purls = parse.get_dependencies_from_stdin(sys.stdin)
     if purls is None:
       log.error(
           "No purls returned, ensure that conda list is returning"
@@ -88,6 +93,10 @@ def __add_parser_args_and_return():
   parser.add_argument(
       '-P', '--python',
       help='set optional jake IQ Server config',
+      action='store_true')
+  parser.add_argument(
+      '-N', '--snek',
+      help='get python requirements instead',
       action='store_true')
   parser.add_argument(
       '-V', '--version',

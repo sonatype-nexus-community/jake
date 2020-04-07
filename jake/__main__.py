@@ -58,7 +58,8 @@ def main():
     log.info('Calling OSS Index')
     if args.snek:
       pip_handler = Pip()
-      purls = pip_handler.get_dependencies()
+      coords = pip_handler.get_dependencies()
+      purls = coords.get_purls()
     else:
       purls = parse.get_dependencies_from_stdin(sys.stdin)
       if args.application:
@@ -70,9 +71,9 @@ def main():
           "a list of dependencies")
       _exit(EX_OSERR)
 
-    log.debug("Total purls: %s", len(purls.get_coordinates()))
+    log.debug("Total purls: %s", len(purls))
 
-    response = ossindex.call_ossindex(purls)
+    response = ossindex.call_ossindex(coords)
     if response is not None:
       if args.application:
         __handle_iq_server(args.application, response, log, config)

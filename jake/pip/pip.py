@@ -21,6 +21,7 @@ class Pip():
   """pip.py gets installed pip dependencies"""
   def __init__(self):
     self._log = logging.getLogger('jake')
+    self._format = "pypi"
 
   def get_dependencies(self, purls = Coordinates()):
     """converts list of pkg_resource.working_set into purl coordinates"""
@@ -28,16 +29,15 @@ class Pip():
     # pkg_resources.working_set will show as None at compile time
     # it is populated at runtime
     for i in iter(pkg_resources.working_set):
-      purl = self.parse_line_into_purl(i)
-      purls.add_coordinate(purl[0], purl[1], purl[2])
+      purls.add_coordinate(i.project_name, i._version, self._format)
 
     return purls
 
   def get_overwritten_conda_deps(self, conda_purls):
     return self.get_dependencies(purls = conda_purls)  
 
-  @classmethod
-  def parse_line_into_purl(cls, line):
-    """formats an object from pkg_resources.working_set into a purl"""
-    template = "pkg:pypi/{}@{}?extension=tar.gz"
-    return (template.format(line.project_name, line._version), line.project_name, line._version)
+  # @classmethod
+  # def parse_line_into_purl(cls, line):
+  #   """formats an object from pkg_resources.working_set into a purl"""
+  #   template = "pkg:pypi/{}@{}?extension=tar.gz"
+  #   return (template.format(line.project_name, line._version), line.project_name, line._version)

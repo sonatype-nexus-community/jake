@@ -17,15 +17,18 @@ import json
 class Coordinates():
   """Coordinates creates a Coordinates type object"""
   def __init__(self):
-    self._coordinates = []
+    self._coordinates = dict()
 
-  def add_coordinate(self, coordinate):
+  def add_coordinate(self, coordinate, name, version):
     """adds a coordinate to the coordinates array"""
-    self._coordinates.append(coordinate)
+    self._coordinates[(name, version)] = coordinate
 
   def get_coordinates(self):
     """gets the coordinates array"""
     return self._coordinates
+
+  def get_purls(self):
+    return list(self.get_coordinates().values())
 
   def get_coordinates_as_json(self):
     """turns the coordinates array to JSON"""

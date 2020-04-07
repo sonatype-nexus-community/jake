@@ -70,9 +70,9 @@ class OssIndex():
     end_index = self._maxcoords
     for i in range(0, num_chunks):
       if i == (num_chunks - 1):
-        divided = purls.get_coordinates()[start_index:length]
+        divided = purls.get_purls()[start_index:length]
       else:
-        divided = purls.get_coordinates()[start_index:end_index]
+        divided = purls.get_purls()[start_index:end_index]
         start_index = end_index
         end_index += end_index
       chunks.append(divided)
@@ -162,11 +162,11 @@ class OssIndex():
     new_purls = Coordinates()
     results = []
     coordinate_query = Query()
-    for purl in purls.get_coordinates():
+    for coordinate, purl in purls.get_coordinates().items():
       mydatetime = datetime.now()
       result = self._db.search(coordinate_query.purl == purl)
       if len(result) == 0 or parse(result[0]['ttl']) < mydatetime:
-        new_purls.add_coordinate(purl)
+        new_purls.add_coordinate(purl, coordinate[0], coordinate[1])
       else:
         results.append(json.loads(
             result[0]['response'], cls=ResultsDecoder))

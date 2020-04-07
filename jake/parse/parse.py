@@ -70,7 +70,7 @@ class Parse():
       else:
         purl = self.parse_line_into_purl(line)
         if purl is not None:
-          purls.add_coordinate(self.parse_line_into_purl(line))
+          purls.add_coordinate(purl[0], purl[1], purl[2])
     if len(purls.get_coordinates()) == 0:
       return None
 
@@ -82,6 +82,6 @@ class Parse():
     line_array = line.split()
     template = "pkg:conda/{}@{}"
     if len(line_array) != 0:
-      return template.format(line_array[0], line_array[1])
+      return (template.format(line_array[0], line_array[1]), line_array[0], line_array[1])
 
     return None

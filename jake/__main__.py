@@ -61,6 +61,9 @@ def main():
       purls = pip_handler.get_dependencies()
     else:
       purls = parse.get_dependencies_from_stdin(sys.stdin)
+      if args.application:
+        pip_handler = Pip()
+        purls = pip_handler.get_overwritten_conda_deps(purls)
     if purls is None:
       log.error(
           "No purls returned, ensure that conda list is returning"

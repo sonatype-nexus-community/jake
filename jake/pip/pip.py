@@ -23,7 +23,7 @@ class Pip():
     self._log = logging.getLogger('jake')
     self._format = "pypi"
 
-  def get_dependencies(self, coords = Coordinates()):
+  def get_dependencies(self, coords=Coordinates()):
     """converts list of pkg_resource.working_set into purl coordinates"""
 
     for i in iter(pkg_resources.working_set):

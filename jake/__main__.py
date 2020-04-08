@@ -70,11 +70,17 @@ def main():
 
     log.debug("Total purls: %s", len(coords.get_coordinates()))
 
-    if args.application:
-      coords.join_coords(Pip().get_dependencies().get_coordinates())
+    # TODO: determine if joining conda and pypi purls for hybridized IQ results is feasible
+    # This joins the pypi coordinates from pkg_resources and the conda coordinates from conda
+    # list and will generate a report with dupes.  I would remove the conda purls that have dupes
+    # from the pypi purls, but not all of the pypi purls get results in IQ and it would be difficult
+    # to figure out which ones will aheadof time (before making the request)
+
+    # if args.application:
+    #    coords.join_coords(Pip().get_dependencies().get_coordinates())
 
     response = ossindex.call_ossindex(coords)
-    
+
     if response is not None:
       if args.application:
         __handle_iq_server(args.application, response, log, config)

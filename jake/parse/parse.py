@@ -72,7 +72,7 @@ class Parse():
         line_array = line.split()
         if len(line_array) != 0:
           coords.add_coordinate(line_array[0], line_array[1], self._format)
-      
+
     if len(coords.get_coordinates()) == 0:
       return None
 

@@ -83,7 +83,7 @@ def main():
 
     if response is not None:
       if args.application:
-        __handle_iq_server(args.application, response, log, config)
+        __handle_iq_server(args.application, args.stage, response, log, config)
       else:
         code = audit.audit_results(response)
     else:
@@ -95,6 +95,7 @@ def main():
     _exit(code)
 
 def __add_parser_args_and_return():
+  # TODO: figure out how subparsers work to make this cleaner and do input validation
   parser = argparse.ArgumentParser()
   parser.add_argument('run', help='run jake', choices=['ddt'])
   parser.add_argument(
@@ -118,11 +119,17 @@ def __add_parser_args_and_return():
       help="set verbosity level to debug",
       action='store_true')
   parser.add_argument(
-      '-A', '--application',
-      help="supply an IQ Server Public Application ID"
-  )
+      '-a', '--application',
+      help='supply an IQ Server Public Application ID')
   parser.add_argument(
-      '-C', '--clean', help="wipe out jake cache", action='store_true')
+      '-s', '--stage',
+      help='specify a stage',
+      default='develop',
+      choices=['develop', 'build', 'stage-release', 'release'])
+  parser.add_argument(
+      '-C', '--clean',
+      help='wipe out jake cache',
+      action='store_true')
 
   return parser.parse_args()
 
@@ -137,14 +144,14 @@ def __setup_logger(verbose):
 
   return log
 
-def __handle_iq_server(application_id, response, log, config: Config):
+def __handle_iq_server(application_id, stage, response, log, config: Config):
   sbom_gen = CycloneDxSbomGenerator()
   sbom = sbom_gen.create_and_return_sbom(response)
   log.debug(application_id)
   if config.check_if_config_exists('.iq-server-config') is False:
     print("No IQ server config supplied, please run jake ddt -P to set your config")
     _exit(311)
-  iq_server = IQ(application_id)
+  iq_server = IQ(application_id, stage)
   _id = iq_server.get_internal_application_id_from_iq_server()
   status_url = iq_server.submit_sbom_to_third_party_api(sbom_gen.sbom_to_string(sbom), _id)
   iq_server.poll_for_results(status_url)

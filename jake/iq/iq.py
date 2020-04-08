@@ -29,9 +29,10 @@ LOG = logging.getLogger('jake')
 
 class IQ():
   """IQ handles requests to IQ Server"""
-  def __init__(self, public_application_id, iq_server_base_url='http://localhost:8070/'):
-    self._iq_server_base_url = iq_server_base_url.rstrip('/')
+  def __init__(self, public_application_id, stage='develop', iq_url='http://localhost:8070/'):
+    self._iq_url = iq_url.rstrip('/')
     self._public_application_id = public_application_id
+    self._stage = stage
     self._headers = DEFAULT_HEADERS
     self._report_url = ''
     self._policy_action = None
@@ -40,11 +41,11 @@ class IQ():
 
     self._user = results['Username']
     self._password = results['Token']
-    self._iq_server_base_url = results['Server']
+    self._iq_url = results['Server']
 
   def get_url(self):
     """gets url to use for IQ Server request"""
-    return self._iq_server_base_url
+    return self._iq_url
 
   def get_policy_action(self):
     """gets policy action from IQ Server result"""
@@ -84,9 +85,10 @@ class IQ():
     headers = self.get_headers()
     headers['Content-Type'] = 'application/xml'
     response = requests.post(
-        '{0}/api/v2/scan/applications/{1}/sources/jake'.format(
+        '{0}/api/v2/scan/applications/{1}/sources/jake?stageId={2}'.format(
             self.get_url(),
-            internal_id),
+            internal_id,
+            self._stage),
         data=sbom,
         headers=headers,
         auth=(self._user, self._password))
@@ -101,7 +103,7 @@ class IQ():
     , and times out after one minute"""
     polling.poll(
         lambda: requests.get(
-            '{0}/{1}'.format(self._iq_server_base_url, status_url),
+            '{0}/{1}'.format(self._iq_url, status_url),
             auth=(self._user, self._password)).text,
         check_success=self.__handle_response,
         step=1,

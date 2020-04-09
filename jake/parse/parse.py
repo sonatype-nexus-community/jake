@@ -77,13 +77,3 @@ class Parse():
       return None
 
     return coords
-
-  # @classmethod
-  # def parse_line_into_purl(cls, line):
-  #   """formats list of purls for logging"""
-  #   line_array = line.split()
-  #   template = "pkg:conda/{}@{}"
-  #   if len(line_array) != 0:
-  #     return (template.format(line_array[0], line_array[1]), line_array[0], line_array[1])
-
-  #   return None

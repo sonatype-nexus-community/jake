@@ -12,6 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 import logging
 import pkg_resources
 
@@ -33,9 +34,3 @@ class Pip():
       return None
 
     return coords
-
-  # @classmethod
-  # def parse_line_into_purl(cls, line):
-  #   """formats an object from pkg_resources.working_set into a purl"""
-  #   template = "pkg:pypi/{}@{}?extension=tar.gz"
-  #   return (template.format(line.project_name, line._version), line.project_name, line._version)

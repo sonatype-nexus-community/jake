@@ -27,7 +27,7 @@ from jake.audit.audit import Audit
 from jake.config.config import Config
 from jake.config.iq_config import IQConfig
 
-from ._version import __version__
+from jake._version import __version__
 
 def main():
   """jake entry point"""

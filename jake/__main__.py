@@ -133,6 +133,70 @@ def __add_parser_args_and_return():
 
   return parser.parse_args()
 
+def parse_root_args(self):
+  parser = argparse.ArgumentParser(
+      description='Jake: Put your python deps in a chokehold'
+  )
+  parser.add_argument('command', help='Subcommand to run')
+  args = parser.parse_args(sys.argv[1:2])
+  if not hasattr(self, args.command):
+      print('Unrecognized command')
+      parser.print_help()
+      exit(1)
+  # use dispatch pattern to invoke method with same name
+  getattr(self, args.command)()
+
+def version(self):
+    print(__version__)
+    _exit(0)
+
+def config(self):
+    parser = argparse.ArgumentParser(
+        description='Set config'
+    )
+    parser.add_argument(
+        'iq',
+        help='set IQ config',
+        action='store_true')
+    parser.add_argument(
+        'ossi',
+        help='set OSS index config',
+        action='store_true')
+    args = parser.parse_args(sys.argv[2:])
+    if args.iq:
+          config = Config()
+          __get_config_from_std_in(config)
+    if args.ossi:
+          config = IQConfig()
+          __get_config_from_std_in(config)
+    print('Unrecognized config type')
+    parser.print_help()
+    exit(1)
+
+def iq(self):
+  parser = argparse.ArgumentParser(
+      description='Run scan against Sonatype IQ'
+  )
+  parser.add_argument(
+      '-a', '--application',
+      help='supply an IQ Server Public Application ID')
+  parser.add_argument(
+      '-s', '--stage',
+      help='specify a stage',
+      default='develop',
+      choices=['develop', 'build', 'stage-release', 'release'])
+  args = parser.parse_args(sys.argv[2:])
+
+def ossi(self):
+  parser = argparse.ArgumentParser(
+      description='Run scan against Sonatype OSS Index'
+  )
+  parser.add_argument(
+      '-N', '--snek',
+      help='get python requirements instead',
+      action='store_true')
+  args = parser.parse_args(sys.argv[2:])
+
 def __setup_logger(verbose):
   logging.basicConfig(level=logging.NOTSET)
   log = logging.getLogger('jake')

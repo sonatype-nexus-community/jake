@@ -29,70 +29,126 @@ from jake.config.iq_config import IQConfig
 
 from jake._version import __version__
 
+class ArgRouter(object):
+  def __init__(self):
+    self._args = None
+    self._parser = argparse.ArgumentParser(
+        description='Jake: Put your python deps in a chokehold'
+    )
+    self._sub_parsers = self._parser.add_subparsers(
+        help='subcommands: iq, ossi, config',
+        dest='command'
+    )
+    self.__parse_jake_args()
+
+    config_parser = self._sub_parsers.add_parser('config')
+    ossi_parser = self._sub_parsers.add_parser('ossi')
+    iq_parser = self._sub_parsers.add_parser('iq')
+
+    config_parser.add_argument(
+        'Config Type',
+        help='set config type',
+        choices=['iq', 'ossi'])
+
+    iq_parser.add_argument(
+        '-a', '--application',
+        help='supply an IQ Server Public Application ID',
+        required=True)
+    iq_parser.add_argument(
+        '-s', '--stage',
+        help='specify a stage',
+        default='develop',
+        choices=['develop', 'build', 'stage-release', 'release'])
+
+    ossi_parser.add_argument(
+        '-C', '--clean',
+        help='wipe out jake cache',
+        action='store_true')
+
+    self._args = self._parser.parse_args()
+
+  def __parse_jake_args(self):
+      # parser = argparse.ArgumentParser()
+      self._parser.add_argument(
+          '-N', '--snek',
+          help='get python requirements instead',
+          action='store_true')
+      self._parser.add_argument(
+          '-VV', '--verbose',
+          help="set verbosity level to debug",
+          action='store_true')
+      self._parser.add_argument(
+          '-V', '--version',
+          help='show version and exit',
+          action='store_true'
+      )
+
+  def get_args(self):
+        return self._args
+
 def main():
   """jake entry point"""
-  args = __add_parser_args_and_return()
+  router = ArgRouter()
+  args = router.get_args()
   log = __setup_logger(args.verbose)
-  if args.application:
-    config = IQConfig()
-  else:
-    config = Config()
 
-  if args.snake:
-    __get_config_from_std_in(config)
-  elif args.python:
-    config = IQConfig()
-    __get_config_from_std_in(config)
-  elif args.version:
+  if args.version:
     print(__version__)
     _exit(0)
 
-  parse = Parse()
-  ossindex = OssIndex()
-  audit = Audit()
-
-  if args.clean:
-    ossindex.clean_cache()
-
-  if args.run == 'ddt':
-    log.info('Calling OSS Index')
-    if args.snek:
-      pip_handler = Pip()
-      coords = pip_handler.get_dependencies()
+  print(args)
+  if args.command is 'config':
+    if args.config.iq:
+      config = IQConfig()
     else:
-      coords = parse.get_dependencies_from_stdin(sys.stdin)
-
-    if coords is None:
-      log.error(
-          "No purls returned, ensure that conda list is returning"
-          "a list of dependencies")
+      config = Config()
+    result = config.get_config_from_std_in()
+    if result is False:
       _exit(EX_OSERR)
-
-    log.debug("Total purls: %s", len(coords.get_coordinates()))
-
-    # TODO: determine if joining conda and pypi purls for hybridized IQ results is feasible
-    # This joins the pypi coordinates from pkg_resources and the conda coordinates from conda
-    # list and will generate a report with dupes.  I would remove the conda purls that have dupes
-    # from the pypi purls, but not all of the pypi purls get results in IQ and it would be difficult
-    # to figure out which ones will aheadof time (before making the request)
-
-    # if args.application:
-    #    coords.join_coords(Pip().get_dependencies().get_coordinates())
-
-    response = ossindex.call_ossindex(coords)
-
-    if response is not None:
-      if args.application:
-        __handle_iq_server(args.application, args.stage, response, log, config)
-      else:
-        code = audit.audit_results(response)
     else:
-      log.error(
-          "Something went horribly wrong, please rerun with -VV to see"
-          "what happened")
-      _exit(EX_OSERR)
+      _exit(0)
 
+  if args.snek:
+    pip_handler = Pip()
+    coords = pip_handler.get_dependencies()
+  else:
+    parse = Parse()
+    coords = parse.get_dependencies_from_stdin(sys.stdin)
+
+  if coords is None:
+    log.error(
+        "No purls returned, ensure that conda list is returning"
+        "a list of dependencies")
+    _exit(EX_OSERR)
+
+  log.debug("Total purls: %s", len(coords.get_coordinates()))
+
+  oss_index = OssIndex()
+  ossi_response = oss_index.call_ossindex(coords)
+
+  if ossi_response is None:
+    log.error(
+        "Something went horribly wrong, please rerun with -VV to see"
+        "what happened")
+    _exit(EX_OSERR)
+
+  if args.command == 'iq':
+    __handle_iq_server(args.application, args.stage, ossi_response, log, config=IQConfig())
+
+  if args.command == 'ossi':
+    audit = Audit()
+    code = audit.audit_results(ossi_response)
     _exit(code)
+
+  # TODO: determine if joining conda and pypi purls for hybridized IQ results is feasible
+  # This joins the pypi coordinates from pkg_resources and the conda coordinates from conda
+  # list and will generate a report with dupes.  I would remove the conda purls that have dupes
+  # from the pypi purls, but not all of the pypi purls get results in IQ and it would be difficult
+  # to figure out which ones will aheadof time (before making the request)
+
+  # if args.application:
+  #    coords.join_coords(Pip().get_dependencies().get_coordinates())
+
 
 def __add_parser_args_and_return():
   # TODO: figure out how subparsers work to make this cleaner and do input validation
@@ -132,70 +188,6 @@ def __add_parser_args_and_return():
       action='store_true')
 
   return parser.parse_args()
-
-def parse_root_args(self):
-  parser = argparse.ArgumentParser(
-      description='Jake: Put your python deps in a chokehold'
-  )
-  parser.add_argument('command', help='Subcommand to run')
-  args = parser.parse_args(sys.argv[1:2])
-  if not hasattr(self, args.command):
-      print('Unrecognized command')
-      parser.print_help()
-      exit(1)
-  # use dispatch pattern to invoke method with same name
-  getattr(self, args.command)()
-
-def version(self):
-    print(__version__)
-    _exit(0)
-
-def config(self):
-    parser = argparse.ArgumentParser(
-        description='Set config'
-    )
-    parser.add_argument(
-        'iq',
-        help='set IQ config',
-        action='store_true')
-    parser.add_argument(
-        'ossi',
-        help='set OSS index config',
-        action='store_true')
-    args = parser.parse_args(sys.argv[2:])
-    if args.iq:
-          config = Config()
-          __get_config_from_std_in(config)
-    if args.ossi:
-          config = IQConfig()
-          __get_config_from_std_in(config)
-    print('Unrecognized config type')
-    parser.print_help()
-    exit(1)
-
-def iq(self):
-  parser = argparse.ArgumentParser(
-      description='Run scan against Sonatype IQ'
-  )
-  parser.add_argument(
-      '-a', '--application',
-      help='supply an IQ Server Public Application ID')
-  parser.add_argument(
-      '-s', '--stage',
-      help='specify a stage',
-      default='develop',
-      choices=['develop', 'build', 'stage-release', 'release'])
-  args = parser.parse_args(sys.argv[2:])
-
-def ossi(self):
-  parser = argparse.ArgumentParser(
-      description='Run scan against Sonatype OSS Index'
-  )
-  parser.add_argument(
-      '-N', '--snek',
-      help='get python requirements instead',
-      action='store_true')
-  args = parser.parse_args(sys.argv[2:])
 
 def __setup_logger(verbose):
   logging.basicConfig(level=logging.NOTSET)

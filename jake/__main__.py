@@ -29,42 +29,59 @@ from jake.config.iq_config import IQConfig
 
 from jake._version import __version__
 
+
+
 class ArgRouter(object):
+  """
+  Encapsulates all parsing and subparsing of command line args
+
+  Initalizing ArgRouter() will parse all args present in sys_in and generate the args list
+
+  Public function get_args() returns the args list after init
+  """
   def __init__(self):
-    self._args = None
     self._parser = argparse.ArgumentParser(
         description='Jake: Put your python deps in a chokehold'
     )
+    # defines the positional argument where a sub-command would be
     self._sub_parsers = self._parser.add_subparsers(
         help='Select sub-command to run',
         dest='command'
     )
+
+    # picks up flags that can be passed in regardless of the sub-command
     self.__parse_jake_args()
 
+    # create a nested parser in the root parser for each valid sub-command
     config_parser = self._sub_parsers.add_parser('config')
     ossi_parser = self._sub_parsers.add_parser('ossi')
     iq_parser = self._sub_parsers.add_parser('iq')
 
+    # looks for an iq or ossi value after the config sub-command
     config_parser.add_argument(
         'type',
         help='set config type',
         choices=['iq', 'ossi'])
 
+    # looks for the app-id flag after the iq sub-command
     iq_parser.add_argument(
         '-a', '--application',
         help='supply an IQ Server Public Application ID',
         required=True)
+    # App stage, a develop throw-away report by default
     iq_parser.add_argument(
         '-s', '--stage',
         help='specify a stage',
         default='develop',
         choices=['develop', 'build', 'stage-release', 'release'])
 
+    # The cache is oss index specific, might want to make this a root jake flag since conda pushes ossi results to IQ
     ossi_parser.add_argument(
         '-C', '--clean',
         help='wipe out jake cache',
         action='store_true')
 
+    # Resolves all the args, including sub-command args
     self._args = self._parser.parse_args()
 
   def __parse_jake_args(self):
@@ -84,6 +101,7 @@ class ArgRouter(object):
 
   def get_args(self):
         return self._args
+
 
 def main():
   """jake entry point"""

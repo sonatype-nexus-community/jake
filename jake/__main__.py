@@ -30,7 +30,6 @@ from jake.config.iq_config import IQConfig
 from jake._version import __version__
 
 
-
 class ArgRouter(object):
   """
   Encapsulates all parsing and subparsing of command line args
@@ -39,6 +38,7 @@ class ArgRouter(object):
 
   Public function get_args() returns the args list after init
   """
+
   def __init__(self):
     self._parser = argparse.ArgumentParser(
         description='Jake: Put your python deps in a chokehold'
@@ -100,7 +100,14 @@ class ArgRouter(object):
       )
 
   def get_args(self):
-        return self._args
+      """
+      args list getter
+
+      returns the args list that gets generated on init
+
+      type: argparse.Namespace object that can be cast as a dict w/ var(args)
+      """
+      return self._args
 
 
 def main():
@@ -150,7 +157,8 @@ def main():
     _exit(EX_OSERR)
 
   if args.command == 'iq':
-    __handle_iq_server(args.application, args.stage, ossi_response, log, config=IQConfig())
+    __handle_iq_server(args.application, args.stage,
+                       ossi_response, log, config=IQConfig())
 
   if args.command == 'ossi':
     audit = Audit()
@@ -169,6 +177,7 @@ def main():
   # if args.application:
   #    coords.join_coords(Pip().get_dependencies().get_coordinates())
 
+
 def __setup_logger(verbose):
   logging.basicConfig(level=logging.NOTSET)
   log = logging.getLogger('jake')
@@ -180,6 +189,7 @@ def __setup_logger(verbose):
 
   return log
 
+
 def __handle_iq_server(application_id, stage, response, log, config: Config):
   sbom_gen = CycloneDxSbomGenerator()
   sbom = sbom_gen.create_and_return_sbom(response)
@@ -189,7 +199,8 @@ def __handle_iq_server(application_id, stage, response, log, config: Config):
     _exit(311)
   iq_server = IQ(application_id, stage)
   _id = iq_server.get_internal_application_id_from_iq_server()
-  status_url = iq_server.submit_sbom_to_third_party_api(sbom_gen.sbom_to_string(sbom), _id)
+  status_url = iq_server.submit_sbom_to_third_party_api(
+      sbom_gen.sbom_to_string(sbom), _id)
   iq_server.poll_for_results(status_url)
   print(
       "Your IQ Server Report is available here: {}".format(iq_server.get_report_url()))
@@ -201,6 +212,7 @@ def __handle_iq_server(application_id, stage, response, log, config: Config):
     print(
         "All good to go! Smooth sailing for you! No policy violations reported by IQ Server")
     _exit(0)
+
 
 if __name__ == '__main__':
   main()

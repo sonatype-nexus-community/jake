@@ -2,4 +2,4 @@
 init-hook="from pylint.config import find_pylintrc; import os, sys; sys.path.append(os.path.dirname(find_pylintrc()))"
 indent-string='  '
 extension-pkg-whitelist=lxml
-disable=too-many-instance-attributes, too-many-branches, W
+disable=too-many-instance-attributes, too-many-branches, W, too-few-public-methods

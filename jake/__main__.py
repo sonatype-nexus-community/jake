@@ -30,7 +30,7 @@ from jake.config.iq_config import IQConfig
 from jake._version import __version__
 
 
-class ArgRouter(object):
+class ArgRouter():
   """
   Encapsulates all parsing and subparsing of command line args
 
@@ -75,7 +75,7 @@ class ArgRouter(object):
         default='develop',
         choices=['develop', 'build', 'stage-release', 'release'])
 
-    # The cache is oss index specific, might want to make this a root jake flag since conda pushes ossi results to IQ
+    # The cache is oss index specific, except IQ uses ossindex, jake arg?
     ossi_parser.add_argument(
         '-C', '--clean',
         help='wipe out jake cache',

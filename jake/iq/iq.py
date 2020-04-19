@@ -29,8 +29,11 @@ LOG = logging.getLogger('jake')
 
 class IQ():
   """IQ handles requests to IQ Server"""
-  def __init__(self, public_application_id, stage='develop', iq_url='http://localhost:8070/'):
-    self._iq_url = iq_url.rstrip('/')
+  def __init__(self, public_application_id, stage='develop', iq_url=None, user=None, password=None):
+    self._iq_url = iq_url
+    self._user = user
+    self._password = password
+
     self._public_application_id = public_application_id
     self._stage = stage
     self._headers = DEFAULT_HEADERS
@@ -39,9 +42,12 @@ class IQ():
     config = IQConfig()
     results = config.get_config_from_file(".iq-server-config")
 
-    self._user = results['Username']
-    self._password = results['Token']
-    self._iq_url = results['Server']
+    if self._user is None:
+      self._user = results['Username']
+    if self._password is None:
+      self._password = results['Token']
+    if self._iq_url is None:
+      self._iq_url = results['Server']
 
   def get_url(self):
     """gets url to use for IQ Server request"""

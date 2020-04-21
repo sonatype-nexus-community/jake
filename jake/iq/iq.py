@@ -39,15 +39,25 @@ class IQ():
     self._headers = DEFAULT_HEADERS
     self._report_url = ''
     self._policy_action = None
-    config = IQConfig()
-    results = config.get_config_from_file(".iq-server-config")
 
-    if self._user is None:
-      self._user = results['Username']
-    if self._password is None:
-      self._password = results['Token']
-    if self._iq_url is None:
-      self._iq_url = results['Server']
+    config = IQConfig()
+    if config.check_if_config_exists('.iq-server-config') is False:
+      LOG.debug("No IQ server config supplied, using defaults or taking from command-line.")
+      if self._user is None:
+          self._user = 'admin'
+      if self._password is None:
+        self._password = 'admin123'
+      if self._iq_url is None:
+        self._iq_url = 'http://localhost:8070'
+    else:
+      LOG.debug("Found iq server config.  Using those unless overwritten by command line params.")
+      results = config.get_config_from_file(".iq-server-config")
+      if self._user is None:
+        self._user = results['Username']
+      if self._password is None:
+        self._password = results['Token']
+      if self._iq_url is None:
+        self._iq_url = results['Server']
 
   def get_url(self):
     """gets url to use for IQ Server request"""

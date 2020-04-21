@@ -74,6 +74,18 @@ class ArgRouter():
         help='specify a stage',
         default='develop',
         choices=['develop', 'build', 'stage-release', 'release'])
+    # App stage, a develop throw-away report by default
+    iq_parser.add_argument(
+        '-u', '--user',
+        help='specify a username for Sonatype IQ')
+    # App stage, a develop throw-away report by default
+    iq_parser.add_argument(
+        '-p', '--password',
+        help='specify a password/token for Sonatype IQ')
+    # App stage, a develop throw-away report by default
+    iq_parser.add_argument(
+        '-e', '--host',
+        help='specify an endpoint for Sonatype IQ')
 
     # The cache is oss index specific, except IQ uses ossindex, jake arg?
     ossi_parser.add_argument(
@@ -158,7 +170,7 @@ def main():
 
   if args.command == 'iq':
     __handle_iq_server(args.application, args.stage,
-                       ossi_response, log, config=IQConfig())
+                       ossi_response, log, args.host, args.user, args.password),
 
   if args.command == 'ossi':
     audit = Audit()
@@ -190,14 +202,11 @@ def __setup_logger(verbose):
   return log
 
 
-def __handle_iq_server(application_id, stage, response, log, config: Config):
+def __handle_iq_server(application_id, stage, response, log, host=None, user=None, password=None):
   sbom_gen = CycloneDxSbomGenerator()
   sbom = sbom_gen.create_and_return_sbom(response)
   log.debug(application_id)
-  if config.check_if_config_exists('.iq-server-config') is False:
-    print("No IQ server config supplied, please run jake ddt -P to set your config")
-    _exit(311)
-  iq_server = IQ(application_id, stage)
+  iq_server = IQ(application_id, stage, host, user, password)
   _id = iq_server.get_internal_application_id_from_iq_server()
   status_url = iq_server.submit_sbom_to_third_party_api(
       sbom_gen.sbom_to_string(sbom), _id)

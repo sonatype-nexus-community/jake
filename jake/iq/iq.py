@@ -29,16 +29,16 @@ LOG = logging.getLogger('jake')
 
 class IQ():
   """IQ handles requests to IQ Server"""
-  def __init__(self, public_application_id, stage='develop', iq_url=None, user=None, password=None):
-    self._iq_url = iq_url
-    self._user = user
-    self._password = password
-
-    self._public_application_id = public_application_id
-    self._stage = stage
+  def __init__(self, args, log):
+    self._iq_url = args.host
+    self._user = args.user
+    self._password = args.password
+    self._public_application_id = args.application
+    self._stage = args.stage
     self._headers = DEFAULT_HEADERS
     self._report_url = ''
     self._policy_action = None
+    self._log = log
 
     config = IQConfig()
     if config.check_if_config_exists('.iq-server-config') is False:
@@ -79,7 +79,7 @@ class IQ():
     """gets public application id to use for IQ Server request"""
     return self._public_application_id
 
-  def get_internal_application_id_from_iq_server(self):
+  def get_internal_id(self):
     """gets internal application id from IQ Server using the public
     application id"""
     response = requests.get(

@@ -169,8 +169,7 @@ def main():
     _exit(EX_OSERR)
 
   if args.command == 'iq':
-    __handle_iq_server(args.application, args.stage,
-                       ossi_response, log, args.host, args.user, args.password),
+    __handle_iq_server(ossi_response, args, log),
 
   if args.command == 'ossi':
     audit = Audit()
@@ -202,18 +201,19 @@ def __setup_logger(verbose):
   return log
 
 
-def __handle_iq_server(application_id, stage, response, log, host=None, user=None, password=None):
+def __handle_iq_server(response, args, log):
   sbom_gen = CycloneDxSbomGenerator()
   sbom = sbom_gen.create_and_return_sbom(response)
-  log.debug(application_id)
-  iq_server = IQ(application_id, stage, host, user, password)
-  _id = iq_server.get_internal_application_id_from_iq_server()
-  status_url = iq_server.submit_sbom_to_third_party_api(
+  print('args: ', args)
+  log.debug(args.application)
+  iq_requests = IQ(args, log)
+  _id = iq_requests.get_internal_id()
+  status_url = iq_requests.submit_sbom_to_third_party_api(
       sbom_gen.sbom_to_string(sbom), _id)
-  iq_server.poll_for_results(status_url)
+  iq_requests.poll_for_results(status_url)
   print(
-      "Your IQ Server Report is available here: {}".format(iq_server.get_report_url()))
-  if iq_server.get_policy_action() is not None:
+      "Your IQ Server Report is available here: {}".format(iq_requests.get_report_url()))
+  if iq_requests.get_policy_action() is not None:
     print(
         "Your build has failed, please check your IQ Server Report for more information")
     _exit(1)

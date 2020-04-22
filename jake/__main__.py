@@ -1,4 +1,6 @@
 """jake entry point"""
+# pylint: disable=too-many-arguments
+# pylint: disable=invalid-name
 # Copyright 2019 Sonatype Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -143,7 +145,19 @@ def ddt(clear, conda):
 @click.option(
     '-h', '--host',
     help='Specify an endpoint for Sonatype IQ')
-def iq(application, stage, user, password, host):
+@click.option(
+    '-c', '--conda',
+    default=False,
+    is_flag=True,
+    help='Resolve conda dependencies from std_in')
+def iq(application, stage, user, password, host, conda):
+  """EXTRA SPECIAL MOVE\n
+  Allows you to perform scans backed by Sonatype's Nexus IQ Server
+
+  Example usage:\n
+      Python scan: jake iq -a publicapplicationid\n
+      Conda scan: conda list | jake iq -a publicapplicationid -c\n
+  """
   iq_args = {}
   iq_args['application'] = application
   iq_args['stage'] = stage
@@ -151,8 +165,9 @@ def iq(application, stage, user, password, host):
   iq_args['password'] = password
   iq_args['host'] = host
 
-  coords = Pip().get_dependencies()
+  coords = Parse().get_dependencies_from_stdin(sys.stdin) if conda else Pip().get_dependencies()
   response = OssIndex().call_ossindex(coords)
+
   __handle_iq_server(response, iq_args)
 
   # TODO: determine if joining conda and pypi purls for hybridized IQ results is feasible

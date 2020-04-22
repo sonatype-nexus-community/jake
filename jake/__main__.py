@@ -17,11 +17,9 @@ from os import _exit, EX_OSERR
 import sys
 import logging
 import click
-from colorama import init
-init(strip=not sys.stdout.isatty()) # strip colors on redirected output
 from termcolor import cprint
 from pyfiglet import figlet_format
-
+from colorama import init
 from jake.ossindex.ossindex import OssIndex
 from jake.iq.iq import IQ
 from jake.cyclonedx.generator import CycloneDxSbomGenerator
@@ -30,20 +28,15 @@ from jake.pip.pip import Pip
 from jake.audit.audit import Audit
 from jake.config.config import Config
 from jake.config.iq_config import IQConfig
-
 from jake._version import __version__
 
-def print_version(ctx, value):
-    if not value:
-        return
-    print(__package__, 'v' +  __version__)
-    ctx.exit()
+init(strip=not sys.stdout.isatty()) # strip colors on redirected output
 
 @click.group(help='Jake: Put your python deps in a chokehold.')
 @click.option(
     '-V', '--version',
     is_flag=True,
-    callback=print_version,
+    callback=__print_version,
     expose_value=False,
     is_eager=True,
     help='Print version and exit')
@@ -81,16 +74,11 @@ def config(type):
     Arguments:
         type -- cli input restricted by click to 'iq' and 'ossi'
     """
-    if type == 'iq':
-        config = IQConfig()
-    else:
-        config = Config()
+    config = IQConfig() if type == 'iq' else Config()
+
     # call the config entry prompt and exit
     result = config.get_config_from_std_in()
-    if result is False:
-        _exit(EX_OSERR)
-    else:
-        _exit(0)
+    _exit(EX_OSERR) if result is False else _exit(0)
 
 @main.command()
 @click.option(
@@ -110,19 +98,20 @@ def ddt(clear, conda):
         clear -- flag to clear the cache
         conda -- flag to resolve conda dependencies piping conda list from std_in
     """
-    if conda:
-        coords = Parse().get_dependencies_from_stdin(sys.stdin)
-    else:
-        coords = Pip().get_dependencies()
+    coords = Parse().get_dependencies_from_stdin(sys.stdin) if conda else Pip().get_dependencies()
+
     oss_index = OssIndex()
     response = oss_index.call_ossindex(coords)
+
     if response is None:
         click.echo(
-            "Something went horribly wrong, there is no response from Oss Index",
+            "Something went horribly wrong, there is no response from OSS Index",
             "please rerun with -VV to see what happened")
         _exit(EX_OSERR)
+
     audit = Audit()
     code = audit.audit_results(response)
+
     if clear:
         if oss_index.clean_cache():
                 print('Cache Cleared')
@@ -212,6 +201,12 @@ def __banner():
       # cprint(figlet_format(version, font=version_font), 'white', attrs=[])
       click.echo('Put your python deps in a chokehold.')
       # 'on_blue' after the primary color to set background
+
+def __print_version(ctx, value):
+    if not value:
+        return
+    print(__package__, 'v' +  __version__)
+    ctx.exit()
 
 if __name__ == '__main__':
     main()

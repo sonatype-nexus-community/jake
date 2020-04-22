@@ -29,8 +29,72 @@ from jake.config.iq_config import IQConfig
 
 from jake._version import __version__
 
+import click
+
+@click.group()
+@click.option(
+  '-V', '--version',
+  is_flag=True,
+  default=False,
+  help='Print version and exit')
+@click.option(
+  '-VV', '--verbose',
+  is_flag=True,
+  default=False,
+  help='Set log level to verbose')
+def main(version, verbose):
+      if version:
+            print(__package__, 'v' +  __version__)
+            _exit(0)
+      pass
+
+@main.command()
+@click.argument(
+  'type',
+  type=click.Choice(['iq', 'ossi']))
+def config(type):
+      if type == 'iq':
+            config = IQConfig()
+      else:
+            config = Config()
+      result = config.get_config_from_std_in()
+      if result is False:
+            _exit(EX_OSERR)
+      else:
+            _exit(0)
+
+@main.command()
+@click.option(
+  '-a', '--application',
+  help='supply an IQ Server Public Application ID',
+  required=True)
+@click.option(
+  '-s', '--stage',
+  default='develop',
+  type=click.Choice(['develop', 'build', 'stage-release', 'release']),
+  help='Specify a stage')
+@click.option(
+  '-u', '--user',
+  help='Set username for Sonatype IQ')
+@click.option(
+  '-p', '--password',
+  help='Set password or token for associated user')
+@click.option(
+  '-h', '--host',
+  help='Specify an endpoint for Sonatype IQ')
+def iq(application, stage, user, password, host):
+      iq_args = {}
+      iq_args['application'] = application
+      iq_args['stage'] = stage
+      iq_args['user'] = user
+      iq_args['password'] = password
+      iq_args['host'] = host
+      print(iq_args)
 
 class ArgRouter():
+      def __init__(self, verbose, snek):
+            click.echo('in ArgRouter', verbose, snek)
+class ArgRouterOld():
   """
   Encapsulates all parsing and subparsing of command line args
 
@@ -123,7 +187,7 @@ class ArgRouter():
       return self._args
 
 
-def main():
+def old_main():
   """jake entry point"""
   router = ArgRouter()
   args = router.get_args()

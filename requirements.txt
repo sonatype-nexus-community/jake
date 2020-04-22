@@ -1,6 +1,7 @@
 astroid==2.3.3
 certifi==2019.9.11
 chardet==3.0.4
+click==7.1.1
 idna==2.8
 isort==4.3.21
 lazy-object-proxy==1.4.3

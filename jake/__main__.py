@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import sys
-import argparse
 import logging
 
 from os import _exit, EX_OSERR
@@ -122,63 +121,6 @@ def iq(application, stage, user, password, host):
       coords = Pip().get_dependencies()
       response = OssIndex().call_ossindex(coords)
       __handle_iq_server(response, iq_args)
-
-
-def old_main():
-  """jake entry point"""
-  router = ArgRouter()
-  args = router.get_args()
-  log = __setup_logger(args.verbose)
-
-  if args.version:
-    print(__version__)
-    _exit(0)
-
-  if args.command == 'config':
-    if args.type == 'iq':
-      config = IQConfig()
-    else:
-      config = Config()
-    result = config.get_config_from_std_in()
-    if result is False:
-      _exit(EX_OSERR)
-    else:
-      _exit(0)
-
-  if args.snek:
-    # pip_handler = Pip()
-    coords = Pip().get_dependencies()
-  else:
-    parse = Parse()
-    coords = parse.get_dependencies_from_stdin(sys.stdin)
-
-  if coords is None:
-    log.error(
-        "No purls returned, ensure that conda list is returning"
-        "a list of dependencies")
-    _exit(EX_OSERR)
-
-  log.debug("Total purls: %s", len(coords.get_coordinates()))
-
-  oss_index = OssIndex()
-  ossi_response = oss_index.call_ossindex(coords)
-
-  if ossi_response is None:
-    log.error(
-        "Something went horribly wrong, there is no response from Oss Index",
-        "please rerun with -VV to see what happened")
-    _exit(EX_OSERR)
-
-  if args.command == 'iq':
-    __handle_iq_server(ossi_response, args),
-
-  if args.command == 'ossi':
-    audit = Audit()
-    code = audit.audit_results(ossi_response)
-    if args.clean:
-      if oss_index.clean_cache():
-        print('Cache Cleared')
-    _exit(code)
 
   # TODO: determine if joining conda and pypi purls for hybridized IQ results is feasible
   # This joins the pypi coordinates from pkg_resources and the conda coordinates from conda

@@ -31,7 +31,7 @@ from jake._version import __version__
 
 import click
 
-@click.group()
+@click.group(help='Jake: Put your python deps in a chokehold.')
 @click.option(
   '-V', '--version',
   is_flag=True,
@@ -65,8 +65,21 @@ def config(type):
 
 @main.command()
 @click.option(
+  '--clear',
+  is_flag=True,
+  help='Clear the OSS Index cache')
+@click.option(
+  '-c', '--conda',
+  is_flag=True,
+  help='Resolve conda dependencies from std_in'
+)
+def ddt():
+      print('in ddt')
+
+@main.command()
+@click.option(
   '-a', '--application',
-  help='supply an IQ Server Public Application ID',
+  help='Supply an IQ Server Public Application ID',
   required=True)
 @click.option(
   '-s', '--stage',
@@ -91,9 +104,7 @@ def iq(application, stage, user, password, host):
       iq_args['host'] = host
       print(iq_args)
 
-class ArgRouter():
-      def __init__(self, verbose, snek):
-            click.echo('in ArgRouter', verbose, snek)
+
 class ArgRouterOld():
   """
   Encapsulates all parsing and subparsing of command line args

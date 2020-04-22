@@ -223,12 +223,9 @@ def __handle_iq_server(response, args):
 def __banner():
   top_font = 'isometric4' # another option: 'isometric1'
   bot_font = 'invita'
-  # version_font = 'digital'
   top = 'Jake'
   bot = ' ..the snake..'
-  # version = 'v' + __version__
   cprint(figlet_format(top, font=top_font), 'green', attrs=[])
   cprint(figlet_format(bot, font=bot_font), 'blue', attrs=['dark'])
-  # cprint(figlet_format(version, font=version_font), 'white', attrs=[])
+  click.echo("Jake version: v{}".format(__version__))
   click.echo('Put your python deps in a chokehold.')
-  # 'on_blue' after the primary color to set background

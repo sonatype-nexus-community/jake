@@ -97,12 +97,13 @@ def config(type):
     is_flag=True,
     help='Resolve conda dependencies from std_in')
 def ddt(clear, conda):
-  """ SPECIAL MOVE
-      handles args and program flows unique to an OSS Index scan
+  """SPECIAL MOVE\n
+  Allows you to perform scans backed by Sonatype's OSS Index
 
-  Arguments:
-      clear -- flag to clear the cache
-      conda -- flag to resolve conda dependencies piping conda list from std_in
+  Example usage:\n
+      Python scan: jake ddt\n
+      Conda scan: conda list | jake ddt -c\n
+      Clear cache: jake ddt --clear
   """
   coords = Parse().get_dependencies_from_stdin(sys.stdin) if conda else Pip().get_dependencies()
 

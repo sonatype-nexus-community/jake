@@ -54,7 +54,7 @@ class ArgRouter():
 
     # create a nested parser in the root parser for each valid sub-command
     config_parser = self._sub_parsers.add_parser('config')
-    ossi_parser = self._sub_parsers.add_parser('ossi')
+    ossi_parser = self._sub_parsers.add_parser('ddt')
     iq_parser = self._sub_parsers.add_parser('iq')
 
     # looks for an iq or ossi value after the config sub-command
@@ -74,15 +74,15 @@ class ArgRouter():
         help='specify a stage',
         default='develop',
         choices=['develop', 'build', 'stage-release', 'release'])
-    # App stage, a develop throw-away report by default
+    # Username, not required, config param
     iq_parser.add_argument(
         '-u', '--user',
         help='specify a username for Sonatype IQ')
-    # App stage, a develop throw-away report by default
+    # Password or token, not required, config param
     iq_parser.add_argument(
         '-p', '--password',
         help='specify a password/token for Sonatype IQ')
-    # App stage, a develop throw-away report by default
+    # IQ Endpoint, not required, config param
     iq_parser.add_argument(
         '-e', '--host',
         help='specify an endpoint for Sonatype IQ')
@@ -97,6 +97,7 @@ class ArgRouter():
     self._args = self._parser.parse_args()
 
   def __parse_jake_args(self):
+      """parses command line flags from the jake root command, can always pass these in"""
       self._parser.add_argument(
           '-N', '--snek',
           help='get python requirements instead',
@@ -126,7 +127,6 @@ def main():
   """jake entry point"""
   router = ArgRouter()
   args = router.get_args()
-  print(args)
   log = __setup_logger(args.verbose)
 
   if args.version:
@@ -164,8 +164,8 @@ def main():
 
   if ossi_response is None:
     log.error(
-        "Something went horribly wrong, please rerun with -VV to see"
-        "what happened")
+        "Something went horribly wrong, there is no response from Oss Index",
+        "please rerun with -VV to see what happened")
     _exit(EX_OSERR)
 
   if args.command == 'iq':
@@ -204,7 +204,6 @@ def __setup_logger(verbose):
 def __handle_iq_server(response, args, log):
   sbom_gen = CycloneDxSbomGenerator()
   sbom = sbom_gen.create_and_return_sbom(response)
-  print('args: ', args)
   log.debug(args.application)
   iq_requests = IQ(args, log)
   _id = iq_requests.get_internal_id()

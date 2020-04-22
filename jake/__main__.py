@@ -40,24 +40,35 @@ def __print_version(ctx, value):
   print(__package__, 'v' +  __version__)
   ctx.exit()
 
+__shared_options = [
+    click.option(
+        '-v', '--version',
+        is_flag=True,
+        callback=__print_version,
+        expose_value=False,
+        is_eager=True,
+        help='Print version and exit'),
+    click.option(
+        '-vv', '--verbose',
+        is_flag=True,
+        default=False,
+        help='Set log level to verbose'),
+    click.option(
+        '-q', '--quiet',
+        is_flag=True,
+        default=False,
+        help='Suppress cosmetic and informational output')
+]
+
+def __add_options(options):
+    def _add_options(func):
+        for option in reversed(options):
+            func = option(func)
+        return func
+    return _add_options
+
 @click.group(help='Jake: Put your python deps in a chokehold.')
-@click.option(
-    '-v', '--version',
-    is_flag=True,
-    callback=__print_version,
-    expose_value=False,
-    is_eager=True,
-    help='Print version and exit')
-@click.option(
-    '-vv', '--verbose',
-    is_flag=True,
-    default=False,
-    help='Set log level to verbose')
-@click.option(
-    '-q', '--quiet',
-    is_flag=True,
-    default=False,
-    help='Suppress cosmetic and informational output')
+@__add_options(__shared_options)
 def main(verbose, quiet):
   """ defining the root cli command as main so that running 'jake'
       in the command line will use this as the entry point
@@ -89,6 +100,7 @@ def config(type):
   _exit(EX_OSERR) if result is False else _exit(0)
 
 @main.command()
+@__add_options(__shared_options)
 @click.option(
     '--clear',
     is_flag=True,
@@ -98,7 +110,7 @@ def config(type):
     default=False,
     is_flag=True,
     help='Resolve conda dependencies from std_in')
-def ddt(clear, conda):
+def ddt(verbose, quiet, clear, conda):
   """SPECIAL MOVE\n
   Allows you to perform scans backed by Sonatype's OSS Index
 
@@ -127,6 +139,7 @@ def ddt(clear, conda):
     _exit(code)
 
 @main.command()
+@__add_options(__shared_options)
 @click.option(
     '-a', '--application',
     help='Supply an IQ Server Public Application ID',
@@ -150,7 +163,7 @@ def ddt(clear, conda):
     default=False,
     is_flag=True,
     help='Resolve conda dependencies from std_in')
-def iq(application, stage, user, password, host, conda):
+def iq(verbose, quiet, application, stage, user, password, host, conda):
   """EXTRA SPECIAL MOVE\n
   Allows you to perform scans backed by Sonatype's Nexus IQ Server
 

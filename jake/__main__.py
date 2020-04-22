@@ -77,7 +77,7 @@ def main(verbose, quiet):
     'type',
     type=click.Choice(['iq', 'ossi']))
 def config(type):
-  """ subcommand to prompt the user to set iq or ossi config params
+  """Allows a user to set Nexus IQ or OSS Index config params
 
   Arguments:
       type -- cli input restricted by click to 'iq' and 'ossi'
@@ -219,6 +219,3 @@ def __banner():
   # cprint(figlet_format(version, font=version_font), 'white', attrs=[])
   click.echo('Put your python deps in a chokehold.')
   # 'on_blue' after the primary color to set background
-
-if __name__ == '__main__':
-  main()

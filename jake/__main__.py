@@ -12,10 +12,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import sys
-import logging
 
 from os import _exit, EX_OSERR
+import sys
+import logging
+import click
 
 from jake.ossindex.ossindex import OssIndex
 from jake.iq.iq import IQ
@@ -28,19 +29,17 @@ from jake.config.iq_config import IQConfig
 
 from jake._version import __version__
 
-import click
-
 @click.group(help='Jake: Put your python deps in a chokehold.')
 @click.option(
-  '-V', '--version',
-  is_flag=True,
-  default=False,
-  help='Print version and exit')
+    '-V', '--version',
+    is_flag=True,
+    default=False,
+    help='Print version and exit')
 @click.option(
-  '-VV', '--verbose',
-  is_flag=True,
-  default=False,
-  help='Set log level to verbose')
+    '-VV', '--verbose',
+    is_flag=True,
+    default=False,
+    help='Set log level to verbose')
 def main(version, verbose):
       if version:
             print(__package__, 'v' +  __version__)
@@ -49,8 +48,8 @@ def main(version, verbose):
 
 @main.command()
 @click.argument(
-  'type',
-  type=click.Choice(['iq', 'ossi']))
+    'type',
+    type=click.Choice(['iq', 'ossi']))
 def config(type):
       if type == 'iq':
             config = IQConfig()
@@ -64,14 +63,14 @@ def config(type):
 
 @main.command()
 @click.option(
-  '--clear',
-  is_flag=True,
-  help='Clear the OSS Index cache')
+    '--clear',
+    is_flag=True,
+    help='Clear the OSS Index cache')
 @click.option(
-  '-c', '--conda',
-  default=False,
-  is_flag=True,
-  help='Resolve conda dependencies from std_in')
+    '-c', '--conda',
+    default=False,
+    is_flag=True,
+    help='Resolve conda dependencies from std_in')
 def ddt(clear, conda):
       if conda:
             coords = Parse().get_dependencies_from_stdin(sys.stdin)
@@ -81,8 +80,8 @@ def ddt(clear, conda):
       response = oss_index.call_ossindex(coords)
       if response is None:
             click.echo(
-              "Something went horribly wrong, there is no response from Oss Index",
-              "please rerun with -VV to see what happened")
+                "Something went horribly wrong, there is no response from Oss Index",
+                "please rerun with -VV to see what happened")
             _exit(EX_OSERR)
       audit = Audit()
       code = audit.audit_results(response)
@@ -93,23 +92,23 @@ def ddt(clear, conda):
 
 @main.command()
 @click.option(
-  '-a', '--application',
-  help='Supply an IQ Server Public Application ID',
-  required=True)
+    '-a', '--application',
+    help='Supply an IQ Server Public Application ID',
+    required=True)
 @click.option(
-  '-s', '--stage',
-  default='develop',
-  type=click.Choice(['develop', 'build', 'stage-release', 'release']),
-  help='Specify a stage')
+    '-s', '--stage',
+    default='develop',
+    type=click.Choice(['develop', 'build', 'stage-release', 'release']),
+    help='Specify a stage')
 @click.option(
-  '-u', '--user',
-  help='Set username for Sonatype IQ')
+    '-u', '--user',
+    help='Set username for Sonatype IQ')
 @click.option(
-  '-p', '--password',
-  help='Set password or token for associated user')
+    '-p', '--password',
+    help='Set password or token for associated user')
 @click.option(
-  '-h', '--host',
-  help='Specify an endpoint for Sonatype IQ')
+    '-h', '--host',
+    help='Specify an endpoint for Sonatype IQ')
 def iq(application, stage, user, password, host):
       iq_args = {}
       iq_args['application'] = application

@@ -70,11 +70,27 @@ def config(type):
   help='Clear the OSS Index cache')
 @click.option(
   '-c', '--conda',
+  default=False,
   is_flag=True,
-  help='Resolve conda dependencies from std_in'
-)
-def ddt():
-      print('in ddt')
+  help='Resolve conda dependencies from std_in')
+def ddt(clear, conda):
+      if conda:
+            coords = Parse().get_dependencies_from_stdin(sys.stdin)
+      else:
+            coords = Pip().get_dependencies()
+      oss_index = OssIndex()
+      response = oss_index.call_ossindex(coords)
+      if response is None:
+            click.echo(
+              "Something went horribly wrong, there is no response from Oss Index",
+              "please rerun with -VV to see what happened")
+            _exit(EX_OSERR)
+      audit = Audit()
+      code = audit.audit_results(response)
+      if clear:
+            if oss_index.clean_cache():
+                    print('Cache Cleared')
+            _exit(code)
 
 @main.command()
 @click.option(
@@ -102,7 +118,10 @@ def iq(application, stage, user, password, host):
       iq_args['user'] = user
       iq_args['password'] = password
       iq_args['host'] = host
-      print(iq_args)
+
+      coords = Pip().get_dependencies()
+      response = OssIndex().call_ossindex(coords)
+      __handle_iq_server(response, iq_args)
 
 
 def old_main():
@@ -127,8 +146,8 @@ def old_main():
       _exit(0)
 
   if args.snek:
-    pip_handler = Pip()
-    coords = pip_handler.get_dependencies()
+    # pip_handler = Pip()
+    coords = Pip().get_dependencies()
   else:
     parse = Parse()
     coords = parse.get_dependencies_from_stdin(sys.stdin)
@@ -151,7 +170,7 @@ def old_main():
     _exit(EX_OSERR)
 
   if args.command == 'iq':
-    __handle_iq_server(ossi_response, args, log),
+    __handle_iq_server(ossi_response, args),
 
   if args.command == 'ossi':
     audit = Audit()
@@ -183,11 +202,10 @@ def __setup_logger(verbose):
   return log
 
 
-def __handle_iq_server(response, args, log):
+def __handle_iq_server(response, args):
   sbom_gen = CycloneDxSbomGenerator()
   sbom = sbom_gen.create_and_return_sbom(response)
-  log.debug(args.application)
-  iq_requests = IQ(args, log)
+  iq_requests = IQ(args)
   _id = iq_requests.get_internal_id()
   status_url = iq_requests.submit_sbom_to_third_party_api(
       sbom_gen.sbom_to_string(sbom), _id)

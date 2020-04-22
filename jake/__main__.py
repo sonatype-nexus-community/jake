@@ -32,6 +32,12 @@ from jake._version import __version__
 
 init(strip=not sys.stdout.isatty()) # strip colors on redirected output
 
+def __print_version(ctx, value):
+  if not value:
+    return
+  print(__package__, 'v' +  __version__)
+  ctx.exit()
+
 @click.group(help='Jake: Put your python deps in a chokehold.')
 @click.option(
     '-V', '--version',
@@ -197,12 +203,6 @@ def __banner():
   # cprint(figlet_format(version, font=version_font), 'white', attrs=[])
   click.echo('Put your python deps in a chokehold.')
   # 'on_blue' after the primary color to set background
-
-def __print_version(ctx, value):
-  if not value:
-    return
-  print(__package__, 'v' +  __version__)
-  ctx.exit()
 
 if __name__ == '__main__':
   main()

@@ -51,34 +51,34 @@ init(strip=not sys.stdout.isatty()) # strip colors on redirected output
     default=False,
     help='Suppress cosmetic and informational output')
 def main(verbose, quiet):
-    """ defining the root cli command as main so that running 'jake'
-        in the command line will use this as the entry point
-        also prints the banner with every invokation
+  """ defining the root cli command as main so that running 'jake'
+      in the command line will use this as the entry point
+      also prints the banner with every invokation
 
-    Arguments:
-        version -- jake flag that will print version and exit
-        verbose -- get full runtime output from debug logger
-        quiet -- supress the banner TODO: non vulnerable outputs as well
-    """
-    if not quiet:
-        __banner()
-    pass
+  Arguments:
+      version -- jake flag that will print version and exit
+      verbose -- get full runtime output from debug logger
+      quiet -- supress the banner TODO: non vulnerable outputs as well
+  """
+  if not quiet:
+    __banner()
+  pass
 
 @main.command()
 @click.argument(
     'type',
     type=click.Choice(['iq', 'ossi']))
 def config(type):
-    """ subcommand to prompt the user to set iq or ossi config params
+  """ subcommand to prompt the user to set iq or ossi config params
 
-    Arguments:
-        type -- cli input restricted by click to 'iq' and 'ossi'
-    """
-    config = IQConfig() if type == 'iq' else Config()
+  Arguments:
+      type -- cli input restricted by click to 'iq' and 'ossi'
+  """
+  config = IQConfig() if type == 'iq' else Config()
 
-    # call the config entry prompt and exit
-    result = config.get_config_from_std_in()
-    _exit(EX_OSERR) if result is False else _exit(0)
+  # call the config entry prompt and exit
+  result = config.get_config_from_std_in()
+  _exit(EX_OSERR) if result is False else _exit(0)
 
 @main.command()
 @click.option(
@@ -91,31 +91,31 @@ def config(type):
     is_flag=True,
     help='Resolve conda dependencies from std_in')
 def ddt(clear, conda):
-    """ SPECIAL MOVE
-        handles args and program flows uniwue to an OSS Index scan
+  """ SPECIAL MOVE
+      handles args and program flows unique to an OSS Index scan
 
-    Arguments:
-        clear -- flag to clear the cache
-        conda -- flag to resolve conda dependencies piping conda list from std_in
-    """
-    coords = Parse().get_dependencies_from_stdin(sys.stdin) if conda else Pip().get_dependencies()
+  Arguments:
+      clear -- flag to clear the cache
+      conda -- flag to resolve conda dependencies piping conda list from std_in
+  """
+  coords = Parse().get_dependencies_from_stdin(sys.stdin) if conda else Pip().get_dependencies()
 
-    oss_index = OssIndex()
-    response = oss_index.call_ossindex(coords)
+  oss_index = OssIndex()
+  response = oss_index.call_ossindex(coords)
 
-    if response is None:
-        click.echo(
-            "Something went horribly wrong, there is no response from OSS Index",
-            "please rerun with -VV to see what happened")
-        _exit(EX_OSERR)
+  if response is None:
+    click.echo(
+        "Something went horribly wrong, there is no response from OSS Index",
+        "please rerun with -VV to see what happened")
+    _exit(EX_OSERR)
 
-    audit = Audit()
-    code = audit.audit_results(response)
+  audit = Audit()
+  code = audit.audit_results(response)
 
-    if clear:
-        if oss_index.clean_cache():
-                print('Cache Cleared')
-        _exit(code)
+  if clear:
+    if oss_index.clean_cache():
+      print('Cache Cleared')
+    _exit(code)
 
 @main.command()
 @click.option(
@@ -137,16 +137,16 @@ def ddt(clear, conda):
     '-h', '--host',
     help='Specify an endpoint for Sonatype IQ')
 def iq(application, stage, user, password, host):
-      iq_args = {}
-      iq_args['application'] = application
-      iq_args['stage'] = stage
-      iq_args['user'] = user
-      iq_args['password'] = password
-      iq_args['host'] = host
+  iq_args = {}
+  iq_args['application'] = application
+  iq_args['stage'] = stage
+  iq_args['user'] = user
+  iq_args['password'] = password
+  iq_args['host'] = host
 
-      coords = Pip().get_dependencies()
-      response = OssIndex().call_ossindex(coords)
-      __handle_iq_server(response, iq_args)
+  coords = Pip().get_dependencies()
+  response = OssIndex().call_ossindex(coords)
+  __handle_iq_server(response, iq_args)
 
   # TODO: determine if joining conda and pypi purls for hybridized IQ results is feasible
   # This joins the pypi coordinates from pkg_resources and the conda coordinates from conda
@@ -162,13 +162,9 @@ def __setup_logger(verbose):
   logging.basicConfig(level=logging.NOTSET)
   log = logging.getLogger('jake')
 
-  if verbose:
-    log.setLevel(logging.DEBUG)
-  else:
-    log.setLevel(logging.ERROR)
+  log.setLevel(logging.DEBUG) if verbose else log.setLevel(logging.ERROR)
 
   return log
-
 
 def __handle_iq_server(response, args):
   sbom_gen = CycloneDxSbomGenerator()
@@ -190,23 +186,23 @@ def __handle_iq_server(response, args):
     _exit(0)
 
 def __banner():
-      top_font = 'isometric4' # another option: 'isometric1'
-      bot_font = 'invita'
-      # version_font = 'digital'
-      top = 'Jake'
-      bot = ' ..the snake..'
-      # version = 'v' + __version__
-      cprint(figlet_format(top, font=top_font), 'green', attrs=[])
-      cprint(figlet_format(bot, font=bot_font), 'blue', attrs=['dark'])
-      # cprint(figlet_format(version, font=version_font), 'white', attrs=[])
-      click.echo('Put your python deps in a chokehold.')
-      # 'on_blue' after the primary color to set background
+  top_font = 'isometric4' # another option: 'isometric1'
+  bot_font = 'invita'
+  # version_font = 'digital'
+  top = 'Jake'
+  bot = ' ..the snake..'
+  # version = 'v' + __version__
+  cprint(figlet_format(top, font=top_font), 'green', attrs=[])
+  cprint(figlet_format(bot, font=bot_font), 'blue', attrs=['dark'])
+  # cprint(figlet_format(version, font=version_font), 'white', attrs=[])
+  click.echo('Put your python deps in a chokehold.')
+  # 'on_blue' after the primary color to set background
 
 def __print_version(ctx, value):
-    if not value:
-        return
-    print(__package__, 'v' +  __version__)
-    ctx.exit()
+  if not value:
+    return
+  print(__package__, 'v' +  __version__)
+  ctx.exit()
 
 if __name__ == '__main__':
-    main()
+  main()

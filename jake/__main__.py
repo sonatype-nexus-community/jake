@@ -21,7 +21,8 @@ import logging
 import click
 from termcolor import cprint
 from pyfiglet import figlet_format
-from colorama import init
+from colorama import init, Fore
+from yaspin import yaspin
 from jake.ossindex.ossindex import OssIndex
 from jake.iq.iq import IQ
 from jake.cyclonedx.generator import CycloneDxSbomGenerator
@@ -119,19 +120,25 @@ def ddt(verbose, quiet, clear, conda):
       Conda scan: conda list | jake ddt -c\n
       Clear cache: jake ddt --clear
   """
-  coords = Parse().get_dependencies_from_stdin(sys.stdin) if conda else Pip().get_dependencies()
+  with yaspin(text="Loading", color="yellow") as spinner:
+    spinner.text = "Collecting Dependencies"
+    coords = Parse().get_dependencies_from_stdin(sys.stdin) if conda else Pip().get_dependencies()
 
-  oss_index = OssIndex()
-  response = oss_index.call_ossindex(coords)
+    spinner.text = "Querying OSS Index"
+    oss_index = OssIndex()
+    response = oss_index.call_ossindex(coords)
 
-  if response is None:
-    click.echo(
-        "Something went horribly wrong, there is no response from OSS Index",
-        "please rerun with -VV to see what happened")
-    _exit(EX_OSERR)
+    if response is None:
+      spinner.fail("💥 ")
+      click.echo(
+          "Something went horribly wrong, there is no response from OSS Index",
+          "please rerun with -VV to see what happened")
+      _exit(EX_OSERR)
 
-  audit = Audit()
-  code = audit.audit_results(response)
+    spinner.text = "Auditing results from OSS Index"
+    audit = Audit()
+    spinner.ok("✅ ")
+    code = audit.audit_results(response)
 
   if clear:
     if oss_index.clean_cache():
@@ -178,10 +185,14 @@ def iq(verbose, quiet, application, stage, user, password, host, conda):
   iq_args['password'] = password
   iq_args['host'] = host
 
-  coords = Parse().get_dependencies_from_stdin(sys.stdin) if conda else Pip().get_dependencies()
-  response = OssIndex().call_ossindex(coords)
+  with yaspin(text="Loading", color="yellow") as spinner:
+    spinner.text = "Collecting Dependencies"
+    coords = Parse().get_dependencies_from_stdin(sys.stdin) if conda else Pip().get_dependencies()
+    spinner.text = "Calling OSS Index"
+    response = OssIndex().call_ossindex(coords)
+    spinner.ok("✅ ")
 
-  __handle_iq_server(response, iq_args)
+    __handle_iq_server(response, iq_args)
 
   # TODO: determine if joining conda and pypi purls for hybridized IQ results is feasible
   # This joins the pypi coordinates from pkg_resources and the conda coordinates from conda
@@ -202,23 +213,29 @@ def __setup_logger(verbose):
   return log
 
 def __handle_iq_server(response, args):
-  sbom_gen = CycloneDxSbomGenerator()
-  sbom = sbom_gen.create_and_return_sbom(response)
-  iq_requests = IQ(args)
-  _id = iq_requests.get_internal_id()
-  status_url = iq_requests.submit_sbom_to_third_party_api(
-      sbom_gen.sbom_to_string(sbom), _id)
-  iq_requests.poll_for_results(status_url)
-  print(
-      "Your IQ Server Report is available here: {}".format(iq_requests.get_report_url()))
-  if iq_requests.get_policy_action() is not None:
-    print(
-        "Your build has failed, please check your IQ Server Report for more information")
-    _exit(1)
-  else:
-    print(
-        "All good to go! Smooth sailing for you! No policy violations reported by IQ Server")
-    _exit(0)
+  with yaspin(text="Loading", color="yellow") as spinner:
+    spinner.text = "Calling Nexus IQ Server"
+    sbom_gen = CycloneDxSbomGenerator()
+    sbom = sbom_gen.create_and_return_sbom(response)
+    iq_requests = IQ(args)
+    _id = iq_requests.get_internal_id()
+    status_url = iq_requests.submit_sbom_to_third_party_api(
+        sbom_gen.sbom_to_string(sbom), _id)
+    iq_requests.poll_for_results(status_url)
+    if iq_requests.get_policy_action() is not None:
+      spinner.fail("💥 ")
+      print(Fore.YELLOW +
+            "Your IQ Server Report is available here: {}".format(iq_requests.get_report_url()))
+      print(Fore.YELLOW +
+            "Your build has failed, please check your IQ Server Report for more information")
+      _exit(1)
+    else:
+      spinner.ok("✅ ")
+      print(Fore.GREEN +
+            "Your IQ Server Report is available here: {}".format(iq_requests.get_report_url()))
+      print(Fore.GREEN +
+            "All good to go! Smooth sailing for you! No policy violations reported by IQ Server")
+      _exit(0)
 
 def __banner():
   top_font = 'isometric4' # another option: 'isometric1'

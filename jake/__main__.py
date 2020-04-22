@@ -42,19 +42,19 @@ def __print_version(ctx, value):
 
 @click.group(help='Jake: Put your python deps in a chokehold.')
 @click.option(
-    '-V', '--version',
+    '-v', '--version',
     is_flag=True,
     callback=__print_version,
     expose_value=False,
     is_eager=True,
     help='Print version and exit')
 @click.option(
-    '-VV', '--verbose',
+    '-vv', '--verbose',
     is_flag=True,
     default=False,
     help='Set log level to verbose')
 @click.option(
-    '-Q', '--quiet',
+    '-q', '--quiet',
     is_flag=True,
     default=False,
     help='Suppress cosmetic and informational output')

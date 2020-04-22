@@ -33,38 +33,64 @@ from jake.config.iq_config import IQConfig
 
 from jake._version import __version__
 
+def print_version(ctx, value):
+    if not value:
+        return
+    print(__package__, 'v' +  __version__)
+    ctx.exit()
+
 @click.group(help='Jake: Put your python deps in a chokehold.')
 @click.option(
     '-V', '--version',
     is_flag=True,
-    default=False,
+    callback=print_version,
+    expose_value=False,
+    is_eager=True,
     help='Print version and exit')
 @click.option(
     '-VV', '--verbose',
     is_flag=True,
     default=False,
     help='Set log level to verbose')
-def main(version, verbose):
-      if version:
-            print(__package__, 'v' +  __version__)
-            _exit(0)
-      __banner()
-      pass
+@click.option(
+    '-Q', '--quiet',
+    is_flag=True,
+    default=False,
+    help='Suppress cosmetic and informational output')
+def main(verbose, quiet):
+    """ defining the root cli command as main so that running 'jake'
+        in the command line will use this as the entry point
+        also prints the banner with every invokation
+
+    Arguments:
+        version -- jake flag that will print version and exit
+        verbose -- get full runtime output from debug logger
+        quiet -- supress the banner TODO: non vulnerable outputs as well
+    """
+    if not quiet:
+        __banner()
+    pass
 
 @main.command()
 @click.argument(
     'type',
     type=click.Choice(['iq', 'ossi']))
 def config(type):
-      if type == 'iq':
-            config = IQConfig()
-      else:
-            config = Config()
-      result = config.get_config_from_std_in()
-      if result is False:
-            _exit(EX_OSERR)
-      else:
-            _exit(0)
+    """ subcommand to prompt the user to set iq or ossi config params
+
+    Arguments:
+        type -- cli input restricted by click to 'iq' and 'ossi'
+    """
+    if type == 'iq':
+        config = IQConfig()
+    else:
+        config = Config()
+    # call the config entry prompt and exit
+    result = config.get_config_from_std_in()
+    if result is False:
+        _exit(EX_OSERR)
+    else:
+        _exit(0)
 
 @main.command()
 @click.option(
@@ -77,23 +103,30 @@ def config(type):
     is_flag=True,
     help='Resolve conda dependencies from std_in')
 def ddt(clear, conda):
-      if conda:
-            coords = Parse().get_dependencies_from_stdin(sys.stdin)
-      else:
-            coords = Pip().get_dependencies()
-      oss_index = OssIndex()
-      response = oss_index.call_ossindex(coords)
-      if response is None:
-            click.echo(
-                "Something went horribly wrong, there is no response from Oss Index",
-                "please rerun with -VV to see what happened")
-            _exit(EX_OSERR)
-      audit = Audit()
-      code = audit.audit_results(response)
-      if clear:
-            if oss_index.clean_cache():
-                    print('Cache Cleared')
-            _exit(code)
+    """ SPECIAL MOVE
+        handles args and program flows uniwue to an OSS Index scan
+
+    Arguments:
+        clear -- flag to clear the cache
+        conda -- flag to resolve conda dependencies piping conda list from std_in
+    """
+    if conda:
+        coords = Parse().get_dependencies_from_stdin(sys.stdin)
+    else:
+        coords = Pip().get_dependencies()
+    oss_index = OssIndex()
+    response = oss_index.call_ossindex(coords)
+    if response is None:
+        click.echo(
+            "Something went horribly wrong, there is no response from Oss Index",
+            "please rerun with -VV to see what happened")
+        _exit(EX_OSERR)
+    audit = Audit()
+    code = audit.audit_results(response)
+    if clear:
+        if oss_index.clean_cache():
+                print('Cache Cleared')
+        _exit(code)
 
 @main.command()
 @click.option(
@@ -168,13 +201,14 @@ def __handle_iq_server(response, args):
     _exit(0)
 
 def __banner():
-      jake_font = 'isometric4' # another option: 'isometric1'
-      the_snake_font = 'invita'
+      top_font = 'isometric4' # another option: 'isometric1'
+      bot_font = 'invita'
       # version_font = 'digital'
-      bottom_text = 'the snake'
+      top = 'Jake'
+      bot = ' ..the snake..'
       # version = 'v' + __version__
-      cprint(figlet_format('Jake', font=jake_font), 'green', attrs=[])
-      cprint(figlet_format(bottom_text, font=the_snake_font), 'blue', attrs=['dark'])
+      cprint(figlet_format(top, font=top_font), 'green', attrs=[])
+      cprint(figlet_format(bot, font=bot_font), 'blue', attrs=['dark'])
       # cprint(figlet_format(version, font=version_font), 'white', attrs=[])
       click.echo('Put your python deps in a chokehold.')
       # 'on_blue' after the primary color to set background

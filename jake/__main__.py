@@ -170,12 +170,13 @@ def __handle_iq_server(response, args):
 def __banner():
       jake_font = 'isometric4' # another option: 'isometric1'
       the_snake_font = 'invita'
-      version_font = 'digital'
+      # version_font = 'digital'
       bottom_text = 'the snake'
-      version = 'v' + __version__
+      # version = 'v' + __version__
       cprint(figlet_format('Jake', font=jake_font), 'green', attrs=[])
       cprint(figlet_format(bottom_text, font=the_snake_font), 'blue', attrs=['dark'])
-      cprint(figlet_format(version, font=version_font), 'white', attrs=[])
+      # cprint(figlet_format(version, font=version_font), 'white', attrs=[])
+      click.echo('Put your python deps in a chokehold.')
       # 'on_blue' after the primary color to set background
 
 if __name__ == '__main__':

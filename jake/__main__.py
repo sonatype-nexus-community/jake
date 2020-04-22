@@ -17,6 +17,10 @@ from os import _exit, EX_OSERR
 import sys
 import logging
 import click
+from colorama import init
+init(strip=not sys.stdout.isatty()) # strip colors on redirected output
+from termcolor import cprint
+from pyfiglet import figlet_format
 
 from jake.ossindex.ossindex import OssIndex
 from jake.iq.iq import IQ
@@ -44,6 +48,7 @@ def main(version, verbose):
       if version:
             print(__package__, 'v' +  __version__)
             _exit(0)
+      __banner()
       pass
 
 @main.command()
@@ -162,6 +167,16 @@ def __handle_iq_server(response, args):
         "All good to go! Smooth sailing for you! No policy violations reported by IQ Server")
     _exit(0)
 
+def __banner():
+      jake_font = 'isometric4' # another option: 'isometric1'
+      the_snake_font = 'invita'
+      version_font = 'digital'
+      bottom_text = 'the snake'
+      version = 'v' + __version__
+      cprint(figlet_format('Jake', font=jake_font), 'green', attrs=[])
+      cprint(figlet_format(bottom_text, font=the_snake_font), 'blue', attrs=['dark'])
+      cprint(figlet_format(version, font=version_font), 'white', attrs=[])
+      # 'on_blue' after the primary color to set background
 
 if __name__ == '__main__':
-  main()
+    main()

@@ -8,7 +8,6 @@ colorama==0.4.3
 distlib==0.3.0
 idna==2.8
 isort==4.3.21
--e git+git@github.com:sonatype-nexus-community/jake.git@4a8cece5a43d55ad5bbc1f9d8c435110e33330fc#egg=jake
 johnnydep==1.5
 lazy-object-proxy==1.4.3
 lxml==4.4.2

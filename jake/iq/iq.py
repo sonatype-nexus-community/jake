@@ -1,4 +1,5 @@
 """iq.py handles requests to IQ Server"""
+# pylint: disable=too-many-instance-attributes
 # Copyright 2019 Sonatype Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,22 +30,38 @@ LOG = logging.getLogger('jake')
 
 class IQ():
   """IQ handles requests to IQ Server"""
-  def __init__(self, public_application_id, iq_server_base_url='http://localhost:8070/'):
-    self._iq_server_base_url = iq_server_base_url.rstrip('/')
-    self._public_application_id = public_application_id
+  def __init__(self, args):
+    self._iq_url = args.get('host')
+    self._user = args.get('user')
+    self._password = args.get('password')
+    self._public_application_id = args.get('application')
+    self._stage = args.get('stage')
     self._headers = DEFAULT_HEADERS
     self._report_url = ''
     self._policy_action = None
-    config = IQConfig()
-    results = config.get_config_from_file(".iq-server-config")
 
-    self._user = results['Username']
-    self._password = results['Token']
-    self._iq_server_base_url = results['Server']
+    config = IQConfig()
+    if config.check_if_config_exists('.iq-server-config') is False:
+      LOG.debug("No IQ server config supplied, using defaults or taking from command-line.")
+      if self._user is None:
+        self._user = 'admin'
+      if self._password is None:
+        self._password = 'admin123'
+      if self._iq_url is None:
+        self._iq_url = 'http://localhost:8070'
+    else:
+      LOG.debug("Found iq server config.  Using those unless overwritten by command line params.")
+      results = config.get_config_from_file(".iq-server-config")
+      if self._user is None:
+        self._user = results['Username']
+      if self._password is None:
+        self._password = results['Token']
+      if self._iq_url is None:
+        self._iq_url = results['Server']
 
   def get_url(self):
     """gets url to use for IQ Server request"""
-    return self._iq_server_base_url
+    return self._iq_url
 
   def get_policy_action(self):
     """gets policy action from IQ Server result"""
@@ -62,7 +79,7 @@ class IQ():
     """gets public application id to use for IQ Server request"""
     return self._public_application_id
 
-  def get_internal_application_id_from_iq_server(self):
+  def get_internal_id(self):
     """gets internal application id from IQ Server using the public
     application id"""
     response = requests.get(
@@ -84,9 +101,10 @@ class IQ():
     headers = self.get_headers()
     headers['Content-Type'] = 'application/xml'
     response = requests.post(
-        '{0}/api/v2/scan/applications/{1}/sources/jake'.format(
+        '{0}/api/v2/scan/applications/{1}/sources/jake?stageId={2}'.format(
             self.get_url(),
-            internal_id),
+            internal_id,
+            self._stage),
         data=sbom,
         headers=headers,
         auth=(self._user, self._password))
@@ -101,7 +119,7 @@ class IQ():
     , and times out after one minute"""
     polling.poll(
         lambda: requests.get(
-            '{0}/{1}'.format(self._iq_server_base_url, status_url),
+            '{0}/{1}'.format(self._iq_url, status_url),
             auth=(self._user, self._password)).text,
         check_success=self.__handle_response,
         step=1,

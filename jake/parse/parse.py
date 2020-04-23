@@ -21,6 +21,7 @@ class Parse():
   """parse.py parses dependencies and converts them to purls"""
   def __init__(self):
     self._log = logging.getLogger('jake')
+    self._format = "conda"
 
   def get_dependencies(self, run_command_list):
     """checks if conda exists and then gets a list of conda dependencies from stdout"""
@@ -62,26 +63,17 @@ class Parse():
 
   def parse_conda_dependencies_into_purls(self, stdin):
     """converts list of dependencies from stdin into purl coordinates"""
-    purls = Coordinates()
+    coords = Coordinates()
     self._log.debug("Starting to parse results")
     for line in stdin:
       if "#" in line:
         self._log.debug("Skipping line")
       else:
-        purl = self.parse_line_into_purl(line)
-        if purl is not None:
-          purls.add_coordinate(self.parse_line_into_purl(line))
-    if len(purls.get_coordinates()) == 0:
+        line_array = line.split()
+        if len(line_array) != 0:
+          coords.add_coordinate(line_array[0], line_array[1], self._format)
+
+    if len(coords.get_coordinates()) == 0:
       return None
 
-    return purls
-
-  @classmethod
-  def parse_line_into_purl(cls, line):
-    """formats list of purls for logging"""
-    line_array = line.split()
-    template = "pkg:conda/{}@{}"
-    if len(line_array) != 0:
-      return template.format(line_array[0], line_array[1])
-
-    return None
+    return coords

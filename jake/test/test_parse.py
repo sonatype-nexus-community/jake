@@ -17,7 +17,6 @@ import pathlib
 
 from jake.parse.parse import Parse
 
-
 class TestParse(unittest.TestCase):
   """TestParse audits the Parse class"""
   def setUp(self):
@@ -31,6 +30,9 @@ class TestParse(unittest.TestCase):
       actual = self.func.get_dependencies_from_stdin(stdin)
       output = actual.get_coordinates()
     self.assertEqual(len(output), 262)
-    self.assertEqual(output[0], "pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0")
-    self.assertEqual(output[131], "pkg:conda/mkl_fft@1.0.12")
-    self.assertEqual(output[261], "pkg:conda/zstd@1.3.7")
+    self.assertEqual(output[('_ipyw_jlab_nb_ext_conf', '0.1.0', 'conda')],
+                     "pkg:conda/_ipyw_jlab_nb_ext_conf@0.1.0")
+    self.assertEqual(output[('mkl_fft', '1.0.12', 'conda')],
+                     "pkg:conda/mkl_fft@1.0.12")
+    self.assertEqual(output[('zstd', '1.3.7', 'conda')],
+                     "pkg:conda/zstd@1.3.7")

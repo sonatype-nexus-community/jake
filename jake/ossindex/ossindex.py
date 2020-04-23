@@ -58,11 +58,11 @@ class OssIndex():
     """gets headers to use for OSSIndex request"""
     return self._headers
 
-  def chunk(self, purls):
+  def chunk(self, coords: Coordinates):
     """chunks up purls array into 128-purl subarrays"""
     chunks = []
     divided = []
-    length = len(purls.get_coordinates())
+    length = len(coords.get_coordinates())
     num_chunks = length // self._maxcoords
     if length % self._maxcoords > 0:
       num_chunks += 1
@@ -70,26 +70,26 @@ class OssIndex():
     end_index = self._maxcoords
     for i in range(0, num_chunks):
       if i == (num_chunks - 1):
-        divided = purls.get_coordinates()[start_index:length]
+        divided = coords.get_purls()[start_index:length]
       else:
-        divided = purls.get_coordinates()[start_index:end_index]
+        divided = coords.get_purls()[start_index:end_index]
         start_index = end_index
         end_index += end_index
       chunks.append(divided)
     return chunks
 
-  def call_ossindex(self, purls: Coordinates):
+  def call_ossindex(self, coords: Coordinates):
     """makes a request to OSSIndex"""
     self._log.debug("Purls received, total purls before chunk: %s",
-                    len(purls.get_coordinates()))
+                    len(coords.get_coordinates()))
 
-    (purls, results) = self.get_purls_and_results_from_cache(purls)
+    (coords, results) = self.get_purls_and_results_from_cache(coords)
 
     self._log.debug("Purls checked against cache, total purls remaining to "
                     "call OSS Index: %s",
-                    len(purls.get_coordinates()))
+                    len(coords.get_coordinates()))
 
-    chunk_purls = self.chunk(purls)
+    chunk_purls = self.chunk(coords)
     for purls_chunk in chunk_purls:
       data = {}
       data["coordinates"] = purls_chunk
@@ -162,11 +162,11 @@ class OssIndex():
     new_purls = Coordinates()
     results = []
     coordinate_query = Query()
-    for purl in purls.get_coordinates():
+    for coordinate, purl in purls.get_coordinates().items():
       mydatetime = datetime.now()
       result = self._db.search(coordinate_query.purl == purl)
       if len(result) == 0 or parse(result[0]['ttl']) < mydatetime:
-        new_purls.add_coordinate(purl)
+        new_purls.add_coordinate(coordinate[0], coordinate[1], coordinate[2])
       else:
         results.append(json.loads(
             result[0]['response'], cls=ResultsDecoder))

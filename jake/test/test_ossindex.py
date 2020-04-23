@@ -58,9 +58,9 @@ class TestOssIndex(unittest.TestCase):
   def get_fake_purls():
     """get_fake_purls is a helper function that creates a fake Coordinate"""
     fake_purls = Coordinates()
-    fake_purls.add_coordinate("pkg:conda/thing1")
-    fake_purls.add_coordinate("pkg:conda/thing2")
-    fake_purls.add_coordinate("pkg:conda/thing3")
+    fake_purls.add_coordinate('thing', '1.1', 'conda')
+    fake_purls.add_coordinate('thing', '1.2', 'conda')
+    fake_purls.add_coordinate('thing', '1.3', 'conda')
     return fake_purls
 
   @staticmethod
@@ -68,7 +68,7 @@ class TestOssIndex(unittest.TestCase):
     """get_fake_actual_purls is a helper function that creates a
     fake Coordinate with realistic data"""
     fake_actual_purls = Coordinates()
-    fake_actual_purls.add_coordinate("pkg:conda/pycrypto@2.6.1")
+    fake_actual_purls.add_coordinate('pycrypto', '2.6.1', 'conda')
     return fake_actual_purls
 
   @patch('jake.ossindex.ossindex.requests.post')
@@ -202,7 +202,7 @@ class TestOssIndex(unittest.TestCase):
         "cvssScore":0.0,"cve":"CVE-2019-16056",
         "reference":"http://www.wrestling.com"}]}]"""))
     fake_purls = self.get_fake_actual_purls()
-    fake_purls.add_coordinate("pkg:conda/alabaster@0.7.12")
+    fake_purls.add_coordinate('alabaster', '0.7.12', 'conda')
     (new_purls, results) = self.func.get_purls_and_results_from_cache(
         fake_purls)
     self.assertEqual(len(new_purls.get_coordinates()), 1)
@@ -220,8 +220,8 @@ class TestOssIndex(unittest.TestCase):
                      "pkg:conda/pycrypto@2.6.1")
     self.assertEqual(results[0].get_reference(
     ), "https://ossindex.sonatype.org/component/pkg:conda/pycrypto@2.6.1")
-    self.assertEqual(new_purls.get_coordinates()[
-        0], "pkg:conda/alabaster@0.7.12")
+    self.assertEqual(new_purls.get_coordinates()
+                     [('alabaster', '0.7.12', 'conda')], "pkg:conda/alabaster@0.7.12")
 
   def test_get_purls_from_cache_with_non_valid_object(self):
     """test_get_purls_from_cache_with_non_valid_object ensures calls to

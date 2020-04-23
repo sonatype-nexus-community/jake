@@ -189,8 +189,12 @@ def iq(verbose, quiet, application, stage, user, password, host, conda):
   Allows you to perform scans backed by Sonatype's Nexus IQ Server
 
   Example usage:\n
-      Python scan: jake iq -a publicapplicationid\n
-      Conda scan: conda list | jake iq -a publicapplicationid -c\n
+      Python scan: jake iq -a <AppId>\n
+      Conda scan: conda list | jake iq -a <AppId> -c\n
+
+  Will pull values for other params from config unless overwritten here\n
+
+      To set the IQ config: jake config iq\n
   """
   if not quiet:
     __banner()

@@ -11,21 +11,40 @@
 ### Usage
 
 ```
-$ jake --help
-usage: jake [-h] [-S] [-P] [-V] [-VV] [-A APPLICATION] [-C] {ddt}
+$ Usage: jake [OPTIONS] COMMAND [ARGS]...
 
-positional arguments:
-  {ddt}                 run jake
+  Jake: Put your python deps in a chokehold.
 
-optional arguments:
-  -h, --help            show this help message and exit
-  -S, --snake           set optional jake config
-  -P, --python          set optional jake IQ Server config
-  -V, --version         show program version and exit
-  -VV, --verbose        set verbosity level to debug
-  -A APPLICATION, --application APPLICATION
-                        supply an IQ Server Public Application ID
-  -C, --clean           wipe out jake cache
+Options:
+  -v, --version  Print version and exit
+  --help         Show this message and exit.
+
+Commands:
+  config  Allows a user to set Nexus IQ or OSS Index config params...
+  ddt     SPECIAL MOVE Allows you to perform scans backed by Sonatype's OSS...
+  iq      EXTRA SPECIAL MOVE Allows you to perform scans backed by...
+
+
+$ Usage: jake ddt [OPTIONS]
+
+  SPECIAL MOVE
+
+  Allows you to perform scans backed by Sonatype's OSS Index
+
+  Example usage:
+
+      Python scan: jake ddt
+
+      Conda scan: conda list | jake ddt -c
+
+      Clear cache: jake ddt --clear
+
+Options:
+  -vv, --verbose  Set log level to verbose
+  -q, --quiet     Suppress cosmetic and informational output
+  --clear         Clear the OSS Index cache
+  -c, --conda     Resolve conda dependencies from std_in
+  --help          Show this message and exit.
 ```
 
 Typical usage of `jake` is to run it like so: `conda list | jake ddt`, which will feed your Conda dependencies in your current Conda environment to `jake`, which will then reach out and check OSS Index to see if they are vulnerable!
@@ -39,6 +58,39 @@ You can also run `jake ddt -C` to clean out your local cache if desired. We cach
 You can also run `jake ddt -S` to set optional configuration of your OSS Index username and API Key so that you can run more requests without getting rate limited. You may register for an account [at this link](https://ossindex.sonatype.org/user/register), and see [the information provided here](https://ossindex.sonatype.org/doc/rest) on Rate Limiting for why this is useful.
 
 #### Usage with Nexus IQ Server
+
+```
+$ jake iq --help
+Usage: jake iq [OPTIONS]
+
+  EXTRA SPECIAL MOVE
+
+  Allows you to perform scans backed by Sonatype's Nexus IQ Server
+
+  Example usage:
+
+      Python scan: jake iq -a <AppId>
+
+      Conda scan: conda list | jake iq -a <AppId> -c
+
+  Will pull values for other params from config unless overwritten here
+
+      To set the IQ config: jake config iq
+
+Options:
+  -vv, --verbose                  Set log level to verbose
+  -q, --quiet                     Suppress cosmetic and informational output
+  -a, --application TEXT          Supply an IQ Server Public Application ID
+                                  [required]
+
+  -s, --stage [develop|build|stage-release|release]
+                                  Specify a stage
+  -u, --user TEXT                 Set username for Sonatype IQ
+  -p, --password TEXT             Set password or token for associated user
+  -h, --host TEXT                 Specify an endpoint for Sonatype IQ
+  -c, --conda                     Resolve conda dependencies from std_in
+  --help                          Show this message and exit.
+```
 
 `jake` can be used against Nexus IQ Server, to audit your application using your organizations policy.
 

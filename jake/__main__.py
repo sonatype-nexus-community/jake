@@ -62,11 +62,11 @@ __shared_options = [
 ]
 
 def __add_options(options):
-    def _add_options(func):
-        for option in reversed(options):
-            func = option(func)
-        return func
-    return _add_options
+  def _add_options(func):
+    for option in reversed(options):
+      func = option(func)
+    return func
+  return _add_options
 
 @click.group(help='Jake: Put your python deps in a chokehold.')
 @__add_options(__shared_options)
@@ -96,7 +96,6 @@ def config(type):
   """
   config = IQConfig() if type == 'iq' else Config()
 
-  # call the config entry prompt and exit
   result = config.get_config_from_std_in()
   _exit(EX_OSERR) if result is False else _exit(0)
 
@@ -120,12 +119,20 @@ def ddt(verbose, quiet, clear, conda):
       Conda scan: conda list | jake ddt -c\n
       Clear cache: jake ddt --clear
   """
+  oss_index = OssIndex()
+  if clear:
+    if oss_index.clean_cache():
+      print('Cache Cleared')
+    _exit(0)
+
   with yaspin(text="Loading", color="yellow") as spinner:
     spinner.text = "Collecting Dependencies"
     coords = Parse().get_dependencies_from_stdin(sys.stdin) if conda else Pip().get_dependencies()
+    spinner.ok("✅ ")
 
+  with yaspin(text="Loading", color="yellow") as spinner:
     spinner.text = "Querying OSS Index"
-    oss_index = OssIndex()
+    
     response = oss_index.call_ossindex(coords)
 
     if response is None:
@@ -134,15 +141,13 @@ def ddt(verbose, quiet, clear, conda):
           "Something went horribly wrong, there is no response from OSS Index",
           "please rerun with -VV to see what happened")
       _exit(EX_OSERR)
+    spinner.ok("✅ ")
 
+  with yaspin(text="Loading", color="yellow") as spinner:
     spinner.text = "Auditing results from OSS Index"
     audit = Audit()
     spinner.ok("✅ ")
     code = audit.audit_results(response)
-
-  if clear:
-    if oss_index.clean_cache():
-      print('Cache Cleared')
     _exit(code)
 
 @main.command()

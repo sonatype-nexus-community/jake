@@ -282,3 +282,6 @@ def __banner():
   cprint(figlet_format(bot, font=bot_font), 'blue', attrs=['dark'])
   click.echo("Jake version: v{}".format(__version__))
   click.echo('Put your python deps in a chokehold.')
+
+if __name__ == '__main__':
+  main()

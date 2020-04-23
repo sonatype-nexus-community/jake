@@ -35,7 +35,7 @@ setup(
     python_requires='>=3.6',
     install_requires=required,
     entry_points={
-        'console_scripts': [
-            'jake = jake.__main__:main'
-        ]
-    })
+        'console_scripts':
+            ['jake=jake.__main__:main']
+    }
+)

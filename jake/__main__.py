@@ -119,6 +119,8 @@ def ddt(verbose, quiet, clear, conda):
       Conda scan: conda list | jake ddt -c\n
       Clear cache: jake ddt --clear
   """
+  __setup_logger(verbose)
+
   oss_index = OssIndex()
   if clear:
     if oss_index.clean_cache():
@@ -183,6 +185,8 @@ def iq(verbose, quiet, application, stage, user, password, host, conda):
       Python scan: jake iq -a publicapplicationid\n
       Conda scan: conda list | jake iq -a publicapplicationid -c\n
   """
+  __setup_logger(verbose)
+
   iq_args = {}
   iq_args['application'] = application
   iq_args['stage'] = stage

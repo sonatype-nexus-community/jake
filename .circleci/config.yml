@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   publish:
     docker: # run the steps with Docker
-      - image: circleci/python:3.6.4
+      - image: circleci/python:3.7
         environment: # environment variables for primary container
           PIPENV_VENV_IN_PROJECT: true 
     steps:
@@ -11,35 +11,17 @@ jobs:
           fingerprints:
             - "4f:7d:6b:26:dc:44:de:b0:4d:f1:96:50:2a:b5:bd:b3"
       - checkout
-      - run: sudo chown -R circleci:circleci /usr/local/bin
-      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.6/site-packages
       - run:
           command: |
-            pip install -r requirements.txt
-      - run:
-          command: |
-            pip install python-semantic-release
-      - run:
-          command: |
-            pip install --upgrade setuptools twine wheel
-      - run:
-          command: |
-            git config user.name "$GITHUB_USERNAME"
-      - run:
-          command: |
-            git config user.email "$GITHUB_EMAIL"
-      - run:
-          command: |
-            semantic-release publish --patch
+            .circleci/ci-publish.sh
+
   build:
     docker: # run the steps with Docker
-      - image: circleci/python:3.6.4
+      - image: circleci/python:3.7
         environment: # environment variables for primary container
           PIPENV_VENV_IN_PROJECT: true
     steps:
       - checkout
-      - run: sudo chown -R circleci:circleci /usr/local/bin
-      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.6/site-packages
       - run:
           command: |
             sudo .circleci/ci-setup.sh

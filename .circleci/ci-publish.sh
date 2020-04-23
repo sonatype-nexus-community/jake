@@ -15,4 +15,4 @@ git config user.name "$GITHUB_USERNAME"
 
 git config user.email "$GITHUB_EMAIL"
 
-semantic-release publish --minor
+semantic-release publish --patch

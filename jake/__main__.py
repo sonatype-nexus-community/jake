@@ -214,11 +214,11 @@ def iq(verbose, quiet, application, stage, user, password, host, conda):
 
 
 def __setup_logger(verbose):
-  logging.basicConfig(level=logging.ERROR)
+  logging.basicConfig()
   log = logging.getLogger('jake')
 
   if verbose:
-    log.setLevel(logging.INFO)
+    log.setLevel(logging.DEBUG)
   else:
     log.setLevel(logging.ERROR)
 

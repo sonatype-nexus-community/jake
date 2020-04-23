@@ -1,6 +1,7 @@
 """jake entry point"""
 # pylint: disable=too-many-arguments
 # pylint: disable=invalid-name
+# pylint: disable=unnecessary-pass
 # Copyright 2019 Sonatype Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -86,18 +87,21 @@ def main():
 
 @main.command()
 @click.argument(
-    'type',
+    'conf',
     type=click.Choice(['iq', 'ossi']))
-def config(type):
+def config(conf):
   """Allows a user to set Nexus IQ or OSS Index config params
 
   Arguments:
       type -- cli input restricted by click to 'iq' and 'ossi'
   """
-  config = IQConfig() if type == 'iq' else Config()
+  cli_config = IQConfig() if conf == 'iq' else Config()
 
-  result = config.get_config_from_std_in()
-  _exit(EX_OSERR) if result is False else _exit(0)
+  result = cli_config.get_config_from_std_in()
+  if result is False:
+    _exit(EX_OSERR)
+  else:
+    _exit(0)
 
 @main.command()
 @__add_options(__shared_options)
@@ -208,12 +212,6 @@ def iq(verbose, quiet, application, stage, user, password, host, conda):
     spinner.ok("✅ ")
 
     __handle_iq_server(response, iq_args)
-
-  # TODO: determine if joining conda and pypi purls for hybridized IQ results is feasible
-  # This joins the pypi coordinates from pkg_resources and the conda coordinates from conda
-  # list and will generate a report with dupes.  I would remove the conda purls that have dupes
-  # from the pypi purls, but not all of the pypi purls get results in IQ and it would be difficult
-  # to figure out which ones will aheadof time (before making the request)
 
   # if args.application:
   #    coords.join_coords(Pip().get_dependencies().get_coordinates())

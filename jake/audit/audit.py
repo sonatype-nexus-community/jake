@@ -16,7 +16,7 @@
 import logging
 
 from typing import List
-from colorama import init, Fore
+from colorama import Fore
 
 from jake.types.coordinateresults import CoordinateResults
 from jake.types.vulnerabilities import Vulnerabilities

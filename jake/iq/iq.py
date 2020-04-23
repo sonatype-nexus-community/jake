@@ -1,4 +1,5 @@
 """iq.py handles requests to IQ Server"""
+# pylint: disable=too-many-instance-attributes
 # Copyright 2019 Sonatype Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -43,7 +44,7 @@ class IQ():
     if config.check_if_config_exists('.iq-server-config') is False:
       LOG.debug("No IQ server config supplied, using defaults or taking from command-line.")
       if self._user is None:
-          self._user = 'admin'
+        self._user = 'admin'
       if self._password is None:
         self._password = 'admin123'
       if self._iq_url is None:

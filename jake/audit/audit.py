@@ -56,13 +56,13 @@ class Audit():
                         coordinate.get_coordinates()), 0)
       return len(coordinate.get_vulnerabilities())
 
-    print(("[{}/{}] - {} [VULNERABLE] {} known vulnerabilities for"
-           "this version")
-          .format(
-              number,
-              length,
-              coordinate.get_coordinates(),
-              len(coordinate.get_vulnerabilities())))
+    self.do_print(("[{}/{}] - {} [VULNERABLE] {} known vulnerabilities for"
+                   "this version")
+                  .format(
+                      number,
+                      length,
+                      coordinate.get_coordinates(),
+                      len(coordinate.get_vulnerabilities())), coordinate.get_max_cvss_score())
     for vulnerability in coordinate.get_vulnerabilities():
       self.print_vulnerability(vulnerability)
     return len(coordinate.get_vulnerabilities())

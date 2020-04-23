@@ -46,6 +46,10 @@ class CoordinateResults():
     """sets vulnerabilities for CoordinateResults obj"""
     return self.vulnerabilities
 
+  def get_max_cvss_score(self):
+    """gets the max cvss_score for vulnerabilities list"""
+    return max(vulnerability.get_cvss_score() for vulnerability in self.vulnerabilities)
+
   def to_json(self):
     """converts CoordinateResults obj to JSON"""
     return json.dumps(self.__dict__, default=lambda o: o.__dict__)

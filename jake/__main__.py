@@ -43,13 +43,6 @@ def __print_version(ctx, value):
 
 __shared_options = [
     click.option(
-        '-v', '--version',
-        is_flag=True,
-        callback=__print_version,
-        expose_value=False,
-        is_eager=True,
-        help='Print version and exit'),
-    click.option(
         '-vv', '--verbose',
         is_flag=True,
         default=False,
@@ -69,8 +62,14 @@ def __add_options(options):
   return _add_options
 
 @click.group(help='Jake: Put your python deps in a chokehold.')
-@__add_options(__shared_options)
-def main(verbose, quiet):
+@click.option(
+    '-v', '--version',
+    is_flag=True,
+    callback=__print_version,
+    expose_value=False,
+    is_eager=True,
+    help='Print version and exit')
+def main():
   """ defining the root cli command as main so that running 'jake'
       in the command line will use this as the entry point
       also prints the banner with every invokation
@@ -80,8 +79,6 @@ def main(verbose, quiet):
       verbose -- get full runtime output from debug logger
       quiet -- supress the banner TODO: non vulnerable outputs as well
   """
-  if not quiet:
-    __banner()
   pass
 
 @main.command()
@@ -119,6 +116,9 @@ def ddt(verbose, quiet, clear, conda):
       Conda scan: conda list | jake ddt -c\n
       Clear cache: jake ddt --clear
   """
+  if not quiet:
+    __banner()
+
   __setup_logger(verbose)
 
   oss_index = OssIndex()
@@ -185,6 +185,9 @@ def iq(verbose, quiet, application, stage, user, password, host, conda):
       Python scan: jake iq -a publicapplicationid\n
       Conda scan: conda list | jake iq -a publicapplicationid -c\n
   """
+  if not quiet:
+    __banner()
+
   __setup_logger(verbose)
 
   iq_args = {}

@@ -15,14 +15,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from os import _exit, EX_OSERR
 import sys
 import logging
+from os import _exit, EX_OSERR, path, mkdir
+from pathlib import Path
+
 import click
 from termcolor import cprint
 from pyfiglet import figlet_format
 from colorama import init, Fore
 from yaspin import yaspin
+
 from jake.ossindex.ossindex import OssIndex
 from jake.iq.iq import IQ
 from jake.cyclonedx.generator import CycloneDxSbomGenerator
@@ -217,15 +220,31 @@ def iq(verbose, quiet, application, stage, user, password, host, conda):
 
 
 def __setup_logger(verbose):
-  logging.basicConfig()
-  log = logging.getLogger('jake')
+  logger = logging.getLogger('jake')
+  logger.setLevel(logging.DEBUG)
+
+  home = str(Path.home())
+  if not path.exists(path.join(home, '.ossindex')):
+    mkdir(path.join(home, '.ossindex'))
+
+  filepath = path.join(home, '.ossindex', 'jake.combined.log')
+  formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+  fh = logging.FileHandler(filepath)
+
+  logger.addHandler(fh)
+
+  ch = logging.StreamHandler()
 
   if verbose:
-    log.setLevel(logging.DEBUG)
+    ch.setLevel(logging.DEBUG)
   else:
-    log.setLevel(logging.ERROR)
+    ch.setLevel(logging.ERROR)
 
-  return log
+  fh.setFormatter(formatter)
+  ch.setFormatter(formatter)
+
+  logger.addHandler(ch)
 
 def __handle_iq_server(response, args):
   with yaspin(text="Loading", color="yellow") as spinner:

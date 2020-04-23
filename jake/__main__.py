@@ -132,7 +132,7 @@ def ddt(verbose, quiet, clear, conda):
 
   with yaspin(text="Loading", color="yellow") as spinner:
     spinner.text = "Querying OSS Index"
-    
+
     response = oss_index.call_ossindex(coords)
 
     if response is None:

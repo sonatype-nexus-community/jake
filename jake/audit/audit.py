@@ -1,4 +1,5 @@
 """ audit.py for all your audit py needs """
+# pylint: disable=no-else-return
 # Copyright 2019 Sonatype Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -49,10 +50,10 @@ class Audit():
     """
     if len(coordinate.get_vulnerabilities()) == 0:
       self.do_print("[{}/{}] - {} - no known vulnerabilities for this version"
-            .format(
-                number,
-                length,
-                coordinate.get_coordinates()), 0)
+                    .format(
+                        number,
+                        length,
+                        coordinate.get_coordinates()), 0)
       return len(coordinate.get_vulnerabilities())
 
     print(("[{}/{}] - {} [VULNERABLE] {} known vulnerabilities for"
@@ -75,7 +76,8 @@ class Audit():
     cls.do_print("ID: {}".format(vulnerability.get_id()), cvss_score)
     cls.do_print("Title: {}".format(vulnerability.get_title()), cvss_score)
     cls.do_print("Description: {}".format(vulnerability.get_description()), cvss_score)
-    cls.do_print("CVSS Score: {} - {}".format(vulnerability.get_cvss_score(), cls.get_cvss_severity(cvss_score)), cvss_score)
+    cls.do_print("CVSS Score: {} - {}".format(vulnerability.get_cvss_score(),
+                                              cls.get_cvss_severity(cvss_score)), cvss_score)
     if vulnerability.get_cvss_vector() is not None:
       cls.do_print("CVSS Vector: {}".format(vulnerability.get_cvss_vector()), cvss_score)
     cls.do_print("CVE: {}".format(vulnerability.get_cve()), cvss_score)
@@ -84,6 +86,10 @@ class Audit():
 
   @classmethod
   def do_print(cls, text, cvss_score):
+    """
+    do_print takes text, and a cvss_score and prints it in a different text depending on
+    the score
+    """
     if cvss_score == 0:
       print(Fore.GREEN + text + Fore.RESET)
     elif 0 < cvss_score < 4:
@@ -97,6 +103,9 @@ class Audit():
 
   @classmethod
   def get_cvss_severity(cls, cvss_score):
+    """
+    get_cvss_severity takes a cvss_score and returns a human readable severity for it
+    """
     if cvss_score == 0:
       return "None"
     elif 0 < cvss_score < 4:

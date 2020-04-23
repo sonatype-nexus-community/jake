@@ -49,10 +49,13 @@ Options:
 
 `jake` can be run against either pypi or conda installed dependencies.
 
-  Conda: `conda list | jake ddt -c`
-    Feeds your Conda dependencies from `conda list` by piping the output to `jake`
-  PyPi: `jake ddt`
-    Feeds dependencies available to pip in the current scope
+Conda: `conda list | jake ddt -c`
+
+  Feeds your Conda dependencies from `conda list` by piping the output to `jake`
+
+PyPi: `jake ddt`
+
+  Feeds dependencies available to pip in the current scope (run `pip freeze` to see what those are)
 
 ### Options
 
@@ -105,7 +108,7 @@ Once configured with proper credentials, run `jake iq -a <AppId>`, replacing `<A
 
 Each `jake` scan will generate a Software Bill of Materials (SBOM) in IQ and will output direct link to console.  The develop stage is used by default as opposed to other stages which usually correspond to component inventories of the latest build for a stage.
 
-An example of using `jake` with the Nexus IQ Server `Sandbox Application` follows.
+Some examples of using `jake` with Sonatype IQ
 
   1. (Onetime) Configure `jake` to use your Nexus IQ Server credentials:
 

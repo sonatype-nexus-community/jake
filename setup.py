@@ -33,6 +33,10 @@ setup(
     license="Apache-2.0",
     packages=find_packages(exclude=["jake/tests/*", "jake/tests/"]),
     python_requires='>=3.6',
+    package_data={
+        'jake':
+            ['cyclonedx/v1_1/*.xsd']
+    },
     install_requires=REQUIRED,
     entry_points={
         'console_scripts':

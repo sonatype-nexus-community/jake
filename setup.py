@@ -19,7 +19,7 @@ with open("README.md", "r") as fh:
   LONG_DESCRIPTION = fh.read()
 
 with open('requirements.txt') as requirements:
-    required = requirements.read().splitlines()
+  REQUIRED = requirements.read().splitlines()
 
 setup(
     name='jake',
@@ -33,7 +33,7 @@ setup(
     license="Apache-2.0",
     packages=find_packages(exclude=["jake/tests/*", "jake/tests/"]),
     python_requires='>=3.6',
-    install_requires=required,
+    install_requires=REQUIRED,
     entry_points={
         'console_scripts':
             ['jake=jake.__main__:main']

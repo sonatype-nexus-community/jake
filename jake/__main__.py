@@ -184,7 +184,7 @@ def ddt(verbose, quiet, clear, conda):
     default=False,
     is_flag=True,
     help='Resolve conda dependencies from std_in')
-def iq(verbose, quiet, application, stage, user, password, host, conda):
+def iq(verbose: bool, quiet: bool, application: str, stage: str, user, password, host, conda):
   """EXTRA SPECIAL MOVE\n
   Allows you to perform scans backed by Sonatype's Nexus IQ Server
 
@@ -221,7 +221,7 @@ def iq(verbose, quiet, application, stage, user, password, host, conda):
   #    coords.join_coords(Pip().get_dependencies().get_coordinates())
 
 
-def __setup_logger(verbose):
+def __setup_logger(verbose: bool):
   logger = logging.getLogger('jake')
   logger.setLevel(logging.DEBUG)
 
@@ -248,7 +248,7 @@ def __setup_logger(verbose):
 
   logger.addHandler(ch)
 
-def __handle_iq_server(response, args):
+def __handle_iq_server(response: list, args: dict):
   with yaspin(text="Loading", color="yellow") as spinner:
     spinner.text = "Calling Nexus IQ Server"
     sbom_gen = CycloneDxSbomGenerator()

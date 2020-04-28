@@ -79,7 +79,7 @@ class IQ():
     """gets public application id to use for IQ Server request"""
     return self._public_application_id
 
-  def get_internal_id(self):
+  def get_internal_id(self) -> (str):
     """gets internal application id from IQ Server using the public
     application id"""
     response = requests.get(
@@ -90,6 +90,11 @@ class IQ():
         auth=(self._user, self._password))
     if response.ok:
       res = json.loads(response.text)
+      if not res['applications']:
+        raise ValueError(
+            "The public application id \'"
+            + self._public_application_id
+            + "\' does not exist or is not accessible by the user.")
       LOG.debug(res['applications'][0]['id'])
       return res['applications'][0]['id']
     raise ValueError(response.text)

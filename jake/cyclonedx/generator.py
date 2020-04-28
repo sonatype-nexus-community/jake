@@ -32,7 +32,7 @@ class CycloneDxSbomGenerator():
     else:
       raise NotImplementedError
 
-  def create_and_return_sbom(self, results):
+  def create_and_return_sbom(self, results) -> (etree._Element):
     """create_and_return_sbom is responsible for taking results in
     CoordinateResults form and turning them into a valid CycloneDX SBOM"""
     sbom = self.__generator.create_xml_from_oss_index_results(results)

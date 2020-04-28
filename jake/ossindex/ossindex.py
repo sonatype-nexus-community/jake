@@ -78,7 +78,7 @@ class OssIndex():
       chunks.append(divided)
     return chunks
 
-  def call_ossindex(self, coords: Coordinates):
+  def call_ossindex(self, coords: Coordinates) -> (list):
     """makes a request to OSSIndex"""
     self._log.debug("Purls received, total purls before chunk: %s",
                     len(coords.get_coordinates()))
@@ -154,7 +154,7 @@ class OssIndex():
 
     return (cached, num_cached)
 
-  def get_purls_and_results_from_cache(self, purls: Coordinates):
+  def get_purls_and_results_from_cache(self, purls: Coordinates) -> (Coordinates, list):
     """get cached purls and results from cache"""
     valid = isinstance(purls, Coordinates)
     if not valid:

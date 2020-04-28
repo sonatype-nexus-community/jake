@@ -23,10 +23,10 @@ from tinydb import TinyDB, Query
 
 import requests
 
-from jake.types.coordinates import Coordinates
-from jake.types.results_decoder import ResultsDecoder
-from jake.types.coordinateresults import CoordinateResults
-from jake.config.config import Config
+from ..types.coordinates import Coordinates
+from ..types.results_decoder import ResultsDecoder
+from ..types.coordinateresults import CoordinateResults
+from ..config.config import Config
 
 DEFAULT_HEADERS = {
     'Content-type': 'application/vnd.ossindex.component-report-request.v1+json',

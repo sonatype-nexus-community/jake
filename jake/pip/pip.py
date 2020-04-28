@@ -17,7 +17,7 @@
 import logging
 import pkg_resources
 
-from jake.types.coordinates import Coordinates
+from ..types.coordinates import Coordinates
 
 class Pip():
   """pip.py gets installed pip dependencies"""

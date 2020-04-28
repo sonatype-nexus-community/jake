@@ -15,7 +15,7 @@
 import unittest
 import pathlib
 
-from jake.parse.parse import Parse
+from ..parse.parse import Parse
 
 class TestParse(unittest.TestCase):
   """TestParse audits the Parse class"""

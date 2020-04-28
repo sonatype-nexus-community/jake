@@ -27,15 +27,15 @@ from pyfiglet import figlet_format
 from colorama import init, Fore
 from yaspin import yaspin
 
-from jake.ossindex.ossindex import OssIndex
-from jake.iq.iq import IQ
-from jake.cyclonedx.generator import CycloneDxSbomGenerator
-from jake.parse.parse import Parse
-from jake.pip.pip import Pip
-from jake.audit.audit import Audit
-from jake.config.config import Config
-from jake.config.iq_config import IQConfig
-from jake._version import __version__
+from .ossindex.ossindex import OssIndex
+from .iq.iq import IQ
+from .cyclonedx.generator import CycloneDxSbomGenerator
+from .parse.parse import Parse
+from .pip.pip import Pip
+from .audit.audit import Audit
+from .config.config import Config
+from .config.iq_config import IQConfig
+from ._version import __version__
 
 init(strip=not sys.stdout.isatty()) # strip colors on redirected output
 

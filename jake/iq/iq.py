@@ -21,7 +21,7 @@ from json import JSONDecodeError
 import requests
 import polling
 
-from jake.config.iq_config import IQConfig
+from ..config.iq_config import IQConfig
 
 DEFAULT_HEADERS = {
     'User-Agent': 'jake'}

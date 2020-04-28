@@ -15,7 +15,7 @@
 import unittest
 import ast
 
-from jake.types.coordinateresults import CoordinateResults
+from ..types.coordinateresults import CoordinateResults
 
 
 class TestResultsDecoder(unittest.TestCase):

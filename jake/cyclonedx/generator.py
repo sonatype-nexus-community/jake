@@ -18,7 +18,7 @@ import logging
 
 from lxml import etree
 
-from jake.cyclonedx.v1_1.generator import CycloneDx11Generator
+from ..cyclonedx.v1_1.generator import CycloneDx11Generator
 
 class CycloneDxSbomGenerator():
   """CycloneDxGenerator is responsible for taking identifiers

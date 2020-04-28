@@ -18,8 +18,8 @@ import logging
 from typing import List
 from colorama import Fore
 
-from jake.types.coordinateresults import CoordinateResults
-from jake.types.vulnerabilities import Vulnerabilities
+from ..types.coordinateresults import CoordinateResults
+from ..types.vulnerabilities import Vulnerabilities
 
 class Audit():
   """ Audit does the business, it prints results from OSS Index to the standard out """

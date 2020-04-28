@@ -14,8 +14,8 @@
 # limitations under the License.
 import unittest
 
-from jake.pip.pip import Pip
-from jake.types.coordinates import Coordinates
+from ..pip.pip import Pip
+from ..types.coordinates import Coordinates
 
 class TestPip(unittest.TestCase):
   """TestPip audits the Pip class"""

@@ -21,12 +21,12 @@ from tinydb import TinyDB, Query
 from dateutil.parser import parse
 
 
-from jake.ossindex.ossindex import OssIndex
-from jake.parse.parse import Parse
-from jake.types.coordinates import Coordinates
-from jake.types.coordinateresults import CoordinateResults
-from jake.types.results_decoder import ResultsDecoder
-from jake.types.vulnerabilities import Vulnerabilities
+from ..ossindex.ossindex import OssIndex
+from ..parse.parse import Parse
+from ..types.coordinates import Coordinates
+from ..types.coordinateresults import CoordinateResults
+from ..types.results_decoder import ResultsDecoder
+from ..types.vulnerabilities import Vulnerabilities
 
 
 class TestOssIndex(unittest.TestCase):

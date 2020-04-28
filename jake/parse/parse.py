@@ -15,7 +15,7 @@
 import logging
 from shutil import which
 
-from jake.types.coordinates import Coordinates
+from ..types.coordinates import Coordinates
 
 class Parse():
   """parse.py parses dependencies and converts them to purls"""

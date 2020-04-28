@@ -17,8 +17,8 @@ import json
 
 from pathlib import Path
 
-from jake.audit.audit import Audit
-from jake.types.results_decoder import ResultsDecoder
+from ..audit.audit import Audit
+from ..types.results_decoder import ResultsDecoder
 
 class TestAudit(unittest.TestCase):
   """ TestAudit is responsible for testing the Audit class """

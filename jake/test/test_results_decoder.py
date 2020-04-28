@@ -16,8 +16,6 @@ import unittest
 import pathlib
 import json
 
-from typing import List
-
 from jake.types.results_decoder import ResultsDecoder
 from jake.types.coordinateresults import CoordinateResults
 

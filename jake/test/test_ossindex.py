@@ -17,7 +17,6 @@ import json
 from unittest.mock import patch
 from pathlib import Path
 from datetime import timedelta
-from typing import List
 from tinydb import TinyDB, Query
 from dateutil.parser import parse
 

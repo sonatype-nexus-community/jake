@@ -173,14 +173,14 @@ class TestOssIndex(unittest.TestCase):
         "reference":"http://www.wrestling.com"}]}]"""))
     (new_purls, results) = self.func.get_purls_and_results_from_cache(
         self.get_fake_actual_purls())
-    self.assertEqual(isinstance(results, List), True)
+    self.assertEqual(isinstance(results, list), True)
     self.assertEqual(isinstance(results[0], CoordinateResults), True)
     self.assertEqual(results[0].get_coordinates(),
                      "pkg:conda/pycrypto@2.6.1")
     self.assertEqual(results[0].get_reference(
     ), "https://ossindex.sonatype.org/component/pkg:conda/pycrypto@2.6.1")
     self.assertEqual(isinstance(
-        results[0].get_vulnerabilities(), List), True)
+        results[0].get_vulnerabilities(), list), True)
     self.assertEqual(isinstance(
         results[0].get_vulnerabilities()[0], Vulnerabilities), True)
     self.assertEqual(results[0].get_vulnerabilities()[
@@ -207,7 +207,7 @@ class TestOssIndex(unittest.TestCase):
         fake_purls)
     self.assertEqual(len(new_purls.get_coordinates()), 1)
     self.assertEqual(isinstance(new_purls, Coordinates), True)
-    self.assertEqual(isinstance(results, List), True)
+    self.assertEqual(isinstance(results, list), True)
     self.assertEqual(isinstance(results[0], CoordinateResults), True)
     self.assertEqual(isinstance(
         results[0].get_vulnerabilities()[0],

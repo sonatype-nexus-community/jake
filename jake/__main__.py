@@ -37,14 +37,24 @@ from .config.config import Config
 from .config.iq_config import IQConfig
 from ._version import __version__
 
-init(strip=not sys.stdout.isatty()) # strip colors on redirected output
+# strip colors on redirected output
+init(strip=not sys.stdout.isatty())
 
-def __print_version(ctx, value):
-  if not value:
+def __print_version(ctx, flag: bool):
+  if not flag:
     return
   print(__package__, 'v' +  __version__)
   ctx.exit()
 
+def __clear_cache(ctx, flag: bool):
+  if not flag:
+    return
+  ossi = OssIndex()
+  if ossi.clean_cache():
+    print('Cache Cleared')
+  ctx.exit()
+
+# params that propagate through subcommands
 __shared_options = [
     click.option(
         '-vv', '--verbose',
@@ -55,7 +65,12 @@ __shared_options = [
         '-q', '--quiet',
         is_flag=True,
         default=False,
-        help='Suppress cosmetic and informational output')
+        help='Suppress cosmetic and informational output'),
+    click.option(
+        '-c', '--conda',
+        default=False,
+        is_flag=True,
+        help='Resolve conda dependencies from std_in')
 ]
 
 def __add_options(options):
@@ -66,6 +81,8 @@ def __add_options(options):
   return _add_options
 
 @click.group(help='Jake: Put your python deps in a chokehold.')
+
+# options that will take priority over other program execution and exit
 @click.option(
     '-v', '--version',
     is_flag=True,
@@ -73,6 +90,15 @@ def __add_options(options):
     expose_value=False,
     is_eager=True,
     help='Print version and exit')
+@click.option(
+    '--clear',
+    is_flag=True,
+    callback=__clear_cache,
+    expose_value=False,
+    is_eager=True,
+    help='Clear the OSS Index cache and exit')
+
+
 def main():
   """ defining the root cli command as main so that running 'jake'
       in the command line will use this as the entry point
@@ -105,34 +131,18 @@ def config(conf):
 
 @main.command()
 @__add_options(__shared_options)
-@click.option(
-    '--clear',
-    is_flag=True,
-    help='Clear the OSS Index cache')
-@click.option(
-    '-c', '--conda',
-    default=False,
-    is_flag=True,
-    help='Resolve conda dependencies from std_in')
-def ddt(verbose, quiet, clear, conda):
+def ddt(verbose, quiet, conda):
   """SPECIAL MOVE\n
   Allows you to perform scans backed by Sonatype's OSS Index
 
   Example usage:\n
       Python scan: jake ddt\n
       Conda scan: conda list | jake ddt -c\n
-      Clear cache: jake ddt --clear
   """
   if not quiet:
     __banner()
 
   __setup_logger(verbose)
-
-  oss_index = OssIndex()
-  if clear:
-    if oss_index.clean_cache():
-      print('Cache Cleared')
-    _exit(0)
 
   with yaspin(text="Loading", color="yellow") as spinner:
     spinner.text = "Collecting Dependencies"
@@ -142,7 +152,7 @@ def ddt(verbose, quiet, clear, conda):
   with yaspin(text="Loading", color="yellow") as spinner:
     spinner.text = "Querying OSS Index"
 
-    response = oss_index.call_ossindex(coords)
+    response = OssIndex().call_ossindex(coords)
 
     if response is None:
       spinner.fail("💥 ")
@@ -179,12 +189,7 @@ def ddt(verbose, quiet, clear, conda):
 @click.option(
     '-h', '--host',
     help='Specify an endpoint for Sonatype IQ')
-@click.option(
-    '-c', '--conda',
-    default=False,
-    is_flag=True,
-    help='Resolve conda dependencies from std_in')
-def iq(verbose: bool, quiet: bool, application: str, stage: str, user, password, host, conda):
+def iq(verbose: bool, quiet: bool, conda: bool, application, stage, user, password, host):
   """EXTRA SPECIAL MOVE\n
   Allows you to perform scans backed by Sonatype's Nexus IQ Server
 

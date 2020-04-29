@@ -36,6 +36,7 @@ from .audit.audit import Audit
 from .config.config import Config
 from .config.iq_config import IQConfig
 from ._version import __version__
+from .types.results_decoder import ResultsDecoder
 
 # strip colors on redirected output
 init(strip=not sys.stdout.isatty())
@@ -215,11 +216,8 @@ def iq(verbose: bool, quiet: bool, conda: bool, application, stage, user, passwo
   """
   if not quiet:
     __banner()
-
   __setup_logger(verbose)
-
   __check_stdin(conda)
-
 
   iq_args = {}
   iq_args['application'] = application
@@ -227,15 +225,9 @@ def iq(verbose: bool, quiet: bool, conda: bool, application, stage, user, passwo
   iq_args['user'] = user
   iq_args['password'] = password
   iq_args['host'] = host
+  iq_args['conda'] = conda
 
-  with yaspin(text="Loading", color="yellow") as spinner:
-    spinner.text = "Collecting Dependencies"
-    coords = Parse().get_dependencies_from_stdin(sys.stdin) if conda else Pip().get_dependencies()
-    spinner.text = "Calling OSS Index"
-    response = OssIndex().call_ossindex(coords)
-    spinner.ok("✅ ")
-
-    __handle_iq_server(response, iq_args)
+  __iq_control_flow(iq_args)
 
   # if args.application:
   #    coords.join_coords(Pip().get_dependencies().get_coordinates())
@@ -268,15 +260,28 @@ def __setup_logger(verbose: bool):
 
   logger.addHandler(ch)
 
-def __handle_iq_server(response: list, args: dict):
+def __iq_control_flow(args: dict):
+
   with yaspin(text="Loading", color="yellow") as spinner:
-    spinner.text = "Calling Nexus IQ Server"
+    spinner.text = "Collecting Dependencies from System..."
+    coords = Parse().get_dependencies_from_stdin(sys.stdin) if args['conda'] else Pip().get_dependencies()
+    spinner.ok("✅ ")
+    spinner.text = "Parsing Coordinates..."
+    purls = coords.get_purls()
+    spinner.ok("✅ ")
+
+  with yaspin(text="Loading", color="yellow") as spinner:
+    spinner.text = "Generating CycloneDx BOM..."
     sbom_gen = CycloneDxSbomGenerator()
-    sbom = sbom_gen.create_and_return_sbom(response)
+    sbom = sbom_gen.purl_sbom(purls)
+    spinner.ok("✅ ")
+    spinner.text = "Submitting to Sonatype IQ..."
     iq_requests = IQ(args)
     _id = iq_requests.get_internal_id()
     status_url = iq_requests.submit_sbom_to_third_party_api(
         sbom_gen.sbom_to_string(sbom), _id)
+    spinner.ok("✅ ")
+    spinner.text = "Reticulating splines..."
     iq_requests.poll_for_results(status_url)
     if iq_requests.get_policy_action() is not None:
       spinner.fail("💥 ")

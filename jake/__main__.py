@@ -80,6 +80,7 @@ __shared_options = [
         help='Resolve conda dependencies from std_in')
 ]
 
+# decorators be parsed inside out which click handles, but no decorators on the shared options
 def __add_options(options):
   def _add_options(func):
     for option in reversed(options):
@@ -88,7 +89,6 @@ def __add_options(options):
   return _add_options
 
 @click.group(help='Jake: Put your python deps in a chokehold.')
-
 # options that will take priority over other program execution and exit
 @click.option(
     '-v', '--version',
@@ -122,7 +122,8 @@ def main():
     'conf',
     type=click.Choice(['iq', 'ossi']))
 def config(conf):
-  """Allows a user to set Nexus IQ or OSS Index config params
+  """
+  Allows a user to set Nexus IQ or OSS Index config params
 
   Arguments:
       type -- cli input restricted by click to 'iq' and 'ossi'

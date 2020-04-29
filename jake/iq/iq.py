@@ -59,7 +59,7 @@ class IQ():
       if self._iq_url is None:
         self._iq_url = results['Server']
 
-  def get_url(self):
+  def get_url(self) -> (str):
     """gets url to use for IQ Server request"""
     return self._iq_url
 
@@ -71,11 +71,11 @@ class IQ():
     """gets report url from IQ Server result"""
     return self._report_url
 
-  def get_headers(self):
+  def get_headers(self) -> (dict):
     """gets headers to use for IQ Server request"""
     return self._headers
 
-  def get_public_application_id(self):
+  def get_public_application_id(self) -> (str):
     """gets public application id to use for IQ Server request"""
     return self._public_application_id
 
@@ -130,7 +130,7 @@ class IQ():
         step=1,
         timeout=60)
 
-  def __handle_response(self, response):
+  def __handle_response(self, response: str) -> (bool):
     try:
       res = json.loads(response)
       LOG.debug(res)

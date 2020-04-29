@@ -23,8 +23,9 @@ from ..types.vulnerabilities import Vulnerabilities
 
 class Audit():
   """ Audit does the business, it prints results from OSS Index to the standard out """
-  def __init__(self):
+  def __init__(self, quiet=False):
     self._log = logging.getLogger('jake')
+    self._quiet = quiet
 
   def audit_results(self, results: List[CoordinateResults]):
     """
@@ -49,11 +50,12 @@ class Audit():
     vulnerability exists
     """
     if len(coordinate.get_vulnerabilities()) == 0:
-      self.do_print("[{}/{}] - {} - no known vulnerabilities for this version"
-                    .format(
-                        number,
-                        length,
-                        coordinate.get_coordinates()), 0)
+      if not self._quiet:
+        self.do_print("[{}/{}] - {} - no known vulnerabilities for this version"
+                      .format(
+                          number,
+                          length,
+                          coordinate.get_coordinates()), 0)
       return len(coordinate.get_vulnerabilities())
 
     self.do_print(("[{}/{}] - {} [VULNERABLE] {} known vulnerabilities for"

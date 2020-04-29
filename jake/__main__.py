@@ -98,7 +98,7 @@ def __add_options(options):
     is_eager=True,
     help='Clear the OSS Index cache and exit')
 
-
+# entry point, the above options get executed first as callbacks
 def main():
   """ defining the root cli command as main so that running 'jake'
       in the command line will use this as the entry point
@@ -111,7 +111,9 @@ def main():
   """
   pass
 
+# config sub-command
 @main.command()
+# type of config
 @click.argument(
     'conf',
     type=click.Choice(['iq', 'ossi']))
@@ -123,12 +125,14 @@ def config(conf):
   """
   cli_config = IQConfig() if conf == 'iq' else Config()
 
+  # exits 0 if config was set, with non-zero from os if it failed
   result = cli_config.get_config_from_std_in()
   if result is False:
     _exit(EX_OSERR)
   else:
     _exit(0)
 
+# ddt (ossi) subcommand
 @main.command()
 @__add_options(__shared_options)
 def ddt(verbose, quiet, conda):
@@ -164,7 +168,7 @@ def ddt(verbose, quiet, conda):
 
   with yaspin(text="Loading", color="yellow") as spinner:
     spinner.text = "Auditing results from OSS Index"
-    audit = Audit()
+    audit = Audit(quiet)
     spinner.ok("✅ ")
     code = audit.audit_results(response)
     _exit(code)

@@ -35,6 +35,15 @@ class CycloneDxSbomGenerator():
       raise NotImplementedError
 
   def purl_sbom(self, purls: list) -> (list):
+    """ get sbom from a list of purls
+
+    Arguments:
+        purls -- list of purls (strings)
+
+    Returns:
+        sbom as a list of lxml.etree.Element nodes
+        coordinate data only
+    """
     sbom = self.__generator.create_xml_from_purls(purls)
     return sbom
 

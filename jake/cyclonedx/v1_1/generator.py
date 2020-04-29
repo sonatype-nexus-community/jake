@@ -30,6 +30,14 @@ class CycloneDx11Generator():
     self.__xml = []
 
   def create_xml_from_purls(self, coords: list) -> (list):
+    """parses a list of purls to generate an xml w/ only component nodes
+
+    Arguments:
+        coords -- list of purls (strings)
+
+    Returns:
+        xml -- list of etree.Element objects, component only nodes with no vulns
+    """
     self.__create_root()
     components = etree.Element('components')
     for component in coords:

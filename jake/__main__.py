@@ -54,6 +54,13 @@ def __clear_cache(ctx, flag: bool):
     print('Cache Cleared')
   ctx.exit()
 
+def __check_stdin(flag: bool):
+  if flag and sys.stdin.isatty():
+    print('No stdin detected, run \'conda list | jake ...\' with the \'-c\' flag.')
+    _exit(0)
+  else:
+    return
+
 # params that propagate through subcommands
 __shared_options = [
     click.option(
@@ -109,7 +116,6 @@ def main():
       verbose -- get full runtime output from debug logger
       quiet -- supress the banner TODO: non vulnerable outputs as well
   """
-  pass
 
 # config sub-command
 @main.command()
@@ -147,6 +153,8 @@ def ddt(verbose, quiet, conda):
     __banner()
 
   __setup_logger(verbose)
+
+  __check_stdin(conda)
 
   with yaspin(text="Loading", color="yellow") as spinner:
     spinner.text = "Collecting Dependencies"
@@ -209,6 +217,9 @@ def iq(verbose: bool, quiet: bool, conda: bool, application, stage, user, passwo
     __banner()
 
   __setup_logger(verbose)
+
+  __check_stdin(conda)
+
 
   iq_args = {}
   iq_args['application'] = application

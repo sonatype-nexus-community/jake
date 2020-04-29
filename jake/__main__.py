@@ -138,6 +138,31 @@ def config(conf):
   else:
     _exit(0)
 
+@main.command()
+@__add_options(__shared_options)
+@click.option(
+    '-o', '--output',
+    default='bom.xml',
+    help='Specify a file name and/or directory to save the CycloneDx sbom')
+def sbom(verbose, quiet, conda, output):
+  """
+  Generates a purl only bom (no vulns) and outputs it to a file
+  that can be picked up by a Sonatype CLI or CI Plugin
+
+  Does not make any connection to IQ or OSSI
+
+  Arguments:
+    output -- file name, relative or absolute path (w/ file name)
+  """
+  if not quiet:
+    __banner()
+  __setup_logger(verbose)
+  __check_stdin(conda)
+  sbom_xml = __sbom_control_flow(conda).decode('utf-8')
+  with open(output, 'w') as bom_file:
+    print(sbom_xml, file=bom_file)
+  _exit(0)
+
 # ddt (ossi) subcommand
 @main.command()
 @__add_options(__shared_options)
@@ -217,6 +242,7 @@ def iq(verbose: bool, quiet: bool, conda: bool, application, stage, user, passwo
     __banner()
   __setup_logger(verbose)
   __check_stdin(conda)
+  bom = __sbom_control_flow(conda)
 
   iq_args = {}
   iq_args['application'] = application
@@ -226,7 +252,7 @@ def iq(verbose: bool, quiet: bool, conda: bool, application, stage, user, passwo
   iq_args['host'] = host
   iq_args['conda'] = conda
 
-  __iq_control_flow(iq_args)
+  __iq_control_flow(iq_args, bom)
 
 
 def __setup_logger(verbose: bool):
@@ -256,28 +282,14 @@ def __setup_logger(verbose: bool):
 
   logger.addHandler(ch)
 
-def __iq_control_flow(args: dict):
-
-  with yaspin(text="Loading", color="yellow") as spinner:
-    spinner.text = "Collecting Dependencies from System..."
-    coords = Parse().get_dependencies_from_stdin(sys.stdin) if args['conda'] else Pip().get_dependencies()
-    spinner.ok("✅ ")
-    spinner.text = "Parsing Coordinates..."
-    purls = coords.get_purls()
-    spinner.ok("✅ ")
-
-  with yaspin(text="Loading", color="magenta") as spinner:
-    spinner.text = "Generating CycloneDx BOM..."
-    sbom_gen = CycloneDxSbomGenerator()
-    sbom = sbom_gen.purl_sbom(purls)
-    spinner.ok("✅ ")
+def __iq_control_flow(args: dict, bom_str: bytes):
 
   with yaspin(text="Loading", color="magenta") as spinner:
     spinner.text = "Submitting to Sonatype IQ..."
     iq_requests = IQ(args)
     _id = iq_requests.get_internal_id()
     status_url = iq_requests.submit_sbom_to_third_party_api(
-        sbom_gen.sbom_to_string(sbom), _id)
+        bom_str, _id)
     spinner.ok("✅ ")
 
   with yaspin(text="Loading", color="magenta") as spinner:
@@ -297,6 +309,24 @@ def __iq_control_flow(args: dict):
       print(Fore.GREEN +
             "Your IQ Server Report is available here: {}".format(iq_requests.get_report_url()))
       _exit(0)
+
+def __sbom_control_flow(conda: bool) -> (bytes):
+  with yaspin(text="Loading", color="yellow") as spinner:
+    spinner.text = "Collecting Dependencies from System..."
+    coords = Parse().get_dependencies_from_stdin(sys.stdin) if conda else Pip().get_dependencies()
+    spinner.ok("✅ ")
+    spinner.text = "Parsing Coordinates..."
+    purls = coords.get_purls()
+    spinner.ok("✅ ")
+
+  with yaspin(text="Loading", color="magenta") as spinner:
+    spinner.text = "Generating CycloneDx BOM..."
+    sbom_gen = CycloneDxSbomGenerator()
+    sbom_xml = sbom_gen.purl_sbom(purls)
+    sbom_byte_str = sbom_gen.sbom_to_string(sbom_xml)
+    spinner.ok("✅ ")
+
+  return sbom_byte_str
 
 def __banner():
   top_font = 'isometric4' # another option: 'isometric1'

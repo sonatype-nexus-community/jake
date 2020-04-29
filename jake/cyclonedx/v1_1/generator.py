@@ -29,7 +29,7 @@ class CycloneDx11Generator():
     self._log = logging.getLogger('jake')
     self.__xml = []
 
-  def create_xml_from_purls(self, coords: list) -> (list):
+  def create_xml_from_purls(self, coords: list) -> (etree.Element):
     """parses a list of purls to generate an xml w/ only component nodes
 
     Arguments:
@@ -53,7 +53,7 @@ class CycloneDx11Generator():
     self.__xml.append(components)
     return self.__xml
 
-  def create_xml_from_oss_index_results(self, results: list):
+  def create_xml_from_oss_index_results(self, results: list) -> (etree.Element):
     """Takes the CoordinateResults list and creates an sbom in XML form"""
     self.__create_root()
     self.__create_component_nodes(results)

@@ -34,7 +34,7 @@ class CycloneDxSbomGenerator():
     else:
       raise NotImplementedError
 
-  def purl_sbom(self, purls: list) -> (list):
+  def purl_sbom(self, purls: list) -> (etree.Element):
     """ get sbom from a list of purls
 
     Arguments:
@@ -54,7 +54,7 @@ class CycloneDxSbomGenerator():
     return sbom
 
   @staticmethod
-  def sbom_to_string(sbom):
+  def sbom_to_string(sbom: etree.Element) -> (bytes):
     """sbom_to_string is responsible for turning an sbom into a string"""
     return etree.tostring(sbom, encoding="UTF-8")
 

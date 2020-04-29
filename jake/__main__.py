@@ -286,16 +286,16 @@ def __iq_control_flow(args: dict):
     if iq_requests.get_policy_action() is not None:
       spinner.fail("💥 ")
       print(Fore.YELLOW +
-            "Your IQ Server Report is available here: {}".format(iq_requests.get_report_url()))
+            "Snakes on the plane! There are policy failures from Sonatype IQ.")
       print(Fore.YELLOW +
-            "Your build has failed, please check your IQ Server Report for more information")
+            "Your IQ Server Report is available here: {}".format(iq_requests.get_report_url()))
       _exit(1)
     else:
       spinner.ok("✅ ")
       print(Fore.GREEN +
-            "Your IQ Server Report is available here: {}".format(iq_requests.get_report_url()))
+            "Smooth Slithering! No policy failures from Sonatype IQ.")
       print(Fore.GREEN +
-            "All good to go! Smooth sailing for you! No policy violations reported by IQ Server")
+            "Your IQ Server Report is available here: {}".format(iq_requests.get_report_url()))
       _exit(0)
 
 def __banner():

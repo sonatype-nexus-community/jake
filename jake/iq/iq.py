@@ -99,7 +99,7 @@ class IQ():
       return res['applications'][0]['id']
     raise ValueError(response.text)
 
-  def submit_sbom_to_third_party_api(self, sbom: str, internal_id: str):
+  def submit_sbom(self, sbom: str, internal_id: str) -> (str):
     """submits sbom (in str form) to IQ server, valid sbom should get
     202 response. On valid response, sets status url for later polling"""
     LOG.debug(sbom)
@@ -119,7 +119,7 @@ class IQ():
       return res['statusUrl']
     raise ValueError(response.text)
 
-  def poll_for_results(self, status_url: str):
+  def poll_report(self, status_url: str):
     """polls status url once a second until it gets a 200 response
     , and times out after one minute"""
     polling.poll(

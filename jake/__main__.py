@@ -117,9 +117,7 @@ def main():
       quiet -- supress the banner TODO: non vulnerable outputs as well
   """
 
-# config sub-command
 @main.command()
-# type of config
 @click.argument(
     'conf',
     type=click.Choice(['iq', 'ossi']))
@@ -154,10 +152,10 @@ def sbom(verbose, quiet, conda, output):
   Arguments:
     output -- file name, relative or absolute path (w/ file name)
   """
-  if not quiet:
-    __banner()
+  __banner(quiet)
   __setup_logger(verbose)
   __check_stdin(conda)
+
   sbom_xml = __sbom_control_flow(conda).decode('utf-8')
   with open(output, 'w') as bom_file:
     print(sbom_xml, file=bom_file)
@@ -174,11 +172,8 @@ def ddt(verbose, quiet, conda):
       Python scan: jake ddt\n
       Conda scan: conda list | jake ddt -c\n
   """
-  if not quiet:
-    __banner()
-
+  __banner(quiet)
   __setup_logger(verbose)
-
   __check_stdin(conda)
 
   with yaspin(text="Loading", color="yellow") as spinner:
@@ -238,8 +233,7 @@ def iq(verbose: bool, quiet: bool, conda: bool, application, stage, user, passwo
 
       To set the IQ config: jake config iq\n
   """
-  if not quiet:
-    __banner()
+  __banner(quiet)
   __setup_logger(verbose)
   __check_stdin(conda)
   bom = __sbom_control_flow(conda)
@@ -253,7 +247,6 @@ def iq(verbose: bool, quiet: bool, conda: bool, application, stage, user, passwo
   iq_args['conda'] = conda
 
   __iq_control_flow(iq_args, bom)
-
 
 def __setup_logger(verbose: bool):
   logger = logging.getLogger('jake')
@@ -283,18 +276,17 @@ def __setup_logger(verbose: bool):
   logger.addHandler(ch)
 
 def __iq_control_flow(args: dict, bom_str: bytes):
-
   with yaspin(text="Loading", color="magenta") as spinner:
     spinner.text = "Submitting to Sonatype IQ..."
     iq_requests = IQ(args)
     _id = iq_requests.get_internal_id()
-    status_url = iq_requests.submit_sbom_to_third_party_api(
-        bom_str, _id)
+    status_url = iq_requests.submit_sbom(bom_str, _id)
     spinner.ok("✅ ")
 
   with yaspin(text="Loading", color="magenta") as spinner:
     spinner.text = "Reticulating splines..."
-    iq_requests.poll_for_results(status_url)
+    iq_requests.poll_report(status_url)
+
     if iq_requests.get_policy_action() is not None:
       spinner.fail("💥 ")
       print(Fore.YELLOW +
@@ -311,6 +303,15 @@ def __iq_control_flow(args: dict, bom_str: bytes):
       _exit(0)
 
 def __sbom_control_flow(conda: bool) -> (bytes):
+  """
+  Gets the purls depending on the format and generates the sbom
+
+  Arguments:
+      conda -- whether to get conda deps from stdin
+
+  Returns:
+      bytestring of the sbom
+  """
   with yaspin(text="Loading", color="yellow") as spinner:
     spinner.text = "Collecting Dependencies from System..."
     coords = Parse().get_dependencies_from_stdin(sys.stdin) if conda else Pip().get_dependencies()
@@ -328,7 +329,10 @@ def __sbom_control_flow(conda: bool) -> (bytes):
 
   return sbom_byte_str
 
-def __banner():
+def __banner(quiet: bool):
+  """ Prints the banner, most of the user facing commands start with this """
+  if quiet:
+    return
   top_font = 'isometric4' # another option: 'isometric1'
   bot_font = 'invita'
   top = 'Jake'

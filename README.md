@@ -201,6 +201,39 @@ If you do not have a virtual environment activated, `jake` will resolve the pip-
   [72/72] - pkg:pypi/python-apt@1.1.0b1%20ubuntu0.16.4.8?extension=tar.gz - no known vulnerabilities for this version
 ```
 
+You can install `jake` in a virtual environment and it will be scoped to the dependencies that python shell has access to, but you would end up getting a report that includes jake's own dependencies.  To get around this, we added the `-t, --targets` flag which allows you to pass in a list site/dist package directories containing modules outside of the scope that `jake` is executing in.
+
+To get the site packages available to a virtual environment:
+
+```
+  $ source .venv/bin/activate
+  (.venv) $ python -m site
+  sys.path = [
+      '/home/ButterB0wl/git_repos/jake',
+      '/usr/lib/python37.zip',
+      '/usr/lib/python3.7',
+      '/usr/lib/python3.7/lib-dynload',
+      '/home/ButterB0wl/git_repos/jake/.venv/lib/python3.7/site-packages',
+  ]
+  USER_BASE: '/home/ButterB0wl/.local' (exists)
+  USER_SITE: '/home/ButterB0wl/.local/lib/python3.7/site-packages' (exists)
+  ENABLE_USER_SITE: False
+```
+
+The `-t` argument accepts a list as a string literal.  This is the best way I've found to do this, if you find a better way please create an issue :)
+
+Run the python command using the shell you want to target and export to an env var (i.e. activate the virtual environment, run the command, and make the output accesible to jake):
+
+```
+  # using target python shell for system or virtual environment
+  $ export JAKE_TARGET=`python -c "import site; print(site.getsitepackages())"
+  # using whatever shell has access to the jake module, can be a global install or stand-alone virtual environment
+  $ jake ddt -t "$JAKE_TARGET"
+```
+
+This will work for the `ddt`, `iq`, and `sbom` subcommands when evaluating pip modules.
+
+To target a conda environment, specify it using `conda list` piped into `jake` with the `-c` flag.
 
 ## Why Jake?
 

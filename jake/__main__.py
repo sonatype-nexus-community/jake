@@ -79,7 +79,7 @@ __shared_options = [
         is_flag=True,
         help='Resolve conda dependencies from std_in'),
     click.option(
-        '-t', '--target',
+        '-t', '--targets',
         default=None,
         help='List of site packages containing modules to be evaluated')
 ]
@@ -169,7 +169,7 @@ def sbom(verbose, quiet, conda, target, output):
 # ddt (ossi) subcommand
 @main.command()
 @__add_options(__shared_options)
-def ddt(verbose, quiet, conda, target):
+def ddt(verbose, quiet, conda, targets):
   """SPECIAL MOVE\n
   Allows you to perform scans backed by Sonatype's OSS Index
 
@@ -183,7 +183,7 @@ def ddt(verbose, quiet, conda, target):
 
   with yaspin(text="Loading", color="yellow") as spinner:
     spinner.text = "Collecting Dependencies"
-    coords = Parse().get_dependencies_from_stdin(sys.stdin) if conda else Pip(target).get_dependencies()
+    coords = Parse().get_dependencies_from_stdin(sys.stdin) if conda else Pip(targets).get_dependencies()
     spinner.ok("✅ ")
 
   with yaspin(text="Loading", color="yellow") as spinner:
@@ -226,7 +226,7 @@ def ddt(verbose, quiet, conda, target):
 @click.option(
     '-h', '--host',
     help='Specify an endpoint for Sonatype IQ')
-def iq(verbose: bool, quiet: bool, conda: bool, target: str, application, stage, user, password, host):
+def iq(verbose: bool, quiet: bool, conda: bool, targets: str, application, stage, user, password, host):
   """EXTRA SPECIAL MOVE\n
   Allows you to perform scans backed by Sonatype's Nexus IQ Server
 
@@ -241,7 +241,7 @@ def iq(verbose: bool, quiet: bool, conda: bool, target: str, application, stage,
   __banner(quiet)
   __setup_logger(verbose)
   __check_stdin(conda)
-  bom = __sbom_control_flow(conda, target)
+  bom = __sbom_control_flow(conda, targets)
 
   iq_args = {}
   iq_args['application'] = application

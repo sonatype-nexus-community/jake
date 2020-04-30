@@ -303,7 +303,7 @@ def __iq_control_flow(args: dict, bom_str: bytes):
     else:
       spinner.ok("🐍 ")
       print(Fore.GREEN +
-            "Smooth Slithering! No policy failures from Sonatype IQ.")
+            "Smooth slithering there bud! No policy failures from Sonatype IQ.")
       print(Fore.GREEN +
             "Your IQ Server Report is available here: {}".format(iq_requests.get_report_url()))
       _exit(0)

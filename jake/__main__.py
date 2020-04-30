@@ -77,7 +77,11 @@ __shared_options = [
         '-c', '--conda',
         default=False,
         is_flag=True,
-        help='Resolve conda dependencies from std_in')
+        help='Resolve conda dependencies from std_in'),
+    click.option(
+        '-t', '--target',
+        default=None,
+        help='List of site packages containing modules to be evaluated')
 ]
 
 # decorators be parsed inside out which click handles, but no decorators on the shared options
@@ -143,7 +147,7 @@ def config(conf):
     '-o', '--output',
     default='bom.xml',
     help='Specify a file name and/or directory to save the CycloneDx sbom')
-def sbom(verbose, quiet, conda, output):
+def sbom(verbose, quiet, conda, target, output):
   """
   Generates a purl only bom (no vulns) and outputs it to a file
   that can be picked up by a Sonatype CLI or CI Plugin
@@ -157,7 +161,7 @@ def sbom(verbose, quiet, conda, output):
   __setup_logger(verbose)
   __check_stdin(conda)
 
-  sbom_xml = __sbom_control_flow(conda).decode('utf-8')
+  sbom_xml = __sbom_control_flow(conda, target).decode('utf-8')
   with open(output, 'w') as bom_file:
     print(sbom_xml, file=bom_file)
   _exit(0)
@@ -165,7 +169,7 @@ def sbom(verbose, quiet, conda, output):
 # ddt (ossi) subcommand
 @main.command()
 @__add_options(__shared_options)
-def ddt(verbose, quiet, conda):
+def ddt(verbose, quiet, conda, target):
   """SPECIAL MOVE\n
   Allows you to perform scans backed by Sonatype's OSS Index
 
@@ -179,7 +183,7 @@ def ddt(verbose, quiet, conda):
 
   with yaspin(text="Loading", color="yellow") as spinner:
     spinner.text = "Collecting Dependencies"
-    coords = Parse().get_dependencies_from_stdin(sys.stdin) if conda else Pip().get_dependencies()
+    coords = Parse().get_dependencies_from_stdin(sys.stdin) if conda else Pip(target).get_dependencies()
     spinner.ok("✅ ")
 
   with yaspin(text="Loading", color="yellow") as spinner:
@@ -222,7 +226,7 @@ def ddt(verbose, quiet, conda):
 @click.option(
     '-h', '--host',
     help='Specify an endpoint for Sonatype IQ')
-def iq(verbose: bool, quiet: bool, conda: bool, application, stage, user, password, host):
+def iq(verbose: bool, quiet: bool, conda: bool, target: str, application, stage, user, password, host):
   """EXTRA SPECIAL MOVE\n
   Allows you to perform scans backed by Sonatype's Nexus IQ Server
 
@@ -237,7 +241,7 @@ def iq(verbose: bool, quiet: bool, conda: bool, application, stage, user, passwo
   __banner(quiet)
   __setup_logger(verbose)
   __check_stdin(conda)
-  bom = __sbom_control_flow(conda)
+  bom = __sbom_control_flow(conda, target)
 
   iq_args = {}
   iq_args['application'] = application
@@ -303,7 +307,7 @@ def __iq_control_flow(args: dict, bom_str: bytes):
             "Your IQ Server Report is available here: {}".format(iq_requests.get_report_url()))
       _exit(0)
 
-def __sbom_control_flow(conda: bool) -> (bytes):
+def __sbom_control_flow(conda: bool, target: str) -> (bytes):
   """
   Gets the purls depending on the format and generates the sbom
 
@@ -315,7 +319,7 @@ def __sbom_control_flow(conda: bool) -> (bytes):
   """
   with yaspin(text="Loading", color="yellow") as spinner:
     spinner.text = "Collecting Dependencies from System..."
-    coords = Parse().get_dependencies_from_stdin(sys.stdin) if conda else Pip().get_dependencies()
+    coords = Parse().get_dependencies_from_stdin(sys.stdin) if conda else Pip(target).get_dependencies()
     spinner.ok("✅ ")
     spinner.text = "Parsing Coordinates..."
     purls = coords.get_purls()

@@ -15,21 +15,25 @@
 # limitations under the License.
 
 import logging
+import ast
 import pkg_resources
 
 from ..types.coordinates import Coordinates
 
 class Pip():
   """pip.py gets installed pip dependencies"""
-  def __init__(self):
+  def __init__(self, targets=None):
     self._log = logging.getLogger('jake')
     self._format = "pypi"
+    self._working_set = pkg_resources.working_set
+    if targets:
+      self._working_set = pkg_resources.WorkingSet(ast.literal_eval(targets))
     self._coords = self.generate_dependencies()
 
   def generate_dependencies(self, coords=Coordinates()) -> (Coordinates):
     """converts list of pkg_resource.working_set into purl coordinates"""
 
-    for i in iter(pkg_resources.working_set):
+    for i in iter(self._working_set):
       coords.add_coordinate(i.project_name, i._version, self._format)
 
     if len(coords.get_coordinates()) == 0:

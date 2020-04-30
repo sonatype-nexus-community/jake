@@ -18,8 +18,8 @@ import json
 
 from lxml import etree
 
-from jake.types.results_decoder import ResultsDecoder
-from jake.cyclonedx.generator import CycloneDxSbomGenerator
+from ..types.results_decoder import ResultsDecoder
+from ..cyclonedx.generator import CycloneDxSbomGenerator
 
 class TestSbomGenerator(unittest.TestCase):
   """TestSbomGenerator audits the cyclonedx/CycloneDxSbomGenerator class"""

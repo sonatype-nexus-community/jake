@@ -17,7 +17,7 @@ import io
 import sys
 import unittest
 
-from jake.config.iq_config import IQConfig
+from ..config.iq_config import IQConfig
 
 class TestIQConfig(unittest.TestCase):
   """testIQConfig verifies the IQConfig class"""

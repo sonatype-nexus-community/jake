@@ -15,8 +15,8 @@
 # limitations under the License.
 import json
 
-from jake.types.coordinateresults import CoordinateResults
-from jake.types.vulnerabilities import Vulnerabilities
+from ..types.coordinateresults import CoordinateResults
+from ..types.vulnerabilities import Vulnerabilities
 
 
 class ResultsDecoder(json.JSONDecoder):

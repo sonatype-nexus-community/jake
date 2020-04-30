@@ -11,21 +11,25 @@
 ### Usage
 
 ```
-$ Usage: jake [OPTIONS] COMMAND [ARGS]...
+$ jake --help
+Usage: jake [OPTIONS] COMMAND [ARGS]...
 
   Jake: Put your python deps in a chokehold.
 
 Options:
   -v, --version  Print version and exit
+  --clear        Clear the OSS Index cache and exit
   --help         Show this message and exit.
 
 Commands:
   config  Allows a user to set Nexus IQ or OSS Index config params...
   ddt     SPECIAL MOVE Allows you to perform scans backed by Sonatype's OSS...
   iq      EXTRA SPECIAL MOVE Allows you to perform scans backed by...
+  sbom    Generates a purl only bom (no vulns) and outputs it to a file
+          that...
 
-
-$ Usage: jake ddt [OPTIONS]
+$ jake ddt --help
+Usage: jake ddt [OPTIONS]
 
   SPECIAL MOVE
 
@@ -37,14 +41,12 @@ $ Usage: jake ddt [OPTIONS]
 
       Conda scan: conda list | jake ddt -c
 
-      Clear cache: jake ddt --clear
-
 Options:
-  -vv, --verbose  Set log level to verbose
-  -q, --quiet     Suppress cosmetic and informational output
-  --clear         Clear the OSS Index cache
-  -c, --conda     Resolve conda dependencies from std_in
-  --help          Show this message and exit.
+  -vv, --verbose      Set log level to verbose
+  -q, --quiet         Suppress cosmetic and informational output
+  -c, --conda         Resolve conda dependencies from std_in
+  -t, --targets TEXT  List of site packages containing modules to be evaluated
+  --help              Show this message and exit.
 ```
 
 `jake` can be run against either pypi or conda installed dependencies.
@@ -88,6 +90,10 @@ Usage: jake iq [OPTIONS]
 Options:
   -vv, --verbose                  Set log level to verbose
   -q, --quiet                     Suppress cosmetic and informational output
+  -c, --conda                     Resolve conda dependencies from std_in
+  -t, --targets TEXT              List of site packages containing modules to
+                                  be evaluated
+
   -a, --application TEXT          Supply an IQ Server Public Application ID
                                   [required]
 
@@ -96,7 +102,6 @@ Options:
   -u, --user TEXT                 Set username for Sonatype IQ
   -p, --password TEXT             Set password or token for associated user
   -h, --host TEXT                 Specify an endpoint for Sonatype IQ
-  -c, --conda                     Resolve conda dependencies from std_in
   --help                          Show this message and exit.
 ```
 
@@ -122,7 +127,7 @@ Some examples of using `jake` with Sonatype IQ
   2. (PyPi) Run `jake` against the AppId which will submit your dependencies to IQ and generate a report.
 
         ```
-        (.venv) ajurgenson@ArtieSonaDell:~/git_repos/jake$ jake iq -a jake
+        (.venv) $ jake iq -a jake
                            ___           ___           ___
                ___        /  /\         /  /\         /  /\
               /__/\      /  /::\       /  /:/        /  /::\
@@ -142,16 +147,19 @@ Some examples of using `jake` with Sonatype IQ
 
 
 
-        Jake version: v0.0.21
+        Jake version: v0.1.4
         Put your python deps in a chokehold.
-        ✅  Calling OSS Index
-        ✅  Calling Nexus IQ Server
-        Your IQ Server Report is available here: http://localhost:8070/ui/links/application/jake/report/2099ab2ce0dc4ea7a034ee227ba431f9
-        All good to go! Smooth sailing for you! No policy violations reported by IQ Server
+        🐍  Collecting Dependencies from System...
+        🐍  Parsing Coordinates...
+        🐍  Generating CycloneDx BOM...
+        🐍  Submitting to Sonatype IQ...
+        🐍  Reticulating splines...
+        Smooth slithering there bud! No policy failures from Sonatype IQ.
+        Your IQ Server Report is available here: http://localhost:8070/ui/links/application/jake/report/9a34b1296aa54bf29a83d274f395000d
         ```
   3. (Conda) Use `conda list` and the `-c` flag to pipe conda managed deps into `jake` to generate a report in Sonatype IQ
         ```
-        $ conda list | jake iq -c -a jake
+        $ conda list | jake iq -a conda-base -c
                            ___           ___           ___
                ___        /  /\         /  /\         /  /\
               /__/\      /  /::\       /  /:/        /  /::\
@@ -169,25 +177,28 @@ Some examples of using `jake` with Sonatype IQ
                    _/_(/    _     _  __   _  (/_   _
             o   o  (__/ )__(/_   /_)_/ (_(_(_/(___(/_ o   o
 
-        Jake version: v0.0.21
+        Jake version: v0.1.4
         Put your python deps in a chokehold.
-        ✅  Calling OSS Index
-        💥  Calling Nexus IQ Server
-        Your IQ Server Report is available here: http://localhost:8070/ui/links/application/jake/report/6adf87e96f72441c8606d2c2a2eca874
-        Your build has failed, please check your IQ Server Report for more information
+        🐍  Collecting Dependencies from System...
+        🐍  Parsing Coordinates...
+        🐍  Generating CycloneDx BOM...
+        🐍  Submitting to Sonatype IQ...
+        💥  Reticulating splines...
+        Snakes on the plane! There are policy failures from Sonatype IQ.
+        Your IQ Server Report is available here: http://localhost:8070/ui/links/application/conda-base/report/966f5ff7d2e44bb1bb14a6567e66b1ef
         ```
 
 #### Usage with Virtual Environments
 
 `jake` will resolve dependencies based off of what the current pip scope has access to.
 
-If you do not have a virtual environment activated, `jake` will resolve the pip-managed pypi packages installed to the system:
+If you do not have a virtual environment activated, `jake` will resolve the pip-managed pypi modules accessible to the system python shell:
 
 ```
   $ jake ddt -q
-  ✅  Collecting Dependencies
-  ✅  Querying OSS Index
-  ✅  Auditing results from OSS Index
+  🐍  Collecting Dependencies
+  🐍  Querying OSS Index
+  🐍  Auditing results from OSS Index
   ...
   [71/72] - pkg:pypi/pyjwt@1.3.0?extension=tar.gz [VULNERABLE] 1 known vulnerabilities forthis version
   ID: 4dc8bf86-e2ee-45b0-881f-bb4f03748b5b
@@ -201,6 +212,41 @@ If you do not have a virtual environment activated, `jake` will resolve the pip-
   [72/72] - pkg:pypi/python-apt@1.1.0b1%20ubuntu0.16.4.8?extension=tar.gz - no known vulnerabilities for this version
 ```
 
+You can install `jake` in a virtual environment and it will be scoped to the dependencies that python shell has access to, but you would end up getting a report that includes jake's own dependencies.  To get around this, we added the `-t, --targets` flag which allows you to pass in a list site/dist package directories containing modules outside of the scope that `jake` is executing in.
+
+To get the site packages available to a virtual environment:
+
+```
+  $ source .venv/bin/activate
+  (.venv) $ python -m site
+  sys.path = [
+      '/home/ButterB0wl/git_repos/jake',
+      '/usr/lib/python37.zip',
+      '/usr/lib/python3.7',
+      '/usr/lib/python3.7/lib-dynload',
+      '/home/ButterB0wl/git_repos/jake/.venv/lib/python3.7/site-packages',
+  ]
+  USER_BASE: '/home/ButterB0wl/.local' (exists)
+  USER_SITE: '/home/ButterB0wl/.local/lib/python3.7/site-packages' (exists)
+  ENABLE_USER_SITE: False
+```
+
+The `-t` argument accepts a list as a string literal.  This is the best way I've found to do this, if you find a better way please create an issue :)
+
+Run the python command using the shell you want to target and export to an env var:
+
+```
+  # using target python shell for system or virtual environment
+  $ export JAKE_TARGET=`python -c "import site; print(site.getsitepackages())"
+  # using whatever shell has access to the jake module, can be a global install or stand-alone virtual environment
+  $ jake ddt -t "$JAKE_TARGET"
+```
+
+In other words: activate the virtual environment, run the `site.getsitepackages()` command, and make the output accesible to your `jake` install
+
+This will work for the `ddt`, `iq`, and `sbom` subcommands when evaluating pip modules.
+
+To target a conda environment, specify it using `conda list` piped into `jake` with the `-c` flag.
 
 ## Why Jake?
 

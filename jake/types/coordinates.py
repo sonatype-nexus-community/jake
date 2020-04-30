@@ -34,11 +34,11 @@ class Coordinates():
     purl = self.parse_to_purl(name, version, source)
     self._coordinates[(name, version, source)] = purl
 
-  def get_coordinates(self):
+  def get_coordinates(self) -> (dict):
     """gets the coordinates set"""
     return self._coordinates
 
-  def get_purls(self):
+  def get_purls(self) -> (list):
     """
     gets a list of purls from the objects dict values
 
@@ -47,13 +47,13 @@ class Coordinates():
     """
     return list(self._coordinates.values())
 
-  def get_coordinates_as_json(self):
+  def get_coordinates_as_json(self) -> (str):
     """turns the coordinates array to JSON"""
     coordinates = {}
     coordinates['coordinates'] = self._coordinates
     return json.dumps(coordinates)
 
-  def parse_to_purl(self, name: str, version: str, source: str):
+  def parse_to_purl(self, name: str, version: str, source: str) -> (str):
     """
     parses a single name, version, source set into a purl
 

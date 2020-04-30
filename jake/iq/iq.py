@@ -21,7 +21,7 @@ from json import JSONDecodeError
 import requests
 import polling
 
-from jake.config.iq_config import IQConfig
+from ..config.iq_config import IQConfig
 
 DEFAULT_HEADERS = {
     'User-Agent': 'jake'}
@@ -59,7 +59,7 @@ class IQ():
       if self._iq_url is None:
         self._iq_url = results['Server']
 
-  def get_url(self):
+  def get_url(self) -> (str):
     """gets url to use for IQ Server request"""
     return self._iq_url
 
@@ -71,15 +71,15 @@ class IQ():
     """gets report url from IQ Server result"""
     return self._report_url
 
-  def get_headers(self):
+  def get_headers(self) -> (dict):
     """gets headers to use for IQ Server request"""
     return self._headers
 
-  def get_public_application_id(self):
+  def get_public_application_id(self) -> (str):
     """gets public application id to use for IQ Server request"""
     return self._public_application_id
 
-  def get_internal_id(self):
+  def get_internal_id(self) -> (str):
     """gets internal application id from IQ Server using the public
     application id"""
     response = requests.get(
@@ -90,11 +90,16 @@ class IQ():
         auth=(self._user, self._password))
     if response.ok:
       res = json.loads(response.text)
+      if not res['applications']:
+        raise ValueError(
+            "The public application id \'"
+            + self._public_application_id
+            + "\' does not exist or is not accessible by the user.")
       LOG.debug(res['applications'][0]['id'])
       return res['applications'][0]['id']
     raise ValueError(response.text)
 
-  def submit_sbom_to_third_party_api(self, sbom: str, internal_id: str):
+  def submit_sbom(self, sbom: str, internal_id: str) -> (str):
     """submits sbom (in str form) to IQ server, valid sbom should get
     202 response. On valid response, sets status url for later polling"""
     LOG.debug(sbom)
@@ -114,7 +119,7 @@ class IQ():
       return res['statusUrl']
     raise ValueError(response.text)
 
-  def poll_for_results(self, status_url: str):
+  def poll_report(self, status_url: str):
     """polls status url once a second until it gets a 200 response
     , and times out after one minute"""
     polling.poll(
@@ -125,7 +130,7 @@ class IQ():
         step=1,
         timeout=60)
 
-  def __handle_response(self, response):
+  def __handle_response(self, response: str) -> (bool):
     try:
       res = json.loads(response)
       LOG.debug(res)

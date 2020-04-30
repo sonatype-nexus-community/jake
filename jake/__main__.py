@@ -27,24 +27,41 @@ from pyfiglet import figlet_format
 from colorama import init, Fore
 from yaspin import yaspin
 
-from jake.ossindex.ossindex import OssIndex
-from jake.iq.iq import IQ
-from jake.cyclonedx.generator import CycloneDxSbomGenerator
-from jake.parse.parse import Parse
-from jake.pip.pip import Pip
-from jake.audit.audit import Audit
-from jake.config.config import Config
-from jake.config.iq_config import IQConfig
-from jake._version import __version__
+from .ossindex.ossindex import OssIndex
+from .iq.iq import IQ
+from .cyclonedx.generator import CycloneDxSbomGenerator
+from .parse.parse import Parse
+from .pip.pip import Pip
+from .audit.audit import Audit
+from .config.config import Config
+from .config.iq_config import IQConfig
+from ._version import __version__
 
-init(strip=not sys.stdout.isatty()) # strip colors on redirected output
+# strip colors on redirected output
+init(strip=not sys.stdout.isatty())
 
-def __print_version(ctx, value):
-  if not value:
+def __print_version(ctx, flag: bool):
+  if not flag:
     return
   print(__package__, 'v' +  __version__)
   ctx.exit()
 
+def __clear_cache(ctx, flag: bool):
+  if not flag:
+    return
+  ossi = OssIndex()
+  if ossi.clean_cache():
+    print('Cache Cleared')
+  ctx.exit()
+
+def __check_stdin(flag: bool):
+  if flag and sys.stdin.isatty():
+    print('No stdin detected, run \'conda list | jake ...\' with the \'-c\' flag.')
+    _exit(0)
+  else:
+    return
+
+# params that propagate through subcommands
 __shared_options = [
     click.option(
         '-vv', '--verbose',
@@ -55,9 +72,19 @@ __shared_options = [
         '-q', '--quiet',
         is_flag=True,
         default=False,
-        help='Suppress cosmetic and informational output')
+        help='Suppress cosmetic and informational output'),
+    click.option(
+        '-c', '--conda',
+        default=False,
+        is_flag=True,
+        help='Resolve conda dependencies from std_in'),
+    click.option(
+        '-t', '--targets',
+        default=None,
+        help='List of site packages containing modules to be evaluated')
 ]
 
+# decorators be parsed inside out which click handles, but no decorators on the shared options
 def __add_options(options):
   def _add_options(func):
     for option in reversed(options):
@@ -66,6 +93,7 @@ def __add_options(options):
   return _add_options
 
 @click.group(help='Jake: Put your python deps in a chokehold.')
+# options that will take priority over other program execution and exit
 @click.option(
     '-v', '--version',
     is_flag=True,
@@ -73,6 +101,15 @@ def __add_options(options):
     expose_value=False,
     is_eager=True,
     help='Print version and exit')
+@click.option(
+    '--clear',
+    is_flag=True,
+    callback=__clear_cache,
+    expose_value=False,
+    is_eager=True,
+    help='Clear the OSS Index cache and exit')
+
+# entry point, the above options get executed first as callbacks
 def main():
   """ defining the root cli command as main so that running 'jake'
       in the command line will use this as the entry point
@@ -83,20 +120,21 @@ def main():
       verbose -- get full runtime output from debug logger
       quiet -- supress the banner TODO: non vulnerable outputs as well
   """
-  pass
 
 @main.command()
 @click.argument(
     'conf',
     type=click.Choice(['iq', 'ossi']))
 def config(conf):
-  """Allows a user to set Nexus IQ or OSS Index config params
+  """
+  Allows a user to set Nexus IQ or OSS Index config params
 
   Arguments:
       type -- cli input restricted by click to 'iq' and 'ossi'
   """
   cli_config = IQConfig() if conf == 'iq' else Config()
 
+  # exits 0 if config was set, with non-zero from os if it failed
   result = cli_config.get_config_from_std_in()
   if result is False:
     _exit(EX_OSERR)
@@ -106,43 +144,52 @@ def config(conf):
 @main.command()
 @__add_options(__shared_options)
 @click.option(
-    '--clear',
-    is_flag=True,
-    help='Clear the OSS Index cache')
-@click.option(
-    '-c', '--conda',
-    default=False,
-    is_flag=True,
-    help='Resolve conda dependencies from std_in')
-def ddt(verbose, quiet, clear, conda):
+    '-o', '--output',
+    default='bom.xml',
+    help='Specify a file name and/or directory to save the CycloneDx sbom')
+def sbom(verbose, quiet, conda, target, output):
+  """
+  Generates a purl only bom (no vulns) and outputs it to a file
+  that can be picked up by a Sonatype CLI or CI Plugin
+
+  Does not make any connection to IQ or OSSI
+
+  Arguments:
+    output -- file name, relative or absolute path (w/ file name)
+  """
+  __banner(quiet)
+  __setup_logger(verbose)
+  __check_stdin(conda)
+
+  sbom_xml = __sbom_control_flow(conda, target).decode('utf-8')
+  with open(output, 'w') as bom_file:
+    print(sbom_xml, file=bom_file)
+  _exit(0)
+
+# ddt (ossi) subcommand
+@main.command()
+@__add_options(__shared_options)
+def ddt(verbose, quiet, conda, targets):
   """SPECIAL MOVE\n
   Allows you to perform scans backed by Sonatype's OSS Index
 
   Example usage:\n
       Python scan: jake ddt\n
       Conda scan: conda list | jake ddt -c\n
-      Clear cache: jake ddt --clear
   """
-  if not quiet:
-    __banner()
-
+  __banner(quiet)
   __setup_logger(verbose)
-
-  oss_index = OssIndex()
-  if clear:
-    if oss_index.clean_cache():
-      print('Cache Cleared')
-    _exit(0)
+  __check_stdin(conda)
 
   with yaspin(text="Loading", color="yellow") as spinner:
     spinner.text = "Collecting Dependencies"
-    coords = Parse().get_dependencies_from_stdin(sys.stdin) if conda else Pip().get_dependencies()
-    spinner.ok("✅ ")
+    coords = Parse().get_deps_stdin(sys.stdin) if conda else Pip(targets).get_dependencies()
+    spinner.ok("🐍 ")
 
   with yaspin(text="Loading", color="yellow") as spinner:
     spinner.text = "Querying OSS Index"
 
-    response = oss_index.call_ossindex(coords)
+    response = OssIndex().call_ossindex(coords)
 
     if response is None:
       spinner.fail("💥 ")
@@ -150,12 +197,12 @@ def ddt(verbose, quiet, clear, conda):
           "Something went horribly wrong, there is no response from OSS Index",
           "please rerun with -VV to see what happened")
       _exit(EX_OSERR)
-    spinner.ok("✅ ")
+    spinner.ok("🐍 ")
 
   with yaspin(text="Loading", color="yellow") as spinner:
     spinner.text = "Auditing results from OSS Index"
-    audit = Audit()
-    spinner.ok("✅ ")
+    audit = Audit(quiet)
+    spinner.ok("🐍 ")
     code = audit.audit_results(response)
     _exit(code)
 
@@ -179,12 +226,8 @@ def ddt(verbose, quiet, clear, conda):
 @click.option(
     '-h', '--host',
     help='Specify an endpoint for Sonatype IQ')
-@click.option(
-    '-c', '--conda',
-    default=False,
-    is_flag=True,
-    help='Resolve conda dependencies from std_in')
-def iq(verbose, quiet, application, stage, user, password, host, conda):
+def iq(verbose: bool, quiet: bool, conda: bool, targets: str,
+       application, stage, user, password, host):
   """EXTRA SPECIAL MOVE\n
   Allows you to perform scans backed by Sonatype's Nexus IQ Server
 
@@ -196,10 +239,10 @@ def iq(verbose, quiet, application, stage, user, password, host, conda):
 
       To set the IQ config: jake config iq\n
   """
-  if not quiet:
-    __banner()
-
+  __banner(quiet)
   __setup_logger(verbose)
+  __check_stdin(conda)
+  bom = __sbom_control_flow(conda, targets)
 
   iq_args = {}
   iq_args['application'] = application
@@ -207,21 +250,11 @@ def iq(verbose, quiet, application, stage, user, password, host, conda):
   iq_args['user'] = user
   iq_args['password'] = password
   iq_args['host'] = host
+  iq_args['conda'] = conda
 
-  with yaspin(text="Loading", color="yellow") as spinner:
-    spinner.text = "Collecting Dependencies"
-    coords = Parse().get_dependencies_from_stdin(sys.stdin) if conda else Pip().get_dependencies()
-    spinner.text = "Calling OSS Index"
-    response = OssIndex().call_ossindex(coords)
-    spinner.ok("✅ ")
+  __iq_control_flow(iq_args, bom)
 
-    __handle_iq_server(response, iq_args)
-
-  # if args.application:
-  #    coords.join_coords(Pip().get_dependencies().get_coordinates())
-
-
-def __setup_logger(verbose):
+def __setup_logger(verbose: bool):
   logger = logging.getLogger('jake')
   logger.setLevel(logging.DEBUG)
 
@@ -248,32 +281,64 @@ def __setup_logger(verbose):
 
   logger.addHandler(ch)
 
-def __handle_iq_server(response, args):
-  with yaspin(text="Loading", color="yellow") as spinner:
-    spinner.text = "Calling Nexus IQ Server"
-    sbom_gen = CycloneDxSbomGenerator()
-    sbom = sbom_gen.create_and_return_sbom(response)
+def __iq_control_flow(args: dict, bom_str: bytes):
+  with yaspin(text="Loading", color="magenta") as spinner:
+    spinner.text = "Submitting to Sonatype IQ..."
     iq_requests = IQ(args)
     _id = iq_requests.get_internal_id()
-    status_url = iq_requests.submit_sbom_to_third_party_api(
-        sbom_gen.sbom_to_string(sbom), _id)
-    iq_requests.poll_for_results(status_url)
+    status_url = iq_requests.submit_sbom(bom_str, _id)
+    spinner.ok("🐍 ")
+
+  with yaspin(text="Loading", color="magenta") as spinner:
+    spinner.text = "Reticulating splines..."
+    iq_requests.poll_report(status_url)
+
     if iq_requests.get_policy_action() is not None:
       spinner.fail("💥 ")
       print(Fore.YELLOW +
-            "Your IQ Server Report is available here: {}".format(iq_requests.get_report_url()))
+            "Snakes on the plane! There are policy failures from Sonatype IQ.")
       print(Fore.YELLOW +
-            "Your build has failed, please check your IQ Server Report for more information")
+            "Your IQ Server Report is available here: {}".format(iq_requests.get_report_url()))
       _exit(1)
     else:
-      spinner.ok("✅ ")
+      spinner.ok("🐍 ")
+      print(Fore.GREEN +
+            "Smooth slithering there bud! No policy failures from Sonatype IQ.")
       print(Fore.GREEN +
             "Your IQ Server Report is available here: {}".format(iq_requests.get_report_url()))
-      print(Fore.GREEN +
-            "All good to go! Smooth sailing for you! No policy violations reported by IQ Server")
       _exit(0)
 
-def __banner():
+def __sbom_control_flow(conda: bool, target: str) -> (bytes):
+  """
+  Gets the purls depending on the format and generates the sbom
+
+  Arguments:
+      conda -- whether to get conda deps from stdin
+
+  Returns:
+      bytestring of the sbom
+  """
+  with yaspin(text="Loading", color="yellow") as spinner:
+    spinner.text = "Collecting Dependencies from System..."
+    coords = Parse().get_deps_stdin(sys.stdin) if conda else Pip(target).get_dependencies()
+    spinner.ok("🐍 ")
+    spinner.text = "Parsing Coordinates..."
+    purls = coords.get_purls()
+    spinner.ok("🐍 ")
+
+  with yaspin(text="Loading", color="magenta") as spinner:
+    spinner.text = "Generating CycloneDx BOM..."
+    sbom_gen = CycloneDxSbomGenerator()
+    sbom_xml = sbom_gen.purl_sbom(purls)
+    sbom_byte_str = sbom_gen.sbom_to_string(sbom_xml)
+    spinner.ok("🐍 ")
+
+  return sbom_byte_str
+
+def __banner(quiet: bool):
+  """ Prints the banner, most of the user facing commands start with this """
+  if quiet:
+    return
   top_font = 'isometric4' # another option: 'isometric1'
   bot_font = 'invita'
   top = 'Jake'

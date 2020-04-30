@@ -15,7 +15,7 @@
 import unittest
 import pathlib
 
-from jake.parse.parse import Parse
+from ..parse.parse import Parse
 
 class TestParse(unittest.TestCase):
   """TestParse audits the Parse class"""
@@ -27,7 +27,7 @@ class TestParse(unittest.TestCase):
     Parse.get_coordinates() returns a list of purls"""
     file = pathlib.Path(__file__).parent / "condalistoutput.txt"
     with open(file, "r") as stdin:
-      actual = self.func.get_dependencies_from_stdin(stdin)
+      actual = self.func.get_deps_stdin(stdin)
       output = actual.get_coordinates()
     self.assertEqual(len(output), 262)
     self.assertEqual(output[('_ipyw_jlab_nb_ext_conf', '0.1.0', 'conda')],

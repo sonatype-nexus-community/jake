@@ -27,9 +27,33 @@ class CycloneDx11Generator():
   and vulnerabilities and turning them into a CycloneDX 1.1 SBOM"""
   def __init__(self):
     self._log = logging.getLogger('jake')
-    self.__xml = None
+    self.__xml = []
 
-  def create_xml_from_oss_index_results(self, results):
+  def create_xml_from_purls(self, coords: list) -> (etree.Element):
+    """parses a list of purls to generate an xml w/ only component nodes
+
+    Arguments:
+        coords -- list of purls (strings)
+
+    Returns:
+        xml -- list of etree.Element objects, component only nodes with no vulns
+    """
+    self.__create_root()
+    components = etree.Element('components')
+    for component in coords:
+      node = etree.Element('component', {"type": "library", "bom-ref": component})
+      nombre, versace = self.__get_name_version_from_purl(component)
+      name = etree.SubElement(node, 'name')
+      name.text = nombre
+      version = etree.SubElement(node, 'version')
+      version.text = versace
+      purl = etree.SubElement(node, 'purl')
+      purl.text = component
+      components.append(node)
+    self.__xml.append(components)
+    return self.__xml
+
+  def create_xml_from_oss_index_results(self, results: list) -> (etree.Element):
     """Takes the CoordinateResults list and creates an sbom in XML form"""
     self.__create_root()
     self.__create_component_nodes(results)
@@ -57,7 +81,7 @@ class CycloneDx11Generator():
   def __create_root(self):
     self.__xml = etree.Element('bom', {"xmlns": XMLNS, "version": "1"}, nsmap=NSMAP)
 
-  def __create_component_nodes(self, component_list):
+  def __create_component_nodes(self, component_list: list) -> (list):
     components = etree.Element('components')
     for component in component_list:
       node = etree.Element('component', {"type": "library", "bom-ref": component.get_coordinates()})

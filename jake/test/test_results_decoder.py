@@ -16,10 +16,8 @@ import unittest
 import pathlib
 import json
 
-from typing import List
-
-from jake.types.results_decoder import ResultsDecoder
-from jake.types.coordinateresults import CoordinateResults
+from ..types.results_decoder import ResultsDecoder
+from ..types.coordinateresults import CoordinateResults
 
 
 class TestResultsDecoder(unittest.TestCase):
@@ -31,7 +29,7 @@ class TestResultsDecoder(unittest.TestCase):
     with open(file, "r") as stdin:
       result = json.loads(stdin.read(), cls=ResultsDecoder)
     self.assertEqual(len(result), 32)
-    self.assertEqual(isinstance(result, List), True)
+    self.assertEqual(isinstance(result, list), True)
     self.assertEqual(isinstance(result[0], CoordinateResults), True)
     self.assertEqual(result[0].get_coordinates(),
                      "pkg:conda/pycrypto@2.6.1")
@@ -39,5 +37,5 @@ class TestResultsDecoder(unittest.TestCase):
     ), "https://ossindex.sonatype.org/component/pkg:conda/pycrypto@2.6.1")
     self.assertEqual(isinstance(
         result[0].get_vulnerabilities(),
-        List), True)
+        list), True)
     self.assertEqual(len(result[0].get_vulnerabilities()), 0)

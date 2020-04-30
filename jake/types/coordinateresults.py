@@ -47,6 +47,8 @@ class CoordinateResults():
 
   def get_max_cvss_score(self):
     """gets the max cvss_score for vulnerabilities list"""
+    # if not self.vulnerabilities:
+    #   return None
     return max(vulnerability.get_cvss_score() for vulnerability in self.vulnerabilities)
 
   def to_json(self):

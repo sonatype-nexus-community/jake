@@ -14,7 +14,7 @@
 # limitations under the License.
 import unittest
 
-from jake.config.config import Config
+from ..config.config import Config
 
 
 class TestConfig(unittest.TestCase):

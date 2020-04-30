@@ -1,4 +1,6 @@
 """generator.py will craft and validate a CycloneDX SBOM"""
+# pylint: disable=protected-access
+#
 # Copyright 2019 Sonatype Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +18,7 @@ import logging
 
 from lxml import etree
 
-from jake.cyclonedx.v1_1.generator import CycloneDx11Generator
+from ..cyclonedx.v1_1.generator import CycloneDx11Generator
 
 class CycloneDxSbomGenerator():
   """CycloneDxGenerator is responsible for taking identifiers
@@ -32,14 +34,27 @@ class CycloneDxSbomGenerator():
     else:
       raise NotImplementedError
 
-  def create_and_return_sbom(self, results):
+  def purl_sbom(self, purls: list) -> (etree.Element):
+    """ get sbom from a list of purls
+
+    Arguments:
+        purls -- list of purls (strings)
+
+    Returns:
+        sbom as a list of lxml.etree.Element nodes
+        coordinate data only
+    """
+    sbom = self.__generator.create_xml_from_purls(purls)
+    return sbom
+
+  def create_and_return_sbom(self, results) -> (list):
     """create_and_return_sbom is responsible for taking results in
     CoordinateResults form and turning them into a valid CycloneDX SBOM"""
     sbom = self.__generator.create_xml_from_oss_index_results(results)
     return sbom
 
   @staticmethod
-  def sbom_to_string(sbom):
+  def sbom_to_string(sbom: etree.Element) -> (bytes):
     """sbom_to_string is responsible for turning an sbom into a string"""
     return etree.tostring(sbom, encoding="UTF-8")
 

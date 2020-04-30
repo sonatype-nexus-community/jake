@@ -17,17 +17,16 @@ import json
 from unittest.mock import patch
 from pathlib import Path
 from datetime import timedelta
-from typing import List
 from tinydb import TinyDB, Query
 from dateutil.parser import parse
 
 
-from jake.ossindex.ossindex import OssIndex
-from jake.parse.parse import Parse
-from jake.types.coordinates import Coordinates
-from jake.types.coordinateresults import CoordinateResults
-from jake.types.results_decoder import ResultsDecoder
-from jake.types.vulnerabilities import Vulnerabilities
+from ..ossindex.ossindex import OssIndex
+from ..parse.parse import Parse
+from ..types.coordinates import Coordinates
+from ..types.coordinateresults import CoordinateResults
+from ..types.results_decoder import ResultsDecoder
+from ..types.vulnerabilities import Vulnerabilities
 
 
 class TestOssIndex(unittest.TestCase):
@@ -106,7 +105,7 @@ class TestOssIndex(unittest.TestCase):
     than 128 purl results into 128-purl chunks"""
     file = Path(__file__).parent / "condalistoutput.txt"
     with open(file, "r") as stdin:
-      purls = self.parse.get_dependencies_from_stdin(stdin)
+      purls = self.parse.get_deps_stdin(stdin)
       actual_result = self.func.chunk(purls)
     self.assertEqual(len(actual_result), 3)
     self.assertEqual(len(actual_result[0]), 128)
@@ -173,14 +172,14 @@ class TestOssIndex(unittest.TestCase):
         "reference":"http://www.wrestling.com"}]}]"""))
     (new_purls, results) = self.func.get_purls_and_results_from_cache(
         self.get_fake_actual_purls())
-    self.assertEqual(isinstance(results, List), True)
+    self.assertEqual(isinstance(results, list), True)
     self.assertEqual(isinstance(results[0], CoordinateResults), True)
     self.assertEqual(results[0].get_coordinates(),
                      "pkg:conda/pycrypto@2.6.1")
     self.assertEqual(results[0].get_reference(
     ), "https://ossindex.sonatype.org/component/pkg:conda/pycrypto@2.6.1")
     self.assertEqual(isinstance(
-        results[0].get_vulnerabilities(), List), True)
+        results[0].get_vulnerabilities(), list), True)
     self.assertEqual(isinstance(
         results[0].get_vulnerabilities()[0], Vulnerabilities), True)
     self.assertEqual(results[0].get_vulnerabilities()[
@@ -207,7 +206,7 @@ class TestOssIndex(unittest.TestCase):
         fake_purls)
     self.assertEqual(len(new_purls.get_coordinates()), 1)
     self.assertEqual(isinstance(new_purls, Coordinates), True)
-    self.assertEqual(isinstance(results, List), True)
+    self.assertEqual(isinstance(results, list), True)
     self.assertEqual(isinstance(results[0], CoordinateResults), True)
     self.assertEqual(isinstance(
         results[0].get_vulnerabilities()[0],

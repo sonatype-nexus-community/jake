@@ -184,7 +184,7 @@ def ddt(verbose, quiet, conda, targets):
   with yaspin(text="Loading", color="yellow") as spinner:
     spinner.text = "Collecting Dependencies"
     coords = Parse().get_deps_stdin(sys.stdin) if conda else Pip(targets).get_dependencies()
-    spinner.ok("✅ ")
+    spinner.ok("🐍 ")
 
   with yaspin(text="Loading", color="yellow") as spinner:
     spinner.text = "Querying OSS Index"
@@ -197,12 +197,12 @@ def ddt(verbose, quiet, conda, targets):
           "Something went horribly wrong, there is no response from OSS Index",
           "please rerun with -VV to see what happened")
       _exit(EX_OSERR)
-    spinner.ok("✅ ")
+    spinner.ok("🐍 ")
 
   with yaspin(text="Loading", color="yellow") as spinner:
     spinner.text = "Auditing results from OSS Index"
     audit = Audit(quiet)
-    spinner.ok("✅ ")
+    spinner.ok("🐍 ")
     code = audit.audit_results(response)
     _exit(code)
 
@@ -287,7 +287,7 @@ def __iq_control_flow(args: dict, bom_str: bytes):
     iq_requests = IQ(args)
     _id = iq_requests.get_internal_id()
     status_url = iq_requests.submit_sbom(bom_str, _id)
-    spinner.ok("✅ ")
+    spinner.ok("🐍 ")
 
   with yaspin(text="Loading", color="magenta") as spinner:
     spinner.text = "Reticulating splines..."
@@ -301,7 +301,7 @@ def __iq_control_flow(args: dict, bom_str: bytes):
             "Your IQ Server Report is available here: {}".format(iq_requests.get_report_url()))
       _exit(1)
     else:
-      spinner.ok("✅ ")
+      spinner.ok("🐍 ")
       print(Fore.GREEN +
             "Smooth Slithering! No policy failures from Sonatype IQ.")
       print(Fore.GREEN +
@@ -321,17 +321,17 @@ def __sbom_control_flow(conda: bool, target: str) -> (bytes):
   with yaspin(text="Loading", color="yellow") as spinner:
     spinner.text = "Collecting Dependencies from System..."
     coords = Parse().get_deps_stdin(sys.stdin) if conda else Pip(target).get_dependencies()
-    spinner.ok("✅ ")
+    spinner.ok("🐍 ")
     spinner.text = "Parsing Coordinates..."
     purls = coords.get_purls()
-    spinner.ok("✅ ")
+    spinner.ok("🐍 ")
 
   with yaspin(text="Loading", color="magenta") as spinner:
     spinner.text = "Generating CycloneDx BOM..."
     sbom_gen = CycloneDxSbomGenerator()
     sbom_xml = sbom_gen.purl_sbom(purls)
     sbom_byte_str = sbom_gen.sbom_to_string(sbom_xml)
-    spinner.ok("✅ ")
+    spinner.ok("🐍 ")
 
   return sbom_byte_str
 

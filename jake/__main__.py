@@ -183,7 +183,7 @@ def ddt(verbose, quiet, conda, targets):
 
   with yaspin(text="Loading", color="yellow") as spinner:
     spinner.text = "Collecting Dependencies"
-    coords = Parse().get_dependencies_from_stdin(sys.stdin) if conda else Pip(targets).get_dependencies()
+    coords = Parse().get_deps_stdin(sys.stdin) if conda else Pip(targets).get_dependencies()
     spinner.ok("✅ ")
 
   with yaspin(text="Loading", color="yellow") as spinner:
@@ -226,7 +226,8 @@ def ddt(verbose, quiet, conda, targets):
 @click.option(
     '-h', '--host',
     help='Specify an endpoint for Sonatype IQ')
-def iq(verbose: bool, quiet: bool, conda: bool, targets: str, application, stage, user, password, host):
+def iq(verbose: bool, quiet: bool, conda: bool, targets: str,
+       application, stage, user, password, host):
   """EXTRA SPECIAL MOVE\n
   Allows you to perform scans backed by Sonatype's Nexus IQ Server
 
@@ -319,7 +320,7 @@ def __sbom_control_flow(conda: bool, target: str) -> (bytes):
   """
   with yaspin(text="Loading", color="yellow") as spinner:
     spinner.text = "Collecting Dependencies from System..."
-    coords = Parse().get_dependencies_from_stdin(sys.stdin) if conda else Pip(target).get_dependencies()
+    coords = Parse().get_deps_stdin(sys.stdin) if conda else Pip(target).get_dependencies()
     spinner.ok("✅ ")
     spinner.text = "Parsing Coordinates..."
     purls = coords.get_purls()

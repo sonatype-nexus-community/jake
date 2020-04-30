@@ -105,7 +105,7 @@ class TestOssIndex(unittest.TestCase):
     than 128 purl results into 128-purl chunks"""
     file = Path(__file__).parent / "condalistoutput.txt"
     with open(file, "r") as stdin:
-      purls = self.parse.get_dependencies_from_stdin(stdin)
+      purls = self.parse.get_deps_stdin(stdin)
       actual_result = self.func.chunk(purls)
     self.assertEqual(len(actual_result), 3)
     self.assertEqual(len(actual_result[0]), 128)

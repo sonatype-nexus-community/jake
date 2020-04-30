@@ -29,7 +29,7 @@ class Parse():
       return self.really_get_conda_dependencies(run_command_list)
     return None
 
-  def get_dependencies_from_stdin(self, stdin):
+  def get_deps_stdin(self, stdin):
     """gets depdencies from stdin"""
     return self.parse_conda_dependencies_into_purls(stdin)
 

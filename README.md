@@ -222,7 +222,7 @@ To get the site packages available to a virtual environment:
 
 The `-t` argument accepts a list as a string literal.  This is the best way I've found to do this, if you find a better way please create an issue :)
 
-Run the python command using the shell you want to target and export to an env var (i.e. activate the virtual environment, run the command, and make the output accesible to jake):
+Run the python command using the shell you want to target and export to an env var:
 
 ```
   # using target python shell for system or virtual environment
@@ -230,6 +230,8 @@ Run the python command using the shell you want to target and export to an env v
   # using whatever shell has access to the jake module, can be a global install or stand-alone virtual environment
   $ jake ddt -t "$JAKE_TARGET"
 ```
+
+In other words: activate the virtual environment, run the `site.getsitepackages()` command, and make the output accesible to your `jake` install
 
 This will work for the `ddt`, `iq`, and `sbom` subcommands when evaluating pip modules.
 

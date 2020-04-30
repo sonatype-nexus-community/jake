@@ -237,7 +237,7 @@ Run the python command using the shell you want to target and export to an env v
 
 ```
   # using target python shell for system or virtual environment
-  $ export JAKE_TARGET=`python -c "import site; print(site.getsitepackages())"
+  $ export JAKE_TARGET=`python -c "import site; print(site.getsitepackages())"`
   # using whatever shell has access to the jake module, can be a global install or stand-alone virtual environment
   $ jake ddt -t "$JAKE_TARGET"
 ```

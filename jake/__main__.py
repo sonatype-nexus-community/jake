@@ -147,7 +147,7 @@ def config(conf):
     '-o', '--output',
     default='bom.xml',
     help='Specify a file name and/or directory to save the CycloneDx sbom')
-def sbom(verbose, quiet, conda, target, output):
+def sbom(verbose, quiet, conda, targets, output):
   """
   Generates a purl only bom (no vulns) and outputs it to a file
   that can be picked up by a Sonatype CLI or CI Plugin
@@ -161,7 +161,7 @@ def sbom(verbose, quiet, conda, target, output):
   __setup_logger(verbose)
   __check_stdin(conda)
 
-  sbom_xml = __sbom_control_flow(conda, target).decode('utf-8')
+  sbom_xml = __sbom_control_flow(conda, targets).decode('utf-8')
   with open(output, 'w') as bom_file:
     print(sbom_xml, file=bom_file)
   _exit(0)

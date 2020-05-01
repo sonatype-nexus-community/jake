@@ -17,6 +17,7 @@
 # limitations under the License.
 
 import sys
+import io
 import logging
 from os import _exit, EX_OSERR, path, mkdir
 from pathlib import Path
@@ -39,6 +40,8 @@ from ._version import __version__
 
 # strip colors on redirected output
 init(strip=not sys.stdout.isatty())
+# save the initial stdout to toggle back to when turned off
+_og_stdout = sys.stdout
 
 def __print_version(ctx, flag: bool):
   if not flag:
@@ -145,25 +148,33 @@ def config(conf):
 @__add_options(__shared_options)
 @click.option(
     '-o', '--output',
-    default='bom.xml',
-    help='Specify a file name and/or directory to save the CycloneDx sbom')
+    help='Specify a file name and/or directory to save the CycloneDx sbom.')
 def sbom(verbose, quiet, conda, targets, output):
   """
-  Generates a purl only bom (no vulns) and outputs it to a file
-  that can be picked up by a Sonatype CLI or CI Plugin
+  Generates a purl only bom (no vulns) and outputs it to std_out a file
+  by default or to a file path with the -o flag
 
   Does not make any connection to IQ or OSSI
 
   Arguments:
     output -- file name, relative or absolute path (w/ file name)
   """
+  # suppress all output except the sbom xml unless verbose
+  if not verbose:
+    quiet = __toggle_stdout(on=False)
   __banner(quiet)
   __setup_logger(verbose)
   __check_stdin(conda)
 
   sbom_xml = __sbom_control_flow(conda, targets).decode('utf-8')
-  with open(output, 'w') as bom_file:
-    print(sbom_xml, file=bom_file)
+
+  # toggle stdout back on and either print to console or to file passed by -o flag
+  __toggle_stdout(on=True)
+  if not output:
+    print(sbom_xml)
+  else:
+    with open(output, 'w') as bom_file:
+      print(sbom_xml, file=bom_file)
   _exit(0)
 
 # ddt (ossi) subcommand
@@ -203,6 +214,7 @@ def ddt(verbose, quiet, conda, targets):
     spinner.text = "Auditing results from OSS Index"
     audit = Audit(quiet)
     spinner.ok("🐍 ")
+    __toggle_stdout(on=True)
     code = audit.audit_results(response)
     _exit(code)
 
@@ -293,8 +305,9 @@ def __iq_control_flow(args: dict, bom_str: bytes):
     spinner.text = "Reticulating splines..."
     iq_requests.poll_report(status_url)
 
-    if iq_requests.get_policy_action() is not None:
+    if iq_requests.get_policy_action():
       spinner.fail("💥 ")
+      __toggle_stdout(on=True)
       print(Fore.YELLOW +
             "Snakes on the plane! There are policy failures from Sonatype IQ.")
       print(Fore.YELLOW +
@@ -302,6 +315,7 @@ def __iq_control_flow(args: dict, bom_str: bytes):
       _exit(1)
     else:
       spinner.ok("🐍 ")
+      __toggle_stdout(on=True)
       print(Fore.GREEN +
             "Smooth slithering there bud! No policy failures from Sonatype IQ.")
       print(Fore.GREEN +
@@ -338,15 +352,21 @@ def __sbom_control_flow(conda: bool, target: str) -> (bytes):
 def __banner(quiet: bool):
   """ Prints the banner, most of the user facing commands start with this """
   if quiet:
+    __toggle_stdout(on=False)
     return
   top_font = 'isometric4' # another option: 'isometric1'
   bot_font = 'invita'
-  top = 'Jake'
-  bot = ' ..the snake..'
-  cprint(figlet_format(top, font=top_font), 'green', attrs=[])
-  cprint(figlet_format(bot, font=bot_font), 'blue', attrs=['dark'])
+  top_text = 'Jake'
+  bot_text = ' ..the snake..'
+  cprint(figlet_format(top_text, font=top_font), 'green', attrs=[])
+  cprint(figlet_format(bot_text, font=bot_font), 'blue', attrs=['dark'])
   click.echo("Jake version: v{}".format(__version__))
   click.echo('Put your python deps in a chokehold.')
+
+def __toggle_stdout(on=True) -> (bool):
+  """ Turns console output on and off and returns the state, turns it on by default  """
+  sys.stdout = _og_stdout if on else io.StringIO()
+  return not on  # return type to set the quiet argument (opposite)
 
 if __name__ == '__main__':
   main()

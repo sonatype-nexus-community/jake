@@ -19,7 +19,7 @@
 import sys
 import io
 import logging
-from os import _exit, EX_OSERR, path, mkdir
+from os import _exit, EX_OSERR, path, mkdir, makedirs, PermissionError
 from pathlib import Path
 
 import click
@@ -173,6 +173,7 @@ def sbom(verbose, quiet, conda, targets, output):
   if not output:
     print(sbom_xml)
   else:
+    makedirs(path.dirname(output), exist_ok=True)
     with open(output, 'w') as bom_file:
       print(sbom_xml, file=bom_file)
   _exit(0)

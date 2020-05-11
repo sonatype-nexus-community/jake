@@ -19,7 +19,8 @@
 import sys
 import io
 import logging
-from os import _exit, EX_OSERR, path, mkdir, makedirs, PermissionError
+from os import _exit, EX_OSERR, path, mkdir, makedirs
+from errno import EACCES, EPERM
 from pathlib import Path
 
 import click
@@ -163,7 +164,7 @@ def sbom(verbose, quiet, conda, targets, output):
   if not verbose:
     quiet = __toggle_stdout(on=False)
   __banner(quiet)
-  __setup_logger(verbose)
+  logger = __setup_logger(verbose)
   __check_stdin(conda)
 
   sbom_xml = __sbom_control_flow(conda, targets).decode('utf-8')
@@ -173,7 +174,19 @@ def sbom(verbose, quiet, conda, targets, output):
   if not output:
     print(sbom_xml)
   else:
-    makedirs(path.dirname(output), exist_ok=True)
+    if path.split(output)[0]:
+      try:
+        makedirs(path.dirname(output), exist_ok=True)
+      except (IOError, OSError) as e:
+        if e.errno == EPERM or e.errno == EACCES:
+          print("PermissionError({0}) -- {1} for creating directory \'{2}\'".format(
+              e.errno,
+              e.strerror,
+              path.dirname(output)))
+          _exit(e.errno)
+        else:
+          print('Unknown system error: ', sys.exc_info()[0])
+          _exit(e.errno)
     with open(output, 'w') as bom_file:
       print(sbom_xml, file=bom_file)
   _exit(0)

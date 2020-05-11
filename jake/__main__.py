@@ -164,7 +164,7 @@ def sbom(verbose, quiet, conda, targets, output):
   if not verbose:
     quiet = __toggle_stdout(on=False)
   __banner(quiet)
-  logger = __setup_logger(verbose)
+  __setup_logger(verbose)
   __check_stdin(conda)
 
   sbom_xml = __sbom_control_flow(conda, targets).decode('utf-8')

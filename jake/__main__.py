@@ -19,7 +19,12 @@
 import sys
 import io
 import logging
-from os import _exit, EX_OSERR, path, mkdir
+import platform
+if platform.system() != 'Windows':
+  from os import _exit, EX_OSERR, path, mkdir
+else:
+  from os import _exit, path, mkdir
+  EX_OSERR = 1
 from pathlib import Path
 
 import click

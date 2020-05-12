@@ -59,9 +59,7 @@ class IQ():
       if self._iq_url is None:
         self._iq_url = results['Server']
 
-  def get_url(self) -> (str):
-    """gets url to use for IQ Server request"""
-    return self._iq_url
+    self._internal_id = self.get_internal_id()
 
   def get_policy_action(self):
     """gets policy action from IQ Server result"""
@@ -70,10 +68,6 @@ class IQ():
   def get_report_url(self):
     """gets report url from IQ Server result"""
     return self._report_url
-
-  def get_headers(self) -> (dict):
-    """gets headers to use for IQ Server request"""
-    return self._headers
 
   def get_public_application_id(self) -> (str):
     """gets public application id to use for IQ Server request"""
@@ -84,31 +78,31 @@ class IQ():
     application id"""
     response = requests.get(
         '{0}/api/v2/applications?publicId={1}'.format(
-            self.get_url(),
-            self.get_public_application_id()),
-        self.get_headers(),
+            self._iq_url,
+            self._public_application_id),
+        self._headers,
         auth=(self._user, self._password))
     if response.ok:
       res = json.loads(response.text)
       if not res['applications']:
         raise ValueError(
-            "The public application id \'"
+            "\nThe public application id \'"
             + self._public_application_id
             + "\' does not exist or is not accessible by the user.")
       LOG.debug(res['applications'][0]['id'])
       return res['applications'][0]['id']
-    raise ValueError(response.text)
+    raise ValueError('\n' + response.text + '\nSet your config with \'jake config iq\'')
 
-  def submit_sbom(self, sbom: str, internal_id: str) -> (str):
+  def submit_sbom(self, sbom: str) -> (str):
     """submits sbom (in str form) to IQ server, valid sbom should get
     202 response. On valid response, sets status url for later polling"""
     LOG.debug(sbom)
-    headers = self.get_headers()
+    headers = self._headers
     headers['Content-Type'] = 'application/xml'
     response = requests.post(
         '{0}/api/v2/scan/applications/{1}/sources/jake?stageId={2}'.format(
-            self.get_url(),
-            internal_id,
+            self._iq_url,
+            self._internal_id,
             self._stage),
         data=sbom,
         headers=headers,

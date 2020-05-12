@@ -310,9 +310,12 @@ def __setup_logger(verbose: bool):
 def __iq_control_flow(args: dict, bom_str: bytes):
   with yaspin(text="Loading", color="magenta") as spinner:
     spinner.text = "Submitting to Sonatype IQ..."
-    iq_requests = IQ(args)
-    _id = iq_requests.get_internal_id()
-    status_url = iq_requests.submit_sbom(bom_str, _id)
+    try:
+      iq_requests = IQ(args)
+    except (ValueError) as e:
+      print(e)
+      _exit(1)
+    status_url = iq_requests.submit_sbom(bom_str)
     spinner.ok("🐍 ")
 
   with yaspin(text="Loading", color="magenta") as spinner:

@@ -19,7 +19,8 @@
 import sys
 import io
 import logging
-from os import _exit, EX_OSERR, path, mkdir
+from os import _exit, path, mkdir, makedirs
+from errno import EACCES, EPERM
 from pathlib import Path
 
 import click
@@ -140,7 +141,7 @@ def config(conf):
   # exits 0 if config was set, with non-zero from os if it failed
   result = cli_config.get_config_from_std_in()
   if result is False:
-    _exit(EX_OSERR)
+    _exit(1)
   else:
     _exit(0)
 
@@ -173,6 +174,19 @@ def sbom(verbose, quiet, conda, targets, output):
   if not output:
     print(sbom_xml)
   else:
+    if path.split(output)[0]:
+      try:
+        makedirs(path.dirname(output), exist_ok=True)
+      except (IOError, OSError) as e:
+        if e.errno == EPERM or e.errno == EACCES:
+          print("PermissionError({0}) -- {1} for creating directory \'{2}\'".format(
+              e.errno,
+              e.strerror,
+              path.dirname(output)))
+          _exit(e.errno)
+        else:
+          print('Unknown system error: ', sys.exc_info()[0])
+          _exit(e.errno)
     with open(output, 'w') as bom_file:
       print(sbom_xml, file=bom_file)
   _exit(0)
@@ -207,7 +221,7 @@ def ddt(verbose, quiet, conda, targets):
       click.echo(
           "Something went horribly wrong, there is no response from OSS Index",
           "please rerun with -VV to see what happened")
-      _exit(EX_OSERR)
+      _exit(1)
     spinner.ok("🐍 ")
 
   with yaspin(text="Loading", color="yellow") as spinner:

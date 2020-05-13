@@ -19,12 +19,8 @@
 import sys
 import io
 import logging
-import platform
-if platform.system() != 'Windows':
-  from os import _exit, EX_OSERR, path, mkdir
-else:
-  from os import _exit, path, mkdir
-  EX_OSERR = 1
+from os import _exit, path, mkdir
+
 from pathlib import Path
 
 import click
@@ -145,7 +141,7 @@ def config(conf):
   # exits 0 if config was set, with non-zero from os if it failed
   result = cli_config.get_config_from_std_in()
   if result is False:
-    _exit(EX_OSERR)
+    _exit(1)
   else:
     _exit(0)
 
@@ -212,7 +208,7 @@ def ddt(verbose, quiet, conda, targets):
       click.echo(
           "Something went horribly wrong, there is no response from OSS Index",
           "please rerun with -VV to see what happened")
-      _exit(EX_OSERR)
+      _exit(1)
     spinner.ok("🐍 ")
 
   with yaspin(text="Loading", color="yellow") as spinner:

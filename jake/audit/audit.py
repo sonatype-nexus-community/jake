@@ -17,6 +17,7 @@ import logging
 
 from typing import List
 from colorama import Fore
+from terminaltables import DoubleTable
 
 from ..types.coordinateresults import CoordinateResults
 from ..types.vulnerabilities import Vulnerabilities
@@ -40,6 +41,17 @@ class Audit():
     for coordinate in results:
       pkg_num += 1
       total_vulns += self.print_result(coordinate, pkg_num, len(results))
+
+    table_data = [
+        ["Audited Dependencies", len(results)],
+        ["Vulnerablities Found", total_vulns],
+    ]
+
+    table_instance = DoubleTable(table_data, "Summary")
+
+    print()
+
+    print(table_instance.table)
 
     return total_vulns
 

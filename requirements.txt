@@ -8,6 +8,7 @@ colorama==0.4.3
 distlib==0.3.0
 idna==2.9
 isort==4.3.21
+-e git+git@github.com:sonatype-nexus-community/jake.git@322d367e6f49db5d0e8d9324a559c0d56f22a0e8#egg=jake
 johnnydep==1.5
 lazy-object-proxy==1.4.3
 lxml==4.5.0
@@ -26,6 +27,7 @@ six==1.14.0
 structlog==20.1.0
 tabulate==0.8.7
 termcolor==1.1.0
+terminaltables==3.1.0
 tinydb==3.15.2
 toml==0.10.0
 typed-ast==1.4.1

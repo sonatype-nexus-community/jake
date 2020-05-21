@@ -6,9 +6,9 @@ chardet==3.0.4
 click==7.1.2
 colorama==0.4.3
 distlib==0.3.0
-idna==2.9
+idna==2.7
 isort==4.3.21
--e git+git@github.com:sonatype-nexus-community/jake.git@322d367e6f49db5d0e8d9324a559c0d56f22a0e8#egg=jake
+-e git+git@github.com:sonatype-nexus-community/jake.git@ffa8a2907085db803fe0bef1f394ee3008fd3e28#egg=jake
 johnnydep==1.5
 lazy-object-proxy==1.4.3
 lxml==4.5.0
@@ -22,7 +22,7 @@ pylint==2.5.0
 pyparsing==2.4.7
 python-dateutil==2.8.1
 PyYAML==5.3.1
-requests==2.23.0
+requests==2.19.0
 six==1.14.0
 structlog==20.1.0
 tabulate==0.8.7
@@ -31,7 +31,7 @@ terminaltables==3.1.0
 tinydb==3.15.2
 toml==0.10.0
 typed-ast==1.4.1
-urllib3==1.25.9
+urllib3==1.23
 wimpy==0.6
 wrapt==1.12.1
 yaspin==0.16.0

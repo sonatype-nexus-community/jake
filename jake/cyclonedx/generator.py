@@ -1,5 +1,3 @@
-"""generator.py will craft and validate a CycloneDX SBOM"""
-# pylint: disable=protected-access
 #
 # Copyright 2019-Present Sonatype Inc.
 #
@@ -14,6 +12,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
+
+"""generator.py will craft and validate a CycloneDX SBOM"""
+# pylint: disable=protected-access
 import logging
 
 from lxml import etree

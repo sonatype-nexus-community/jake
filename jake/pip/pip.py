@@ -1,6 +1,5 @@
-"""pip.py gets installed pip dependencies"""
-# pylint: disable=protected-access
-# Copyright 2020 Sonatype Inc.
+#
+# Copyright 2019-Present Sonatype Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,7 +12,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
 
+"""pip.py gets installed pip dependencies"""
+# pylint: disable=protected-access
 import logging
 import ast
 import pkg_resources

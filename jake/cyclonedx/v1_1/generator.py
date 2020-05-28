@@ -1,4 +1,4 @@
-"""generator.py will craft a CycloneDX 1.1 SBOM"""
+#
 # Copyright 2019-Present Sonatype Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,6 +12,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
+
+"""generator.py will craft a CycloneDX 1.1 SBOM"""
 import pathlib
 import logging
 

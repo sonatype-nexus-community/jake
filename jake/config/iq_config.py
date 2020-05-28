@@ -1,4 +1,4 @@
-"""iq_config.py stores IQ credentials"""
+#
 # Copyright 2019-Present Sonatype Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,6 +12,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
+
+"""iq_config.py stores IQ credentials"""
 from ..config.config import Config
 
 class IQConfig(Config):

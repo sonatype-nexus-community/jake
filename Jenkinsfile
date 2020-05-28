@@ -19,8 +19,7 @@
 dockerizedBuildPipeline(
   buildAndTest: {
     sh '''
-    ./.circleci/ci-setup.sh
-    ./.circleci/ci-run.sh
+    python -m xmlrunner discover -o test-results/
     '''
   },
   onSuccess: {

@@ -16,8 +16,18 @@
 
 FROM docker-all.repo.sonatype.com/python:3.7-alpine
 
-COPY requirements.txt ./
+RUN PATH=$WORKSPACE/.venv/bin:$PATH
 
-COPY .circleci/ci-run.sh ./
+RUN python3 --version
 
-COPY .circleci/ci-setup.sh ./
+RUN python3 -m venv .venv
+
+RUN source .venv/bin/activate
+
+RUN pip3 install python-semantic-release
+
+RUN pip3 install -r requirements.txt
+
+RUN pip3 install pylint
+
+RUN pip3 install unittest-xml-reporting

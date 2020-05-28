@@ -9,4 +9,5 @@
   <exclude>src/**/__init__.py</exclude>
   <exclude>src/**/*.txt</exclude>
   <exclude>src/.venv/**</exclude>
+  <exclude>src/**/*.xsd</exclude>
 </excludes>

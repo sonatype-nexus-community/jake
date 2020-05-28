@@ -70,7 +70,7 @@ class Audit:
         )
       return len(coordinate.get_vulnerabilities())
     self.do_print(
-        f"[{number}/{length}] - {coordinate.get_coordinates()} [VULNERABLE]"
+        f"[{number}/{length}] - {coordinate.get_coordinates()} [VULNERABLE] "
         f"{len(coordinate.get_vulnerabilities())} known vulnerabilities for this version",
         coordinate.get_max_cvss_score(),
     )

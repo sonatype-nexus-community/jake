@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-FROM docker-all.repo.sonatype.com/python:3.7-alpine
+FROM docker-all.repo.sonatype.com/python:3.7
 
 RUN PATH=$WORKSPACE/.venv/bin:$PATH
 

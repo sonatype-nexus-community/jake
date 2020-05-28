@@ -1,7 +1,7 @@
 """generator.py will craft and validate a CycloneDX SBOM"""
 # pylint: disable=protected-access
 #
-# Copyright 2019 Sonatype Inc.
+# Copyright 2019-Present Sonatype Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

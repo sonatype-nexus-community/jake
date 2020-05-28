@@ -1,5 +1,5 @@
 """ test_audit.py , for all your testing of audit py needs """
-# Copyright 2019 Sonatype Inc.
+# Copyright 2019-Present Sonatype Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

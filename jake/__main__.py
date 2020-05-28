@@ -2,7 +2,7 @@
 # pylint: disable=too-many-arguments
 # pylint: disable=invalid-name
 # pylint: disable=unnecessary-pass
-# Copyright 2019 Sonatype Inc.
+# Copyright 2019-Present Sonatype Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

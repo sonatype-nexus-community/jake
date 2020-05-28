@@ -19,8 +19,8 @@
 dockerizedBuildPipeline(
   buildAndTest: {
     sh '''
-    ./ci-setup.sh
-    ./ci-run.sh
+    ./.circleci/ci-setup.sh
+    ./.circleci/ci-run.sh
     '''
   },
   onSuccess: {

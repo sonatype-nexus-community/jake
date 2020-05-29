@@ -26,6 +26,8 @@ USER jenkins
 
 WORKDIR /home/jenkins
 
+RUN PATH=$HOME/.local/bin:$HOME/bin:$PATH
+
 COPY requirements.txt .
 
 RUN pip install -r requirements.txt

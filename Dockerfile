@@ -18,11 +18,9 @@ FROM docker-all.repo.sonatype.com/python:3.7
 
 RUN mkdir /home/jenkins
 
-RUN groupadd -g 100 jenkins
+RUN useradd -r -u 1002 -g 100 -d /home/jenkins jenkins
 
-RUN useradd -r -u 100 -g jenkins -d /home/jenkins jenkins
-
-RUN chown jenkins:jenkins /home/jenkins
+RUN chown jenkins:100 /home/jenkins
 
 USER jenkins
 

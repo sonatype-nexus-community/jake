@@ -20,7 +20,18 @@ dockerizedBuildPipeline(
   buildAndTest: {
     sh '''
     python -m xmlrunner discover -o test-results/
+    python setup.py bdist_wheel
+    cd dist && WHEEL_NAME=$(ls -1) && cd ..
+    pip install --user dist/$WHEEL_NAME
     '''
+  },
+  vulnerabilityScan: {
+    withDockerImage(env.DOCKER_IMAGE_ID, {
+      withCredentials([usernamePassword(credentialsId: 'policy.s integration account',
+        usernameVariable: 'IQ_USERNAME', passwordVariable: 'IQ_PASSWORD')]) {
+        sh 'jake iq --application jake --stage build --user $IQ_USERNAME --token $IQ_PASSWORD --host https://policy.ci.sonatype.dev'
+      }
+    })
   },
   onSuccess: {
     githubStatusUpdate('success')

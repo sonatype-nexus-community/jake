@@ -16,10 +16,24 @@
 
 FROM docker-all.repo.sonatype.com/python:3.7
 
+RUN mkdir /home/jenkins
+
+RUN groupadd -g 100 jenkins
+
+RUN useradd -r -u 100 -g jenkins -d /home/jenkins jenkins
+
+RUN chown jenkins:jenkins /home/jenkins
+
+USER jenkins
+
+WORKDIR /home/jenkins
+
 COPY requirements.txt .
 
-RUN pip3 install -r requirements.txt
+RUN pip install -r requirements.txt
 
-RUN pip3 install pylint
+RUN pip install pylint
 
-RUN pip3 install unittest-xml-reporting
+RUN pip install unittest-xml-reporting
+
+CMD ["/bin/bash"]

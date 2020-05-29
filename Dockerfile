@@ -16,16 +16,6 @@
 
 FROM docker-all.repo.sonatype.com/python:3.7
 
-RUN PATH=$WORKSPACE/.venv/bin:$PATH
-
-RUN python3 --version
-
-RUN python3 -m venv .venv
-
-RUN source .venv/bin/activate
-
-RUN pip3 install python-semantic-release
-
 RUN pip3 install -r requirements.txt
 
 RUN pip3 install pylint

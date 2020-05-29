@@ -26,7 +26,9 @@ USER jenkins
 
 WORKDIR /home/jenkins
 
-ENV PATH "$HOME/.local/bin:$HOME/bin:$PATH"
+ENV PATH=$HOME/.local/bin:$HOME/bin:$PATH
+
+RUN echo $PATH
 
 COPY requirements.txt .
 

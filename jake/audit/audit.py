@@ -16,9 +16,9 @@
 import logging
 
 from typing import List
+from textwrap import wrap
 from colorama import Fore
 from terminaltables import DoubleTable
-from textwrap import wrap
 
 from ..types.coordinateresults import CoordinateResults
 from ..types.vulnerabilities import Vulnerabilities
@@ -85,25 +85,23 @@ class Audit:
     print_vulnerability takes a vulnerability, and well, it prints it
     """
     cvss_score = vulnerability.get_cvss_score()
-    
     table_data = [
-            ["ID", vulnerability.get_id()],
-            ["Title", vulnerability.get_title()],
-            ["Description", '\n'.join(wrap(vulnerability.get_description(), 100))],
-            ["CVSS Score", f"{vulnerability.get_cvss_score()} - {cls.get_cvss_severity(cvss_score)}"],
-            ]
+        ["ID", vulnerability.get_id()],
+        ["Title", vulnerability.get_title()],
+        ["Description", '\n'.join(wrap(vulnerability.get_description(), 100))],
+        ["CVSS Score", f"{vulnerability.get_cvss_score()} - {cls.get_cvss_severity(cvss_score)}"],
+        ]
     if vulnerability.get_cvss_vector():
-        table_data.append(
-                ["CVSS Vector", vulnerability.get_cvss_vector()]
-                )
+      table_data.append(
+          ["CVSS Vector", vulnerability.get_cvss_vector()]
+          )
 
     table_data.extend(
-            [
-                ["CVE", vulnerability.get_cve()],
-                ["Reference", vulnerability.get_reference()]
-            ]
-            )
-    
+        [
+            ["CVE", vulnerability.get_cve()],
+            ["Reference", vulnerability.get_reference()]
+        ]
+        )
     table_instance = DoubleTable(table_data)
     table_instance.inner_heading_row_border = False
     table_instance.inner_row_border = True

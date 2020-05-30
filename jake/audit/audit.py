@@ -84,19 +84,39 @@ class Audit:
     print_vulnerability takes a vulnerability, and well, it prints it
     """
     cvss_score = vulnerability.get_cvss_score()
-    cls.do_print(f"ID: {vulnerability.get_id()}", cvss_score)
-    cls.do_print(f"Title: {vulnerability.get_title()}", cvss_score)
-    cls.do_print(f"Description: {vulnerability.get_description()}", cvss_score)
-    cls.do_print(
-        f"CVSS Score: {vulnerability.get_cvss_score()} - {cls.get_cvss_severity(cvss_score)}",
-        cvss_score,
-    )
-    if vulnerability.get_cvss_vector() is not None:
-      cls.do_print(
-          f"CVSS Vector: {vulnerability.get_cvss_vector()}", cvss_score
-      )
-    cls.do_print(f"CVE: {vulnerability.get_cve()}", cvss_score)
-    cls.do_print(f"Reference: {vulnerability.get_reference()}", cvss_score)
+    table_data = [
+            ["ID", vulnerability.get_id()],
+            ["Title", vulnerability.get_title()],
+            ["Description", vulnerability.get_description()],
+            ["CVSS Score", f"{vulnerability.get_cvss_score()} - {cls.get_cvss_severity(cvss_score)}"],
+            ]
+
+    # cls.do_print(f"ID: {vulnerability.get_id()}", cvss_score)
+    # cls.do_print(f"Title: {vulnerability.get_title()}", cvss_score)
+    # cls.do_print(f"Description: {vulnerability.get_description()}", cvss_score)
+    # cls.do_print(
+        # f"CVSS Score: {vulnerability.get_cvss_score()} - {cls.get_cvss_severity(cvss_score)}",
+        # cvss_score,
+    # )
+    if vulnerability.get_cvss_vector():
+        table_data.append(
+                ["CVSS Vector", vulnerability.get_cvss_vector]
+                )
+      # cls.do_print(
+          # f"CVSS Vector: {vulnerability.get_cvss_vector()}", cvss_score
+      # )
+    table_data.extend(
+            [
+                ["CVE", vulnerability.get_cve],
+                ["Reference", vulnerability.get_reference]
+            ]
+            )
+    # cls.do_print(f"CVE: {vulnerability.get_cve()}", cvss_score)
+    # cls.do_print(f"Reference: {vulnerability.get_reference()}", cvss_score)
+    
+    table_instance = DoubleTable(table_data)
+    cls.do_print(table_instance.table, cvss_score)
+
     print("----------------------------------------------------")
 
   @classmethod

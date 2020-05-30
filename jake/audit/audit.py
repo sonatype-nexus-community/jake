@@ -89,13 +89,14 @@ class Audit:
     table_data = [
             ["ID", vulnerability.get_id()],
             ["Title", vulnerability.get_title()],
-            ["Description", vulnerability.get_description()],
+            ["Description", '\n'.join(wrap(vulnerability.get_description(), 100))],
             ["CVSS Score", f"{vulnerability.get_cvss_score()} - {cls.get_cvss_severity(cvss_score)}"],
             ]
     if vulnerability.get_cvss_vector():
         table_data.append(
                 ["CVSS Vector", vulnerability.get_cvss_vector()]
                 )
+
     table_data.extend(
             [
                 ["CVE", vulnerability.get_cve()],
@@ -104,6 +105,8 @@ class Audit:
             )
     
     table_instance = DoubleTable(table_data)
+    table_instance.inner_heading_row_border = False
+    table_instance.inner_row_border = True
     cls.do_print(table_instance.table, cvss_score)
 
     print("----------------------------------------------------")

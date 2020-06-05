@@ -19,15 +19,18 @@
 import logging
 
 from typing import List
+from textwrap import wrap
 from colorama import Fore
+from terminaltables import DoubleTable
 
 from ..types.coordinateresults import CoordinateResults
 from ..types.vulnerabilities import Vulnerabilities
 
-class Audit():
+class Audit:
   """ Audit does the business, it prints results from OSS Index to the standard out """
+
   def __init__(self, quiet=False):
-    self._log = logging.getLogger('jake')
+    self._log = logging.getLogger("jake")
     self._quiet = quiet
 
   def audit_results(self, results: List[CoordinateResults]):
@@ -35,14 +38,40 @@ class Audit():
     audit_results is the ingest point for the results from OSS Index,
     and handles control flow
     """
-    self._log.debug("Results recieved, %s total results", len(results))
+    self._log.debug("Results received, %s total results", len(results))
 
     total_vulns = 0
     pkg_num = 0
+    good = [x for x in results if len(x.get_vulnerabilities()) == 0]
+    bad = [x for x in results if len(x.get_vulnerabilities()) > 0]
 
-    for coordinate in results:
-      pkg_num += 1
-      total_vulns += self.print_result(coordinate, pkg_num, len(results))
+    if len(good) != 0:
+      print()
+      print("Non-Vulnerable Dependencies")
+      print()
+      for coordinate in good:
+        pkg_num += 1
+        total_vulns += self.print_result(coordinate, pkg_num, len(results))
+
+    if len(bad) != 0:
+      print()
+      print("Vulnerable Dependencies")
+      print()
+
+      for coordinate in bad:
+        pkg_num += 1
+        total_vulns += self.print_result(coordinate, pkg_num, len(results))
+
+    table_data = [
+        ["Audited Dependencies", len(results)],
+        ["Vulnerablities Found", total_vulns],
+    ]
+
+    table_instance = DoubleTable(table_data, "Summary")
+
+    print()
+
+    print(table_instance.table)
 
     return total_vulns
 
@@ -54,20 +83,19 @@ class Audit():
     """
     if len(coordinate.get_vulnerabilities()) == 0:
       if not self._quiet:
-        self.do_print("[{}/{}] - {} - no known vulnerabilities for this version"
-                      .format(
-                          number,
-                          length,
-                          coordinate.get_coordinates()), 0)
+        self.do_print(
+            f"[{number}/{length}] - {coordinate.get_coordinates()}",
+            0
+        )
       return len(coordinate.get_vulnerabilities())
-
-    self.do_print(("[{}/{}] - {} [VULNERABLE] {} known vulnerabilities for"
-                   "this version")
-                  .format(
-                      number,
-                      length,
-                      coordinate.get_coordinates(),
-                      len(coordinate.get_vulnerabilities())), coordinate.get_max_cvss_score())
+    self.do_print(
+        f"[{number}/{length}] - {coordinate.get_coordinates()} [VULNERABLE]",
+        coordinate.get_max_cvss_score(),
+    )
+    self.do_print(
+        f"{len(coordinate.get_vulnerabilities())} known vulnerabilities for this version",
+        coordinate.get_max_cvss_score(),
+    )
     for vulnerability in coordinate.get_vulnerabilities():
       self.print_vulnerability(vulnerability)
     return len(coordinate.get_vulnerabilities())
@@ -78,15 +106,28 @@ class Audit():
     print_vulnerability takes a vulnerability, and well, it prints it
     """
     cvss_score = vulnerability.get_cvss_score()
-    cls.do_print("ID: {}".format(vulnerability.get_id()), cvss_score)
-    cls.do_print("Title: {}".format(vulnerability.get_title()), cvss_score)
-    cls.do_print("Description: {}".format(vulnerability.get_description()), cvss_score)
-    cls.do_print("CVSS Score: {} - {}".format(vulnerability.get_cvss_score(),
-                                              cls.get_cvss_severity(cvss_score)), cvss_score)
-    if vulnerability.get_cvss_vector() is not None:
-      cls.do_print("CVSS Vector: {}".format(vulnerability.get_cvss_vector()), cvss_score)
-    cls.do_print("CVE: {}".format(vulnerability.get_cve()), cvss_score)
-    cls.do_print("Reference: {}".format(vulnerability.get_reference()), cvss_score)
+    table_data = [
+        ["ID", vulnerability.get_id()],
+        ["Title", vulnerability.get_title()],
+        ["Description", '\n'.join(wrap(vulnerability.get_description(), 100))],
+        ["CVSS Score", f"{vulnerability.get_cvss_score()} - {cls.get_cvss_severity(cvss_score)}"],
+        ]
+    if vulnerability.get_cvss_vector():
+      table_data.append(
+          ["CVSS Vector", vulnerability.get_cvss_vector()]
+          )
+
+    table_data.extend(
+        [
+            ["CVE", vulnerability.get_cve()],
+            ["Reference", vulnerability.get_reference()]
+        ]
+        )
+    table_instance = DoubleTable(table_data)
+    table_instance.inner_heading_row_border = False
+    table_instance.inner_row_border = True
+    cls.do_print(table_instance.table, cvss_score)
+
     print("----------------------------------------------------")
 
   @classmethod
@@ -100,7 +141,7 @@ class Audit():
     elif 0 < cvss_score < 4:
       print(Fore.CYAN + text + Fore.RESET)
     elif 4 <= cvss_score < 7:
-      print(Fore.LIGHTYELLOW_EX + text  + Fore.RESET)
+      print(Fore.LIGHTYELLOW_EX + text + Fore.RESET)
     elif 7 <= cvss_score < 9:
       print(Fore.YELLOW + text + Fore.RESET)
     else:

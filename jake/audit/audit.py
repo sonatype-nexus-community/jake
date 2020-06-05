@@ -42,19 +42,22 @@ class Audit:
     good = [x for x in results if len(x.get_vulnerabilities()) == 0]
     bad = [x for x in results if len(x.get_vulnerabilities()) > 0]
 
-    print()
-    print("Non-Vulnerable Dependencies")
-    print()
-    for coordinate in good:
-      pkg_num += 1
-      total_vulns += self.print_result(coordinate, pkg_num, len(results))
+    if len(good) != 0:
+      print()
+      print("Non-Vulnerable Dependencies")
+      print()
+      for coordinate in good:
+        pkg_num += 1
+        total_vulns += self.print_result(coordinate, pkg_num, len(results))
 
-    print()
-    print("Vulnerable Dependencies")
-    print()
-    for coordinate in bad:
-      pkg_num += 1
-      total_vulns += self.print_result(coordinate, pkg_num, len(results))
+    if len(bad) != 0:
+      print()
+      print("Vulnerable Dependencies")
+      print()
+
+      for coordinate in bad:
+        pkg_num += 1
+        total_vulns += self.print_result(coordinate, pkg_num, len(results))
 
     table_data = [
         ["Audited Dependencies", len(results)],

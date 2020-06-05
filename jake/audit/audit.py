@@ -39,8 +39,18 @@ class Audit:
 
     total_vulns = 0
     pkg_num = 0
-
-    for coordinate in results:
+    good = [x for x in results if len(x.get_vulnerabilities()) == 0]
+    bad = [x for x in results if len(x.get_vulnerabilities()) > 0]
+    print() 
+    print("Non-Vulnerable Dependencies")
+    print() 
+    for coordinate in good:
+      pkg_num += 1
+      total_vulns += self.print_result(coordinate, pkg_num, len(results))
+    print() 
+    print("Vulnerable Dependencies")
+    print() 
+    for coordinate in bad:
       pkg_num += 1
       total_vulns += self.print_result(coordinate, pkg_num, len(results))
 
@@ -71,7 +81,10 @@ class Audit:
         )
       return len(coordinate.get_vulnerabilities())
     self.do_print(
-        f"[{number}/{length}] - {coordinate.get_coordinates()} [VULNERABLE] "
+        f"[{number}/{length}] - {coordinate.get_coordinates()} [VULNERABLE]",
+        coordinate.get_max_cvss_score(),
+    )
+    self.do_print(
         f"{len(coordinate.get_vulnerabilities())} known vulnerabilities for this version",
         coordinate.get_max_cvss_score(),
     )

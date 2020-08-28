@@ -145,7 +145,7 @@ class OssIndex():
       else:
         print(result[0]['ttl'])
         timetolive = DT.datetime.strptime(
-          result[0]['ttl'], 
+          result[0]['ttl'],
           '%Y-%m-%dT%H:%M:%S.%f'
           )
         if mydatetime > timetolive:
@@ -173,7 +173,7 @@ class OssIndex():
       mydatetime = datetime.now()
       result = self._db.search(coordinate_query.purl == purl)
       if len(result) == 0 or DT.datetime.strptime(
-        result[0]['ttl'], 
+        result[0]['ttl'],
         '%Y-%m-%dT%H:%M:%S.%f'
         ) < mydatetime:
         new_purls.add_coordinate(coordinate[0], coordinate[1], coordinate[2])

@@ -17,12 +17,12 @@
 """test_ossindex.py audits the call to OSSIndex"""
 import unittest
 import json
+import datetime as DT
+
 from unittest.mock import patch
 from pathlib import Path
 from datetime import timedelta
 from tinydb import TinyDB, Query
-from dateutil.parser import parse
-
 
 from ..ossindex.ossindex import OssIndex
 from ..parse.parse import Parse
@@ -150,7 +150,7 @@ class TestOssIndex(unittest.TestCase):
     self.func.maybe_insert_into_cache(response)
     result_expired = database.search(
         coordinate_query.purl == "pkg:conda/pycrypto@2.6.1")
-    time_unwind = parse(result_expired[0]['ttl']) - timedelta(hours=13)
+    time_unwind = DT.datetime.strptime(result_expired[0]['ttl'], '%Y-%m-%dT%H:%M:%S.%f') - timedelta(hours=13)
     database.update({'ttl': time_unwind.isoformat()},
                     coordinate_query.purl == "pkg:conda/pycrypto@2.6.1")
 

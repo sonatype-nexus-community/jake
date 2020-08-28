@@ -17,11 +17,11 @@
 """ossindex.py makes a request to OSSIndex"""
 import logging
 import json
+import datetime as DT
 
 from typing import List
 from datetime import datetime, timedelta
 from pathlib import Path
-from dateutil.parser import parse
 from tinydb import TinyDB, Query
 
 import requests
@@ -143,7 +143,8 @@ class OssIndex():
         num_cached += 1
         cached = True
       else:
-        timetolive = parse(result[0]['ttl'])
+        print(result[0]['ttl'])
+        timetolive = DT.datetime.strptime(result[0]['ttl'], '%Y-%m-%dT%H:%M:%S.%f')
         if mydatetime > timetolive:
           self._db.update({'response': coordinate.to_json(),
                            'ttl': twelvelater.isoformat()},
@@ -168,7 +169,7 @@ class OssIndex():
     for coordinate, purl in purls.get_coordinates().items():
       mydatetime = datetime.now()
       result = self._db.search(coordinate_query.purl == purl)
-      if len(result) == 0 or parse(result[0]['ttl']) < mydatetime:
+      if len(result) == 0 or DT.datetime.strptime(result[0]['ttl'], '%Y-%m-%dT%H:%M:%S.%f') < mydatetime:
         new_purls.add_coordinate(coordinate[0], coordinate[1], coordinate[2])
       else:
         results.append(json.loads(

@@ -143,7 +143,6 @@ class OssIndex():
         num_cached += 1
         cached = True
       else:
-        print(result[0]['ttl'])
         timetolive = DT.datetime.strptime(
           result[0]['ttl'],
           '%Y-%m-%dT%H:%M:%S.%f'

@@ -17,7 +17,6 @@ pyfiglet==0.8.post1
 pyparsing==2.4.7
 PyYAML==5.3.1
 requests==2.23.0
-six==1.15.0
 tabulate==0.8.7
 termcolor==1.1.0
 terminaltables==3.1.0

@@ -90,7 +90,7 @@ class IQ():
         '{0}/api/v2/applications?publicId={1}'.format(
             self._iq_url,
             self._public_application_id),
-        self._headers)
+        headers=self._headers)
     if response.ok:
       res = json.loads(response.text)
       if not res['applications']:

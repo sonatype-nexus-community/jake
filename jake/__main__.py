@@ -260,7 +260,7 @@ def ddt(verbose, quiet, conda, targets):
 @click.option(
     '-h', '--host',
     help='Specify an endpoint for Sonatype IQ')
-def iq(verbose: bool, quiet: bool, conda: bool, targets: str, 
+def iq(verbose: bool, quiet: bool, conda: bool, targets: str,
        insecure: bool, application, stage, user, password, host):
   """EXTRA SPECIAL MOVE\n
   Allows you to perform scans backed by Sonatype's Nexus IQ Server

@@ -86,6 +86,11 @@ __shared_options = [
         is_flag=True,
         help='Resolve conda dependencies from std_in'),
     click.option(
+        '-i', '--insecure',
+        default=False,
+        is_flag=True,
+        help='Allow jake to communicate with insecure endpoints'),
+    click.option(
         '-t', '--targets',
         default=None,
         help='List of site packages containing modules to be evaluated')
@@ -153,7 +158,7 @@ def config(conf):
 @click.option(
     '-o', '--output',
     help='Specify a file name and/or directory to save the CycloneDx sbom.')
-def sbom(verbose, quiet, conda, targets, output):
+def sbom(verbose, quiet, conda, insecure, targets, output):
   """
   Generates a purl only bom (no vulns) and outputs it to std_out a file
   by default or to a file path with the -o flag
@@ -197,7 +202,7 @@ def sbom(verbose, quiet, conda, targets, output):
 # ddt (ossi) subcommand
 @main.command()
 @__add_options(__shared_options)
-def ddt(verbose, quiet, conda, targets):
+def ddt(verbose, quiet, conda, insecure, targets):
   """SPECIAL MOVE\n
   Allows you to perform scans backed by Sonatype's OSS Index
 
@@ -255,8 +260,8 @@ def ddt(verbose, quiet, conda, targets):
 @click.option(
     '-h', '--host',
     help='Specify an endpoint for Sonatype IQ')
-def iq(verbose: bool, quiet: bool, conda: bool, targets: str,
-       application, stage, user, password, host):
+def iq(verbose: bool, quiet: bool, conda: bool, insecure: bool, 
+       targets: str, application, stage, user, password, host):
   """EXTRA SPECIAL MOVE\n
   Allows you to perform scans backed by Sonatype's Nexus IQ Server
 
@@ -280,6 +285,7 @@ def iq(verbose: bool, quiet: bool, conda: bool, targets: str,
   iq_args['password'] = password
   iq_args['host'] = host
   iq_args['conda'] = conda
+  iq_args['insecure'] = insecure
 
   __iq_control_flow(iq_args, bom)
 

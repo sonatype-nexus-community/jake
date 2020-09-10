@@ -238,6 +238,11 @@ def ddt(verbose, quiet, conda, targets):
 @main.command()
 @__add_options(__shared_options)
 @click.option(
+    '-i', '--insecure',
+    default=False,
+    is_flag=True,
+    help='Allow jake to communicate with insecure endpoints')
+@click.option(
     '-a', '--application',
     help='Supply an IQ Server Public Application ID',
     required=True)
@@ -256,7 +261,7 @@ def ddt(verbose, quiet, conda, targets):
     '-h', '--host',
     help='Specify an endpoint for Sonatype IQ')
 def iq(verbose: bool, quiet: bool, conda: bool, targets: str,
-       application, stage, user, password, host):
+       insecure: bool, application, stage, user, password, host):
   """EXTRA SPECIAL MOVE\n
   Allows you to perform scans backed by Sonatype's Nexus IQ Server
 
@@ -280,6 +285,7 @@ def iq(verbose: bool, quiet: bool, conda: bool, targets: str,
   iq_args['password'] = password
   iq_args['host'] = host
   iq_args['conda'] = conda
+  iq_args['insecure'] = insecure
 
   __iq_control_flow(iq_args, bom)
 

@@ -112,6 +112,9 @@ Options:
   -t, --targets TEXT              List of site packages containing modules to
                                   be evaluated
 
+  -i, --insecure                  Allow jake to communicate with insecure
+                                  endpoints
+
   -a, --application TEXT          Supply an IQ Server Public Application ID
                                   [required]
 
@@ -128,6 +131,8 @@ Options:
 Run `jake config iq` to set the the endpoint and auth params.
 
 Once configured with proper credentials, run `jake iq -a <AppId>`, replacing `<AppId>` with the public ID of your application in Sonatype IQ. If a policy is violated that has the action set to `Fail` in IQ, `jake` will exit with a non zero code which can be picked up build automation or used to notify locally.
+
+If your Nexus IQ installation is using a self-signed certificate, you can run `jake` with the `-i` or `--insecure` flag to work with these types of installations.
 
 Each `jake` scan will generate a Software Bill of Materials (SBOM) in IQ and will output direct link to console.  The develop stage is used by default as opposed to other stages which usually correspond to component inventories of the latest build for a stage.
 

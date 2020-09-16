@@ -66,8 +66,9 @@ class TestIQ(unittest.TestCase):
     an internal ID as expected"""
     file = Path(__file__).parent / "iqapplicationresponse.txt"
     with open(file, "r") as stdin:
-        responses.add(responses.GET, 'http://afakeurlthatdoesnotexist.com:8081/api/v2/applications?publicId=testapp',
-                      json=stdin.read(), status=200)
-        response = self.func.get_internal_id()
+      responses.add(responses.GET, 
+                    'http://afakeurlthatdoesnotexist.com:8081/api/v2/applications?publicId=testapp',
+                    json=stdin.read(), status=200)
+      response = self.func.get_internal_id()
     self.assertEqual(len(response), 32)
     self.assertEqual(response, '4537e6fe68c24dd5ac83efd97d4fc2f4')

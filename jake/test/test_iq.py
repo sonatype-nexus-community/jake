@@ -29,8 +29,7 @@ from ..iq.iq import IQ
 
 class TestIQ(unittest.TestCase):
   """TestIQ audits the call to IQ"""
-  @patch('jake.iq.iq.requests.session.get')
-  def setUp(self, mock_get):
+  def setUp(self):
     iq_args = {}
     iq_args['application'] = 'testapp'
     iq_args['stage'] = 'develop'
@@ -39,12 +38,6 @@ class TestIQ(unittest.TestCase):
     iq_args['host'] = 'http://afakeurlthatdoesnotexist.com:8081'
     iq_args['conda'] = False
     iq_args['insecure'] = False
-
-    file = Path(__file__).parent / "iqapplicationresponse.txt"
-    with open(file, "r") as stdin:
-      mock_result = stdin.read()
-      mock_get.return_value.status_code = 200
-      mock_get.return_value.text = mock_result
 
     self.func = IQ(args=iq_args)
 

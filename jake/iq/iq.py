@@ -69,8 +69,6 @@ class IQ():
 
     self._request.auth = requests.auth.HTTPBasicAuth(self._user, self._password)
 
-    self._internal_id = self.get_internal_id()
-
   def get_policy_action(self):
     """gets policy action from IQ Server result"""
     return self._policy_action
@@ -105,6 +103,8 @@ class IQ():
   def submit_sbom(self, sbom: str) -> (str):
     """submits sbom (in str form) to IQ server, valid sbom should get
     202 response. On valid response, sets status url for later polling"""
+    self._internal_id = self.get_internal_id()
+    
     LOG.debug(sbom)
     headers = self._headers
     headers['Content-Type'] = 'application/xml'

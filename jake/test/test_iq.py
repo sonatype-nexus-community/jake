@@ -98,6 +98,5 @@ class TestIQ(unittest.TestCase):
                     self.status_url,
                     body=stdin.read(), status=200)
 
-      response = self.func.poll_report(self.status_url)
-    self.assertEqual(response, True)
+      self.func.poll_report(self.status_url)
     self.assertEqual(self.func.get_policy_action(), 'None')

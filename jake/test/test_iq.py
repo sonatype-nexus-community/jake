@@ -58,15 +58,15 @@ class TestIQ(unittest.TestCase):
 #     fake_actual_purls.add_coordinate('pycrypto', '2.6.1', 'conda')
 #     return fake_actual_purls
 
-  @patch('jake.iq.iq.requests.session.get')
-  def test_call_get_application_id(self, mock_get):
+  @patch('jake.iq.iq.requests.session')
+  def test_call_get_application_id(self, session_mock):
     """test_call_get_application_id mocks a call to IQ
     and ensures that that calls to IQ for an application ID return
     an internal ID as expected"""
     file = Path(__file__).parent / "iqapplicationresponse.txt"
     with open(file, "r") as stdin:
       mock_result = stdin.read()
-      mock_get.return_value.status_code = 200
-      mock_get.return_value.text = mock_result
+      session_mock.return_value.status_code = 200
+      session_mock.return_value.text = mock_result
       response = self.func.get_internal_id()
     self.assertEqual(len(response), 32)

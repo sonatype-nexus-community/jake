@@ -86,7 +86,7 @@ class TestIQ(unittest.TestCase):
     file = Path(__file__).parent / "iqstatusurlresponse.txt"
     with open(file, "r") as stdin:
       responses.add(responses.POST,
-                    'http://afakeurlthatdoesnotexist.com:8081/api/v2/applications?publicId=testapp',
+                    'http://afakeurlthatdoesnotexist.com:8081/api/v2/scan/applications/4537e6fe68c24dd5ac83efd97d4fc2f4/sources/jake?stageId=develop',
                     body=stdin.read(), status=200)
       response = self.func.submit_sbom("sbom")
     self.assertEqual(len(response), 32)

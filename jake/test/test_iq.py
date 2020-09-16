@@ -50,6 +50,10 @@ class TestIQ(unittest.TestCase):
       self.internal_id,
       self.status_id
     )
+    self.full_status_url = '{0}/{1}'.format(
+      iq_args['host'],
+      status_url
+    )
 
     self.func = IQ(args=iq_args)
 
@@ -95,7 +99,7 @@ class TestIQ(unittest.TestCase):
     file = Path(__file__).parent / "iqpolicynoneresponse.txt"
     with open(file, "r") as stdin:
       responses.add(responses.GET,
-                    self.status_url,
+                    self.full_status_url,
                     body=stdin.read(), status=200)
 
       self.func.poll_report(self.status_url)

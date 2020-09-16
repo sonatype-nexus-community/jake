@@ -40,12 +40,16 @@ class TestIQ(unittest.TestCase):
     iq_args['insecure'] = False
 
     self.internal_id = '4537e6fe68c24dd5ac83efd97d4fc2f4'
+    self.status_id = '9cee2b6366fc4d328edc318eae46b2cb'
     self.third_party_url = '{0}/api/v2/scan/applications/{1}/sources/jake?stageId={2}'.format(
       iq_args['host'],
       self.internal_id,
       iq_args['stage']
     )
-    self.status_url = 'api/v2/scan/applications/4537e6fe68c24dd5ac83efd97d4fc2f4/status/9cee2b6366fc4d328edc318eae46b2cb'
+    self.status_url = 'api/v2/scan/applications/{0}/status/{1}'.format(
+      self.internal_id,
+      self.status_id
+    )
 
     self.func = IQ(args=iq_args)
 

@@ -18,10 +18,9 @@
 import unittest
 # import json
 
-from unittest.mock import patch
 from pathlib import Path
 
-from requests import Session
+import responses
 
 from ..iq.iq import IQ
 # from ..types.coordinates import Coordinates
@@ -60,16 +59,15 @@ class TestIQ(unittest.TestCase):
 #     fake_actual_purls.add_coordinate('pycrypto', '2.6.1', 'conda')
 #     return fake_actual_purls
 
-  @patch.object(Session, 'get')
-  def test_call_get_application_id(self, mock_get):
+  @responses.activate
+  def test_call_get_application_id(self):
     """test_call_get_application_id mocks a call to IQ
     and ensures that that calls to IQ for an application ID return
     an internal ID as expected"""
     file = Path(__file__).parent / "iqapplicationresponse.txt"
     with open(file, "r") as stdin:
-      mock_result = stdin.read()
-      mock_get.return_value.status_code = 200
-      mock_get.return_value.text = mock_result
-      response = self.func.get_internal_id()
+        responses.add(responses.GET, 'http://afakeurlthatdoesnotexist.com:8081/api/v2/applications?publicId=testapp',
+                      json=stdin.read(), status=200)
+        response = self.func.get_internal_id()
     self.assertEqual(len(response), 32)
     self.assertEqual(response, '4537e6fe68c24dd5ac83efd97d4fc2f4')

@@ -35,7 +35,7 @@ class TestIQ(unittest.TestCase):
     iq_args['stage'] = 'develop'
     iq_args['user'] = 'admin'
     iq_args['password'] = 'admin123'
-    iq_args['host'] = 'http://localhost:8081'
+    iq_args['host'] = 'http://afakeurlthatdoesnotexist.com:8081'
     iq_args['conda'] = False
     iq_args['insecure'] = False
 

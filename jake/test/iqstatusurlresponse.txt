@@ -1,0 +1,3 @@
+{
+    "statusUrl": "api/v2/scan/applications/4537e6fe68c24dd5ac83efd97d4fc2f4/status/9cee2b6366fc4d328edc318eae46b2cb"
+}

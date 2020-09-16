@@ -72,3 +72,23 @@ class TestIQ(unittest.TestCase):
       response = self.func.get_internal_id()
     self.assertEqual(len(response), 32)
     self.assertEqual(response, '4537e6fe68c24dd5ac83efd97d4fc2f4')
+
+  @responses.activate
+  def test_call_submit_sbom(self):
+    """test_call_submit_sbom mocks a call to IQ
+    and ensures that that calls to IQ with an sbom return
+    a status URL as expected"""
+    file = Path(__file__).parent / "iqapplicationresponse.txt"
+    with open(file, "r") as stdin:
+      responses.add(responses.GET,
+                    'http://afakeurlthatdoesnotexist.com:8081/api/v2/applications?publicId=testapp',
+                    body=stdin.read(), status=200)
+    file = Path(__file__).parent / "iqstatusurlresponse.txt"
+    with open(file, "r") as stdin:
+      responses.add(responses.POST,
+                    'http://afakeurlthatdoesnotexist.com:8081/api/v2/applications?publicId=testapp',
+                    body=stdin.read(), status=200)
+      response = self.func.submit_sbom("sbom")
+    self.assertEqual(len(response), 32)
+    self.assertEqual(response, 
+                     'api/v2/scan/applications/4537e6fe68c24dd5ac83efd97d4fc2f4/status/9cee2b6366fc4d328edc318eae46b2cb')

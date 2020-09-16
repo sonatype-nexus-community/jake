@@ -30,7 +30,7 @@ from ..iq.iq import IQ
 class TestIQ(unittest.TestCase):
   """TestIQ audits the call to IQ"""
   @patch('jake.iq.iq.requests.session.get')
-  def setUp(self):
+  def setUp(self, mock_get):
     iq_args = {}
     iq_args['application'] = 'testapp'
     iq_args['stage'] = 'develop'

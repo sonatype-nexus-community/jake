@@ -100,5 +100,5 @@ class TestIQ(unittest.TestCase):
                     self.third_party_url,
                     body=stdin.read(), status=200)
       response = self.func.submit_sbom("sbom")
-    self.assertEqual(len(response), 32)
+    self.assertEqual(len(response), 97)
     self.assertEqual(response, self.status_url)

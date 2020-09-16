@@ -16,7 +16,7 @@
 
 """test_iq.py audits the call to IQ"""
 import unittest
-import json
+# import json
 
 from unittest.mock import patch
 from pathlib import Path
@@ -66,7 +66,7 @@ class TestIQ(unittest.TestCase):
     file = Path(__file__).parent / "iqapplicationresponse.txt"
     with open(file, "r") as stdin:
       mock_result = stdin.read()
-      mock_post.return_value.status_code = 200
-      mock_post.return_value.text = mock_result
+      mock_get.return_value.status_code = 200
+      mock_get.return_value.text = mock_result
       response = self.func.get_internal_id()
     self.assertEqual(len(response), 32)

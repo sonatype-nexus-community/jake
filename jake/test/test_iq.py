@@ -29,6 +29,7 @@ from ..iq.iq import IQ
 
 class TestIQ(unittest.TestCase):
   """TestIQ audits the call to IQ"""
+  @patch('jake.iq.iq.requests.session.get')
   def setUp(self):
     iq_args = {}
     iq_args['application'] = 'testapp'
@@ -38,6 +39,12 @@ class TestIQ(unittest.TestCase):
     iq_args['host'] = 'http://afakeurlthatdoesnotexist.com:8081'
     iq_args['conda'] = False
     iq_args['insecure'] = False
+
+    file = Path(__file__).parent / "iqapplicationresponse.txt"
+    with open(file, "r") as stdin:
+      mock_result = stdin.read()
+      mock_get.return_value.status_code = 200
+      mock_get.return_value.text = mock_result
 
     self.func = IQ(args=iq_args)
 
@@ -58,7 +65,7 @@ class TestIQ(unittest.TestCase):
 #     fake_actual_purls.add_coordinate('pycrypto', '2.6.1', 'conda')
 #     return fake_actual_purls
 
-  @patch('jake.iq.iq.requests.get')
+  @patch('jake.iq.iq.requests.session.get')
   def test_call_get_application_id(self, mock_get):
     """test_call_get_application_id mocks a call to IQ
     and ensures that that calls to IQ for an application ID return

@@ -19,8 +19,9 @@ import unittest
 # import json
 
 from unittest.mock import patch
-from requests import Session
 from pathlib import Path
+
+from requests import Session
 
 from ..iq.iq import IQ
 # from ..types.coordinates import Coordinates

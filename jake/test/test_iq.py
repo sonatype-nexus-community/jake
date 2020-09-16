@@ -53,23 +53,6 @@ class TestIQ(unittest.TestCase):
 
     self.func = IQ(args=iq_args)
 
-#   @staticmethod
-#   def get_fake_purls():
-#     """get_fake_purls is a helper function that creates a fake Coordinate"""
-#     fake_purls = Coordinates()
-#     fake_purls.add_coordinate('thing', '1.1', 'conda')
-#     fake_purls.add_coordinate('thing', '1.2', 'conda')
-#     fake_purls.add_coordinate('thing', '1.3', 'conda')
-#     return fake_purls
-
-#   @staticmethod
-#   def get_fake_actual_purls():
-#     """get_fake_actual_purls is a helper function that creates a
-#     fake Coordinate with realistic data"""
-#     fake_actual_purls = Coordinates()
-#     fake_actual_purls.add_coordinate('pycrypto', '2.6.1', 'conda')
-#     return fake_actual_purls
-
   @responses.activate
   def test_call_get_application_id(self):
     """test_call_get_application_id mocks a call to IQ
@@ -102,3 +85,19 @@ class TestIQ(unittest.TestCase):
       response = self.func.submit_sbom("sbom")
     self.assertEqual(len(response), 97)
     self.assertEqual(response, self.status_url)
+
+  @responses.activate
+  def test_call_poll_report_none_policy_action(self):
+    """test_call_poll_report_none_policy_action mocks a call to IQ
+    and ensures that that calls to IQ asking for a poll
+    response on a status URL, return as expected, and sets policy action
+    to None"""
+    file = Path(__file__).parent / "iqpolicynoneresponse.txt"
+    with open(file, "r") as stdin:
+      responses.add(responses.GET,
+                    self.status_url,
+                    body=stdin.read(), status=200)
+
+      response = self.func.poll_report(self.status_url)
+    self.assertEqual(response, True)
+    self.assertEqual(self.func.get_policy_action(), 'None')

@@ -72,4 +72,4 @@ class TestIQ(unittest.TestCase):
       mock_get.return_value.text = mock_result
       response = self.func.get_internal_id()
     self.assertEqual(len(response), 32)
-    self.assertEqual(self.func._internal_id, '4537e6fe68c24dd5ac83efd97d4fc2f4')
+    self.assertEqual(response, '4537e6fe68c24dd5ac83efd97d4fc2f4')

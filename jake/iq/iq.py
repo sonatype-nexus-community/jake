@@ -44,6 +44,7 @@ class IQ():
     self._report_url = ''
     self._policy_action = None
     self._request = requests.Session()
+    self._internal_id = ''
 
     if self._insecure:
       self._request.verify = False
@@ -104,7 +105,7 @@ class IQ():
     """submits sbom (in str form) to IQ server, valid sbom should get
     202 response. On valid response, sets status url for later polling"""
     self._internal_id = self.get_internal_id()
-    
+
     LOG.debug(sbom)
     headers = self._headers
     headers['Content-Type'] = 'application/xml'

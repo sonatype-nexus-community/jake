@@ -16,7 +16,6 @@
 
 """test_iq.py audits the call to IQ"""
 import unittest
-import json
 
 from pathlib import Path
 
@@ -39,6 +38,13 @@ class TestIQ(unittest.TestCase):
     iq_args['host'] = 'http://afakeurlthatdoesnotexist.com:8081'
     iq_args['conda'] = False
     iq_args['insecure'] = False
+
+    self.internal_id = '4537e6fe68c24dd5ac83efd97d4fc2f4'
+    self.third_party_url = '{0}/api/v2/scan/applications/{1}/sources/jake?stageId={2}'.format(
+      iq_args['host'],
+      self.internal_id,
+      iq_args['stage']
+    )
 
     self.func = IQ(args=iq_args)
 
@@ -86,9 +92,9 @@ class TestIQ(unittest.TestCase):
     file = Path(__file__).parent / "iqstatusurlresponse.txt"
     with open(file, "r") as stdin:
       responses.add(responses.POST,
-                    'http://afakeurlthatdoesnotexist.com:8081/api/v2/scan/applications/4537e6fe68c24dd5ac83efd97d4fc2f4/sources/jake?stageId=develop',
+                    self.third_party_url,
                     body=stdin.read(), status=200)
       response = self.func.submit_sbom("sbom")
     self.assertEqual(len(response), 32)
-    self.assertEqual(response, 
+    self.assertEqual(response,
                      'api/v2/scan/applications/4537e6fe68c24dd5ac83efd97d4fc2f4/status/9cee2b6366fc4d328edc318eae46b2cb')

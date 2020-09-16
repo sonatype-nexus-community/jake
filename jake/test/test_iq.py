@@ -45,6 +45,7 @@ class TestIQ(unittest.TestCase):
       self.internal_id,
       iq_args['stage']
     )
+    self.status_url = 'api/v2/scan/applications/4537e6fe68c24dd5ac83efd97d4fc2f4/status/9cee2b6366fc4d328edc318eae46b2cb'
 
     self.func = IQ(args=iq_args)
 
@@ -96,5 +97,4 @@ class TestIQ(unittest.TestCase):
                     body=stdin.read(), status=200)
       response = self.func.submit_sbom("sbom")
     self.assertEqual(len(response), 32)
-    self.assertEqual(response,
-                     'api/v2/scan/applications/4537e6fe68c24dd5ac83efd97d4fc2f4/status/9cee2b6366fc4d328edc318eae46b2cb')
+    self.assertEqual(response, self.status_url)

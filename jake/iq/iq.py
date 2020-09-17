@@ -137,6 +137,7 @@ class IQ():
       res = json.loads(response)
       LOG.debug(res)
       if res['policyAction'] == 'None':
+        self._policy_action = res['policyAction']
         LOG.debug("No policy issues, whew!")
       else:
         self._policy_action = res['policyAction']

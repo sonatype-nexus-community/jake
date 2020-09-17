@@ -331,7 +331,7 @@ def __iq_control_flow(args: dict, bom_str: bytes):
     spinner.text = "Reticulating splines..."
     iq_requests.poll_report(status_url)
 
-    if iq_requests.get_policy_action():
+    if iq_requests.get_policy_action() == 'Failure':
       spinner.fail("💥 ")
       __toggle_stdout(on=True)
       print(Fore.YELLOW +
@@ -339,7 +339,7 @@ def __iq_control_flow(args: dict, bom_str: bytes):
       print(Fore.YELLOW +
             "Your IQ Server Report is available here: {}".format(iq_requests.get_report_url()))
       _exit(1)
-    else:
+    elif iq_requests.get_policy_action() == 'None':
       spinner.ok("🐍 ")
       __toggle_stdout(on=True)
       print(Fore.GREEN +
@@ -347,6 +347,12 @@ def __iq_control_flow(args: dict, bom_str: bytes):
       print(Fore.GREEN +
             "Your IQ Server Report is available here: {}".format(iq_requests.get_report_url()))
       _exit(0)
+    else:
+      spinner.fail("🐍 ")
+      __toggle_stdout(on=True)
+      print(Fore.RED +
+            "Recieved an error response from IQ Server, please check logs.")
+      _exit(3)
 
 def __sbom_control_flow(conda: bool, target: str) -> (bytes):
   """

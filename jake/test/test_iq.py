@@ -16,6 +16,7 @@
 
 """test_iq.py audits the call to IQ"""
 import unittest
+import json
 
 from pathlib import Path
 
@@ -98,9 +99,10 @@ class TestIQ(unittest.TestCase):
     to None"""
     file = Path(__file__).parent / "iqpolicynoneresponse.txt"
     with open(file, "r") as stdin:
+      mock_json = json.loads(stdin.read())
       responses.add(responses.GET,
                     self.full_status_url,
-                    body=stdin.read(), status=200)
+                    json=mock_json, status=200)
 
       self.func.poll_report(self.status_url)
     self.assertEqual(self.func.get_policy_action(), 'None')
@@ -113,9 +115,10 @@ class TestIQ(unittest.TestCase):
     to Failure"""
     file = Path(__file__).parent / "iqpolicyfailureresponse.txt"
     with open(file, "r") as stdin:
+      mock_json = json.loads(stdin.read())
       responses.add(responses.GET,
                     self.full_status_url,
-                    body=stdin.read(), status=200)
+                    json=mock_json, status=200)
 
       self.func.poll_report(self.status_url)
     self.assertEqual(self.func.get_policy_action(), 'Failure')

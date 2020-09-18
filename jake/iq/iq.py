@@ -136,11 +136,8 @@ class IQ():
     try:
       res = json.loads(response)
       LOG.debug(res)
-      if res['policyAction'] == 'None':
-        self._policy_action = res['policyAction']
-        LOG.debug("No policy issues, whew!")
-      else:
-        self._policy_action = res['policyAction']
+      self._policy_action = res['policyAction']
+      LOG.debug("Policy Action parsed")
       self._report_url = res['reportHtmlUrl']
       return True
     except JSONDecodeError as json_decode_error:

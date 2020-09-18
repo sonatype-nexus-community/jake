@@ -1,0 +1,18 @@
+{
+    "applications": [
+        {
+            "id": "4537e6fe68c24dd5ac83efd97d4fc2f4",
+            "publicId": "MyApplicationID",
+            "name": "MyApplication",
+            "organizationId": "bb41817bd3e2403a8a52fe8bcd8fe25a",
+            "contactUserName": "NewAppContact",
+            "applicationTags": [
+                {
+                    "id": "9beee80c6fc148dfa51e8b0359ee4d4e",
+                    "tagId": "cfea8fa79df64283bd64e5b6b624ba48",
+                    "applicationId": "4bb67dcfc86344e3a483832f8c496419"
+                }
+            ]
+        }
+    ]
+}

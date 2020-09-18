@@ -44,6 +44,7 @@ class IQ():
     self._report_url = ''
     self._policy_action = None
     self._request = requests.Session()
+    self._internal_id = ''
 
     if self._insecure:
       self._request.verify = False
@@ -68,8 +69,6 @@ class IQ():
         self._iq_url = results['Server']
 
     self._request.auth = requests.auth.HTTPBasicAuth(self._user, self._password)
-
-    self._internal_id = self.get_internal_id()
 
   def get_policy_action(self):
     """gets policy action from IQ Server result"""
@@ -105,6 +104,8 @@ class IQ():
   def submit_sbom(self, sbom: str) -> (str):
     """submits sbom (in str form) to IQ server, valid sbom should get
     202 response. On valid response, sets status url for later polling"""
+    self._internal_id = self.get_internal_id()
+
     LOG.debug(sbom)
     headers = self._headers
     headers['Content-Type'] = 'application/xml'
@@ -135,10 +136,8 @@ class IQ():
     try:
       res = json.loads(response)
       LOG.debug(res)
-      if res['policyAction'] == 'None':
-        LOG.debug("No policy issues, whew!")
-      else:
-        self._policy_action = res['policyAction']
+      self._policy_action = res['policyAction']
+      LOG.debug("Policy Action parsed")
       self._report_url = res['reportHtmlUrl']
       return True
     except JSONDecodeError as json_decode_error:

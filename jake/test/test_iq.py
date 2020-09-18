@@ -69,8 +69,7 @@ class TestIQ(unittest.TestCase):
                     'http://afakeurlthatdoesnotexist.com:8081/api/v2/applications?publicId=testapp',
                     body=stdin.read(), status=200)
       response = self.func.get_internal_id()
-    self.assertEqual(len(response), 32)
-    self.assertEqual(response, '4537e6fe68c24dd5ac83efd97d4fc2f4')
+    self.assertEqual(response, self.internal_id)
 
   @responses.activate
   def test_call_submit_sbom(self):
@@ -88,7 +87,6 @@ class TestIQ(unittest.TestCase):
                     self.third_party_url,
                     body=stdin.read(), status=200)
       response = self.func.submit_sbom("sbom")
-    self.assertEqual(len(response), 97)
     self.assertEqual(response, self.status_url)
 
   @responses.activate

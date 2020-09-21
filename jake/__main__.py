@@ -346,7 +346,7 @@ def __iq_control_flow(args: dict, bom_str: bytes):
       spinner.ok("🧨 ")
       __toggle_stdout(on=True)
       print(Fore.GREEN +
-            "Warning, something slithers around your ankle! There are policy warnings from Sonatype IQ.")
+            "Something slithers around your ankle! There are policy warnings from Sonatype IQ.")
       print(Fore.GREEN +
             "Your IQ Server Report is available here: {}".format(iq_requests.get_report_url()))
       _exit(0)

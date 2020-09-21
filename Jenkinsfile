@@ -31,7 +31,7 @@ dockerizedBuildPipeline(
         python setup.py bdist_wheel
         cd dist && WHEEL_NAME=$(ls -1) && cd ..
         pip install --user dist/$WHEEL_NAME
-        jake iq --application jake --stage build --user $IQ_USERNAME --password $IQ_PASSWORD --host https://policy.ci.sonatype.dev
+        jake iq --application jake -vv --stage build --user $IQ_USERNAME --password $IQ_PASSWORD --host https://policy.ci.sonatype.dev
         '''
       }
     })

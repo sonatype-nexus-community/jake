@@ -34,7 +34,7 @@ dockerizedBuildPipeline(
         jake iq --application jake -vv --stage build --user $IQ_USERNAME --password $IQ_PASSWORD --host https://policy.ci.sonatype.dev || export jakeFailed=true        
         #cp ${HOME}/.ossinidex/jake.combined.log '${WORKSPACE}'
         #cat ${HOME}/.ossinidex/jake.combined.log
-        cat ~/.ossinidex/jake.combined.log
+        cat "${HOME}/.ossinidex/jake.combined.log"
         if [ -z "$jakeFailed" ]
         then
           echo 'Jake failed'

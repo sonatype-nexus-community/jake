@@ -354,8 +354,8 @@ def __iq_control_flow(args: dict, bom_str: bytes):
       spinner.fail("🐍 ")
       __toggle_stdout(on=True)
       print(Fore.RED +
-            "Received an error response from IQ Server, please check logs. policy action: {}".format(
-                iq_requests.get_policy_action()))
+            "Received an error response from IQ Server, please check logs. policy action: {}"
+            .format(iq_requests.get_policy_action()))
       _exit(3)
 
 def __sbom_control_flow(conda: bool, target: str) -> (bytes):

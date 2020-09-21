@@ -351,7 +351,7 @@ def __iq_control_flow(args: dict, bom_str: bytes):
       spinner.fail("🐍 ")
       __toggle_stdout(on=True)
       print(Fore.RED +
-            "Recieved an error response from IQ Server, please check logs.")
+            "Received an error response from IQ Server, please check logs.")
       _exit(3)
 
 def __sbom_control_flow(conda: bool, target: str) -> (bytes):

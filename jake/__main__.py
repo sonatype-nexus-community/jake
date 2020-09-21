@@ -316,6 +316,9 @@ def __setup_logger(verbose: bool):
 
   logger.addHandler(ch)
 
+  if verbose:
+    print("log file location: "+filepath)
+
 def __iq_control_flow(args: dict, bom_str: bytes):
   with yaspin(text="Loading", color="magenta") as spinner:
     spinner.text = "Submitting to Sonatype IQ..."

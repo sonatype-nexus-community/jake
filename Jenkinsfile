@@ -32,12 +32,9 @@ dockerizedBuildPipeline(
         cd dist && WHEEL_NAME=$(ls -1) && cd ..
         pip install --user dist/$WHEEL_NAME
         jake iq --application jake -vv --stage build --user $IQ_USERNAME --password $IQ_PASSWORD --host https://policy.ci.sonatype.dev || export jakeFailed=true        
-        #cp ${HOME}/.ossindex/jake.combined.log '${WORKSPACE}'
-        #cat ${HOME}/.ossindex/jake.combined.log
-        ls -alh $HOME/.ossindex
-        cat '${HOME}/.ossindex/jake.combined.log'
         if [ -z "$jakeFailed" ]
         then
+          cat ${HOME}/.ossindex/jake.combined.log
           echo 'Jake failed'
           exit 1
         fi

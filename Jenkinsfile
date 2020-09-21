@@ -35,10 +35,9 @@ dockerizedBuildPipeline(
         cp ${HOME}/.ossinidex/jake.combined.log ${WORKSPACE}
         '''
       }
-    },
-    archiveArtifacts: 'jake.combined.log',
-    )
+    })
   },
+  archiveArtifacts: 'jake.combined.log',
   onSuccess: {
     githubStatusUpdate('success')
   },

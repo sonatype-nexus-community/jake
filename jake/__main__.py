@@ -342,6 +342,14 @@ def __iq_control_flow(args: dict, bom_str: bytes):
       print(Fore.YELLOW +
             "Your IQ Server Report is available here: {}".format(iq_requests.get_report_url()))
       _exit(1)
+    elif iq_requests.get_policy_action() == 'Warning':
+      spinner.ok("🧨 ")
+      __toggle_stdout(on=True)
+      print(Fore.GREEN +
+            "Warning, something slithers around your ankle! There are policy warnings from Sonatype IQ.")
+      print(Fore.GREEN +
+            "Your IQ Server Report is available here: {}".format(iq_requests.get_report_url()))
+      _exit(0)
     elif iq_requests.get_policy_action() == 'None':
       spinner.ok("🐍 ")
       __toggle_stdout(on=True)

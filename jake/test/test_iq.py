@@ -120,3 +120,19 @@ class TestIQ(unittest.TestCase):
 
       self.func.poll_report(self.status_url)
     self.assertEqual(self.func.get_policy_action(), 'Failure')
+
+  @responses.activate
+  def test_call_poll_report_warning_policy_action(self):
+    """test_call_poll_report_warning_policy_action mocks a call to IQ
+    and ensures that that calls to IQ asking for a poll
+    response on a status URL, return as expected, and sets policy action
+    to Warning"""
+    file = Path(__file__).parent / "iqpolicywarningresponse.txt"
+    with open(file, "r") as stdin:
+      mock_json = json.loads(stdin.read())
+      responses.add(responses.GET,
+                    self.full_status_url,
+                    json=mock_json, status=200)
+
+      self.func.poll_report(self.status_url)
+    self.assertEqual(self.func.get_policy_action(), 'Warning')

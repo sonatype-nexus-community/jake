@@ -32,9 +32,12 @@ dockerizedBuildPipeline(
         cd dist && WHEEL_NAME=$(ls -1) && cd ..
         pip install --user dist/$WHEEL_NAME
         jake iq --application jake -vv --stage build --user $IQ_USERNAME --password $IQ_PASSWORD --host https://policy.ci.sonatype.dev
+        cp ${HOME}/.ossinidex/jake.combined.log ${WORKSPACE}
         '''
       }
-    })
+    },
+    archiveArtifacts: 'jake.combined.log',
+    )
   },
   onSuccess: {
     githubStatusUpdate('success')

@@ -31,8 +31,8 @@ dockerizedBuildPipeline(
         python setup.py bdist_wheel
         cd dist && WHEEL_NAME=$(ls -1) && cd ..
         pip install --user dist/$WHEEL_NAME
-        jake iq --application jake --stage stage --user $IQ_USERNAME --password $IQ_PASSWORD --host https://policy.ci.sonatype.dev        
-        #jake iq --application jake --stage stage --user $IQ_USERNAME --password $IQ_PASSWORD --host https://policy.ci.sonatype.dev || export jakeFailed=true        
+        jake iq --application jake --stage stage-release --user $IQ_USERNAME --password $IQ_PASSWORD --host https://policy.ci.sonatype.dev        
+        #jake iq --application jake --stage stage-release --user $IQ_USERNAME --password $IQ_PASSWORD --host https://policy.ci.sonatype.dev || export jakeFailed=true        
         #cat ${HOME}/.ossindex/jake.combined.log
         '''
       }

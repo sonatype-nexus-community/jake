@@ -56,7 +56,7 @@ workflows:
       - publish:
           filters:
             branches:
-              only: master
+              only: main
           context: pypi
           requires:
             - build

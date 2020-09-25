@@ -23,6 +23,7 @@ dockerizedBuildPipeline(
     python -m xmlrunner discover -o test-results/
     '''
   },
+  deployBranch: 'main',
   vulnerabilityScan: {
     withDockerImage(env.DOCKER_IMAGE_ID, {
       withCredentials([usernamePassword(credentialsId: 'policy.s integration account',

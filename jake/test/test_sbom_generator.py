@@ -21,6 +21,7 @@ import json
 
 from lxml import etree
 
+from ..types.coordinateresults import CoordinateResults
 from ..types.results_decoder import ResultsDecoder
 from ..cyclonedx.generator import CycloneDxSbomGenerator
 
@@ -61,3 +62,37 @@ class TestSbomGenerator(unittest.TestCase):
     self.assertEqual(vulnerable_component.__len__(), 4)
     vulnerabilities = vulnerable_component.__getitem__(3)
     self.assertEqual(vulnerabilities.__len__(), 5)
+
+  def test__get_name_version_from_purl(self):
+    coord_result = CoordinateResults()
+    coord_result.set_coordinates("pkg:pypi/yaspin@0.16.0?extension=tar.gz")
+    coord_result_normal = CoordinateResults()
+    coord_result_normal.set_coordinates("pkg:pypi/normalpurl@0.17.0")
+    coord_results = [coord_result, coord_result_normal]
+    sbom = self.func.create_and_return_sbom(coord_results)
+    # Assert that it has a <bom>
+    self.assertIsNotNone(sbom)
+    self.assertEqual(etree.iselement(sbom), True)
+    self.assertEqual(sbom.tag, 'bom')
+    # Assert that it has a <components>
+    self.assertIs(sbom.__len__(), 1, sbom.__len__())
+    item = sbom.__getitem__(0)
+    self.assertIsNotNone(item)
+    self.assertEqual(item.tag, "components")
+    self.assertIs(item.__len__(), 2)
+
+    component = item.__getitem__(0)
+    self.assertIsNotNone(component)
+    self.assertEqual(component.tag, "component")
+    self.assertEqual(component.__getitem__(0).text, "yaspin")
+    self.assertEqual(component.__getitem__(1).text, "0.16.0")
+    self.assertEqual(component.__getitem__(2).text, "pkg:pypi/yaspin@0.16.0?extension=tar.gz")
+    self.assertIsNotNone(component)
+
+    component_normal = item.__getitem__(1)
+    self.assertIsNotNone(component_normal)
+    self.assertEqual(component_normal.tag, "component")
+    self.assertEqual(component_normal.__getitem__(0).text, "normalpurl")
+    self.assertEqual(component_normal.__getitem__(1).text, "0.17.0")
+    self.assertEqual(component_normal.__getitem__(2).text, "pkg:pypi/normalpurl@0.17.0")
+    self.assertIsNotNone(component_normal)

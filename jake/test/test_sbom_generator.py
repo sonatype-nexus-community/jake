@@ -64,6 +64,8 @@ class TestSbomGenerator(unittest.TestCase):
     self.assertEqual(vulnerabilities.__len__(), 5)
 
   def test__get_name_version_from_purl(self):
+    """test__get_name_version_from_purl tests if a parameter suffix is removed from the
+    sbom version field"""
     coord_result = CoordinateResults()
     coord_result.set_coordinates("pkg:pypi/yaspin@0.16.0?extension=tar.gz")
     coord_result_normal = CoordinateResults()

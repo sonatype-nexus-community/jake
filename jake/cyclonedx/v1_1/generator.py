@@ -110,7 +110,8 @@ class CycloneDx11Generator():
   def __get_name_version_from_purl(purl):
     split_list = purl.split("/")
     second_split = split_list[1].split("@")
-    return (second_split[0], second_split[1])
+    version_split = second_split[1].split("?")
+    return (second_split[0], version_split[0])
 
   @staticmethod
   def __create_vulnerability_node(vulnerability_list, purl, vulnerabilities, node):

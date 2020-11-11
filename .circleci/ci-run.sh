@@ -2,6 +2,7 @@
 set -e
 
 source .venv/bin/activate
+#pipenv shell
 
 pylint jake
 

@@ -19,7 +19,8 @@
 dockerizedBuildPipeline(
   buildAndTest: {
     sh '''
-    pip3 install responses
+    # development only requirements
+    pip3 install -r requirements-dev.txt
     python -m xmlrunner discover -o test-results/
     '''
   },

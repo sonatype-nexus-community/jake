@@ -307,6 +307,15 @@ Tests can be run with `python3 -m unittest discover`
 
 More TBD.
 
+## Misc
+
+We have a nightly "internal" build that scans Jake using Nexus Lifecycle. Files related to this build are:
+
+    [Jenkinsfile](./Jenkinsfile)
+    [license-excludes.xml](./license-excludes.xml) - define which files to skip during header checks.
+
+You should be able to ignore these file for the most part.    
+    
 ## Contributing
 
 We care a lot about making the world a safer place, and that's why we created `jake`. If you as well want to

@@ -311,8 +311,8 @@ More TBD.
 
 We have a nightly "internal" build that scans Jake using Nexus Lifecycle. Files related to this build are:
 
-    [Jenkinsfile](./Jenkinsfile)
-    [license-excludes.xml](./license-excludes.xml) - define which files to skip during header checks.
+   * [Jenkinsfile](./Jenkinsfile)
+   * [license-excludes.xml](./license-excludes.xml) - define which files to skip during header checks.
 
 You should be able to ignore these file for the most part.    
     

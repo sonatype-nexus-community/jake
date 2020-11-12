@@ -7,7 +7,7 @@ distlib==0.3.1
 idna==2.10
 isort==5.6.4
 lazy-object-proxy==1.4.3
-lxml==4.5.0
+lxml==4.6.1
 mccabe==0.6.1
 oyaml==0.9
 packaging==20.3
@@ -16,14 +16,14 @@ polling==0.3.1
 pyfiglet==0.8.post1
 pyparsing==2.4.7
 PyYAML==5.3.1
-requests==2.24.0
+requests==2.25.0
 tabulate==0.8.7
 termcolor==1.1.0
 terminaltables==3.1.0
 tinydb==3.15.2
 toml==0.10.2
 typed-ast==1.4.1
-urllib3==1.25.11
+urllib3==1.26.2
 wimpy==0.6
 wrapt==1.12.1
 yaspin==0.16.0

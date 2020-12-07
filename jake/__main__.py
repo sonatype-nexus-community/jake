@@ -78,7 +78,7 @@ __shared_options = [
     click.option(
         '-q', '--quiet',
         is_flag=True,
-        default=True,
+        default=False,
         help='Suppress cosmetic and informational output'),
     click.option(
         '-c', '--conda',
@@ -222,7 +222,7 @@ def ddt(verbose, quiet, conda, targets):
     if response is None:
       spinner.fail("💥 ")
       click.echo(
-          "Something went horribly wrong, there is no response from OSS Index",
+          "Something went horribly wrong, there is no response from OSS Index.\n" +
           "please rerun with --verbose to see what happened")
       _exit(1)
     spinner.ok("🐍 ")
@@ -396,7 +396,8 @@ def __sbom_control_flow(conda: bool, target: str) -> (bytes):
 def __banner(quiet: bool):
   """ Prints the banner, most of the user facing commands start with this """
   if quiet:
-    __toggle_stdout(on=False)
+    # don't turn off entire stdout, otherwise other output (errors) are also suppressed
+    # __toggle_stdout(on=False)
     return
   top_font = 'isometric4' # another option: 'isometric1'
   bot_font = 'invita'

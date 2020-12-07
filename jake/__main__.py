@@ -78,7 +78,7 @@ __shared_options = [
     click.option(
         '-q', '--quiet',
         is_flag=True,
-        default=False,
+        default=True,
         help='Suppress cosmetic and informational output'),
     click.option(
         '-c', '--conda',
@@ -223,7 +223,7 @@ def ddt(verbose, quiet, conda, targets):
       spinner.fail("💥 ")
       click.echo(
           "Something went horribly wrong, there is no response from OSS Index",
-          "please rerun with -VV to see what happened")
+          "please rerun with --verbose to see what happened")
       _exit(1)
     spinner.ok("🐍 ")
 

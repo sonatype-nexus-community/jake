@@ -37,11 +37,18 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Setup Python environment
           command: |
             sudo .circleci/ci-setup.sh
       - run:
+          name: Run tests and self scan
           command: |
             .circleci/ci-run.sh
+            # audit jake with jake
+            pip3 install -e .
+            # hot mess to uninstall dev requirements before we self scan. probably should move to pipenv
+            pip3 uninstall -r requirements-dev.txt -y
+            jake ddt -q
       - store_test_results: # Upload test results for display in Test Summary: https://circleci.com/docs/2.0/collect-test-data/
           path: test-results
       - store_artifacts: # Upload test summary for display in Artifacts: https://circleci.com/docs/2.0/artifacts/
@@ -60,3 +67,13 @@ workflows:
           context: pypi
           requires:
             - build
+
+  build_nightly:
+    triggers:
+      - schedule:
+          cron: "20 20 * * *"
+          filters:
+            branches:
+              only: main
+    jobs:
+      - build

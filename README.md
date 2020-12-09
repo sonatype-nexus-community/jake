@@ -265,7 +265,7 @@ Run the python command using the shell you want to target and export to an env v
   $ jake ddt -t "$JAKE_TARGET"
 ```
 
-In other words: activate the virtual environment, run the `site.getsitepackages()` command, and make the output accesible to your `jake` install
+In other words: activate the virtual environment, run the `site.getsitepackages()` command, and make the output accessible to your `jake` install
 
 This will work for the `ddt`, `iq`, and `sbom` subcommands when evaluating pip modules.
 

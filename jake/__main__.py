@@ -155,7 +155,7 @@ def config(conf):
     help='Specify a file name and/or directory to save the CycloneDx sbom.')
 def sbom(verbose, quiet, conda, targets, output):
   """
-  Generates a purl only bom (no vulns) and outputs it to std_out a file
+  Generates a purl only bom (no vulns) and outputs it to std_out
   by default or to a file path with the -o flag
 
   Does not make any connection to IQ or OSSI

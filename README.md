@@ -322,6 +322,13 @@ We care a lot about making the world a safer place, and that's why we created `j
 speed up the pace of software development by working on this project, jump on in! Before you start work, create
 a new issue, or comment on an existing issue, to let others know you are!
 
+## Releasing
+
+We use [python-semantic-release](https://python-semantic-release.readthedocs.io/en/latest/) to generate patch releases
+from commits to the `main` branch.
+
+To avoid performing a release after a commit to the `main` branch, be sure your commit message includes `[skip ci] `.
+
 ## The Fine Print
 
 Remember:

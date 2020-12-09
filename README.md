@@ -74,7 +74,7 @@ Conda: `conda list | jake ddt -c`
 
 PyPi: `jake ddt`
 
-  Feeds dependencies available to pip in the current scope (run `pip freeze` to see what those are)
+  Feeds dependencies available to pip in the current scope (run `pip3 freeze` to see what those are)
 
 ### Options
 
@@ -286,11 +286,11 @@ Who better to wrangle those slippery deps in any virtual or real environment.
 
 * Clone the repo
 * Install Python 3.7 or higher
-* Ensure pip is installed (it should be)
+* Ensure pip3 is installed (it should be)
 * Run `python3 -m venv .venv` (or whatever virtual environment you prefer)
 * Run `source .venv/bin/activate`
-* Run `pip install -r requirements.txt`
-* Run `pip install -e .`
+* Run `pip3 install -r requirements.txt`
+* Run `pip3 install -e .`
 
 Once you've done this, you should have `jake` available to test with fairly globally, pointed at the local source you've cloned.
 
@@ -298,7 +298,7 @@ Once you've done this, you should have `jake` available to test with fairly glob
 
 `jake` is written using Python 3.7
 
-This project also uses `pip` for dependencies, so you will need to download make sure you have `pip`.
+This project also uses `pip3` for dependencies, so you will need to download make sure you have `pip3`.
 
 Follow instructions in [Build from source](#build-from-source).
 

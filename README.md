@@ -149,35 +149,35 @@ Some examples of using `jake` with Sonatype IQ
   2. (PyPi) Run `jake` against the AppId which will submit your dependencies to IQ and generate a report.
 
         ```
-        (.venv) $ jake iq -a jake
-                           ___           ___           ___
-               ___        /  /\         /  /\         /  /\
-              /__/\      /  /::\       /  /:/        /  /::\
-              \__\:\    /  /:/\:\     /  /:/        /  /:/\:\
-          ___ /  /::\  /  /::\ \:\   /  /::\____   /  /::\ \:\
+        (.venv) $ jake iq -a sandbox-application
+                          ___           ___           ___     
+              ___        /  /\         /  /\         /  /\    
+             /__/\      /  /::\       /  /:/        /  /::\   
+             \__\:\    /  /:/\:\     /  /:/        /  /:/\:\  
+         ___ /  /::\  /  /::\ \:\   /  /::\____   /  /::\ \:\
         /__/\  /:/\/ /__/:/\:\_\:\ /__/:/\:::::\ /__/:/\:\ \:\
         \  \:\/:/~~  \__\/  \:\/:/ \__\/~|:|~~~~ \  \:\ \:\_\/
-         \  \::/          \__\::/     |  |:|      \  \:\ \:\
-          \__\/           /  /:/      |  |:|       \  \:\_\/
-                         /__/:/       |__|:|        \  \:\
+         \  \::/          \__\::/     |  |:|      \  \:\ \:\  
+          \__\/           /  /:/      |  |:|       \  \:\_\/  
+                         /__/:/       |__|:|        \  \:\    
                          \__\/         \__\|         \__\/
-
-
-                       /)                     /)
-                   _/_(/    _     _  __   _  (/_   _
-            o   o  (__/ )__(/_   /_)_/ (_(_(_/(___(/_ o   o
-
-
-
-        Jake version: v0.1.4
+        
+        
+                        /)                     /)             
+                    _/_(/    _     _  __   _  (/_   _         
+             o   o  (__/ )__(/_   /_)_/ (_(_(_/(___(/_ o   o  
+        
+        
+        
+        Jake version: v0.2.58
         Put your python deps in a chokehold.
         🐍  Collecting Dependencies from System...
         🐍  Parsing Coordinates...
         🐍  Generating CycloneDx BOM...
         🐍  Submitting to Sonatype IQ...
-        🐍  Reticulating splines...
-        Smooth slithering there bud! No policy failures from Sonatype IQ.
-        Your IQ Server Report is available here: http://localhost:8070/ui/links/application/jake/report/9a34b1296aa54bf29a83d274f395000d
+        🧨  Reticulating splines...
+        Something slithers around your ankle! There are policy warnings from Sonatype IQ.
+        Your IQ Server Report is available here: http://localhost:8070/ui/links/application/sandbox-application/report/d2ef2ebb08fd45daa520e149b8d413f3
         ```
   3. (Conda) Use `conda list` and the `-c` flag to pipe conda managed deps into `jake` to generate a report in Sonatype IQ
         ```

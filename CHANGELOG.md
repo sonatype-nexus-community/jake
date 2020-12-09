@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.2.59 (2020-12-09)
+### Fix
+* Resolve vulnerability: CVE-2020-27783 in lxml ([`7526728`](https://github.com/sonatype-nexus-community/jake/commit/7526728623e102fb75fad30eb82be8824abbdf39))
+
 ## v0.2.58 (2020-12-07)
 
 

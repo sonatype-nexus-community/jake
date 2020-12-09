@@ -129,7 +129,7 @@ Options:
 
 Run `jake config iq` to set the the endpoint and auth params.
 
-Once configured with proper credentials, run `jake iq -a <AppId>`, replacing `<AppId>` with the public ID of your application in Sonatype IQ. If a policy is violated that has the action set to `Fail` in IQ, `jake` will exit with a non zero code which can be picked up build automation or used to notify locally.
+Once configured with proper credentials, run `jake iq -a <AppId>`, replacing `<AppId>` with the public ID of your application in Sonatype IQ. If a policy is violated that has the action set to `Fail` in IQ, `jake` will exit with a non-zero code which can be picked up by build automation or used to notify locally.
 
 If your Nexus IQ installation is using a self-signed certificate, you can run `jake` with the `-i` or `--insecure` flag to work with these types of installations.
 
@@ -340,7 +340,7 @@ Remember:
 
 * If you are a Sonatype customer, you may file Sonatype support tickets related to `jake` support in regard to this project
   * We suggest you file issues here on GitHub as well, so that the community can pitch in
-* If you are not a Sonatype customer, Do NOT file Sonatype support tickets related to nancy support in regard to this project, file an issue here on GitHub
+* If you are not a Sonatype customer, Do NOT file Sonatype support tickets related to `jake` support in regard to this project, file an issue here on GitHub
 
 Have fun creating and using `jake` and the [Sonatype OSS Index](https://ossindex.sonatype.org/), we are glad to have you here!
 

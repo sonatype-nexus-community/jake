@@ -37,9 +37,11 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Setup Python environment
           command: |
             sudo .circleci/ci-setup.sh
       - run:
+          name: Run tests and self scan
           command: |
             .circleci/ci-run.sh
             # audit jake with jake

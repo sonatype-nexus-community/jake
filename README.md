@@ -16,7 +16,7 @@
 
 -->
 
-![Jake Logo](https://github.com/sonatype-nexus-community/jake/blob/main/docs/images/jake.png)
+![Jake Logo](https://github.com/sonatype-nexus-community/jake/blob/main/docs/images/jake.svg)
 
 # Jake
 

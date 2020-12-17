@@ -16,7 +16,9 @@
 
 -->
 
-![Jake Logo](https://github.com/sonatype-nexus-community/jake/blob/main/docs/images/jake.svg)
+<p align="center">
+    <img src="https://raw.githubusercontent.com/sonatype-nexus-community/jake/main/docs/images/jake.png" width="350" alt="jake icon"/>
+</p>
 
 # Jake
 

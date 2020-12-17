@@ -11,4 +11,5 @@
   <exclude>src/.venv/**</exclude>
   <exclude>src/**/*.xsd</exclude>
   <exclude>src/CHANGELOG.md</exclude>
+  <exclude>src/SECURITY.md</exclude>
 </excludes>

@@ -146,16 +146,20 @@ class TestIQ(unittest.TestCase):
                     json=mock_json, status=200)
 
       self.func.poll_report(self.status_url)
+    # pylint: disable=W0212
     self.assertEqual(self.func._iq_url, 'http://afakeurlthatdoesnotexist.com:8081')
-    self.assertEqual(self.func.get_report_url(), 'http://localhost:8070/ui/links/application/my-app/report/95c4c14e')
+    self.assertEqual(self.func.get_report_url(),
+                     'http://localhost:8070/ui/links/application/my-app/report/95c4c14e')
     # ensure we use the IQ provided absolute URL
-    self.assertEqual(self.func.get_absolute_report_url(), 'http://localhost:8070/ui/links/application/my-app/report/95c4c14e')
+    self.assertEqual(self.func.get_absolute_report_url(),
+                     'http://localhost:8070/ui/links/application/my-app/report/95c4c14e')
 
   @responses.activate
   def test_call_poll_report_relative_result_url(self):
     """test_call_poll_report_relative_result_url mocks a call to IQ
     and ensures a relative report URL is returned,
-    and ensure get_absolute_report_url() returns an absolute URL build from the _iq_url and relative report URL"""
+    and ensure get_absolute_report_url() returns an absolute URL
+    built from the _iq_url and relative report URL"""
     file = Path(__file__).parent / "iqresponse_relative_report_url.json"
     with open(file, "r") as stdin:
       mock_json = json.loads(stdin.read())
@@ -164,7 +168,10 @@ class TestIQ(unittest.TestCase):
                     json=mock_json, status=200)
 
       self.func.poll_report(self.status_url)
+    # pylint: disable=W0212
     self.assertEqual(self.func._iq_url, 'http://afakeurlthatdoesnotexist.com:8081')
-    self.assertEqual(self.func.get_report_url(), 'ui/links/application/my-app/report/95c4c14e')
+    self.assertEqual(self.func.get_report_url(),
+                     'ui/links/application/my-app/report/95c4c14e')
     # build the absolute URL from the IQ Server base url
-    self.assertEqual(self.func.get_absolute_report_url(), 'http://afakeurlthatdoesnotexist.com:8081/ui/links/application/my-app/report/95c4c14e')
+    self.assertEqual(self.func.get_absolute_report_url(),
+        'http://afakeurlthatdoesnotexist.com:8081/ui/links/application/my-app/report/95c4c14e')

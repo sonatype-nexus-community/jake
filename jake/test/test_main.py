@@ -24,27 +24,27 @@ from jake.iq.iq import IQ
 
 
 class TestMain(unittest.TestCase):
-    """TestMain tests stuff in __main__"""
+  """TestMain tests stuff in __main__"""
 
-    def setUp(self):
-        iq_args = {}
-        self.func = IQ(args=iq_args)
+  def setUp(self):
+    iq_args = {}
+    self.func = IQ(args=iq_args)
 
-    def test_show_summary(self):
-        """test_show_summary verifies exit code is correct
-    for a given IQ Policy Action"""
-        spinner = yaspin(text="Loading", color="magenta")
+  def test_show_summary(self):
+    """test_show_summary verifies exit code is correct for a given IQ Policy Action"""
+    spinner = yaspin(text="Loading", color="magenta")
 
-        self.func._report_url = 'myRelativeReportURL'
+    # pylint: disable=W0212
+    self.func._report_url = 'myRelativeReportURL'
 
-        self.func._policy_action = None
-        self.assertEqual(3, _show_summary(self.func, spinner))
+    self.func._policy_action = None
+    self.assertEqual(3, _show_summary(self.func, spinner))
 
-        self.func._policy_action = "Failure"
-        self.assertEqual(1, _show_summary(self.func, spinner))
+    self.func._policy_action = "Failure"
+    self.assertEqual(1, _show_summary(self.func, spinner))
 
-        self.func._policy_action = "Warning"
-        self.assertEqual(0, _show_summary(self.func, spinner))
+    self.func._policy_action = "Warning"
+    self.assertEqual(0, _show_summary(self.func, spinner))
 
-        self.func._policy_action = "None"
-        self.assertEqual(0, _show_summary(self.func, spinner))
+    self.func._policy_action = "None"
+    self.assertEqual(0, _show_summary(self.func, spinner))

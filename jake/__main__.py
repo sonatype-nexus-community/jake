@@ -334,37 +334,47 @@ def __iq_control_flow(args: dict, bom_str: bytes):
     spinner.text = "Reticulating splines..."
     iq_requests.poll_report(status_url)
 
+    exit_status_code = _show_summary(iq_requests, spinner)
+    _exit(exit_status_code)
+
+
+def _show_summary(iq_requests, spinner):
     if iq_requests.get_policy_action() == 'Failure':
-      spinner.fail("💥 ")
-      __toggle_stdout(on=True)
-      print(Fore.YELLOW +
-            "Snakes on the plane! There are policy failures from Sonatype IQ.")
-      print(Fore.YELLOW +
-            "Your IQ Server Report is available here: {}".format(iq_requests.get_report_url()))
-      _exit(1)
+        spinner.fail("💥 ")
+        __toggle_stdout(on=True)
+        print(Fore.RED +
+              "Snakes on the plane! There are policy failures from Sonatype IQ.")
+        print(Fore.RED +
+              "Your IQ Server Report is available here: {}".format(iq_requests.get_absolute_report_url()))
+        exit_status_code = 1
     elif iq_requests.get_policy_action() == 'Warning':
-      spinner.ok("🧨 ")
-      __toggle_stdout(on=True)
-      print(Fore.GREEN +
-            "Something slithers around your ankle! There are policy warnings from Sonatype IQ.")
-      print(Fore.GREEN +
-            "Your IQ Server Report is available here: {}".format(iq_requests.get_report_url()))
-      _exit(0)
+        spinner.ok("🧨 ")
+        __toggle_stdout(on=True)
+        print(Fore.YELLOW +
+              "Something slithers around your ankle! There are policy warnings from Sonatype IQ.")
+        print(Fore.YELLOW +
+              "Your IQ Server Report is available here: {}".format(iq_requests.get_absolute_report_url()))
+        exit_status_code = 0
     elif iq_requests.get_policy_action() == 'None':
-      spinner.ok("🐍 ")
-      __toggle_stdout(on=True)
-      print(Fore.GREEN +
-            "Smooth slithering there bud! No policy failures from Sonatype IQ.")
-      print(Fore.GREEN +
-            "Your IQ Server Report is available here: {}".format(iq_requests.get_report_url()))
-      _exit(0)
+        spinner.ok("🐍 ")
+        __toggle_stdout(on=True)
+        print(Fore.GREEN +
+              "Smooth slithering there bud! No policy failures from Sonatype IQ.")
+        print(Fore.GREEN +
+              "Your IQ Server Report is available here: {}".format(iq_requests.get_absolute_report_url()))
+        exit_status_code = 0
     else:
-      spinner.fail("🐍 ")
-      __toggle_stdout(on=True)
-      print(Fore.RED +
-            "Received an error response from IQ Server, please check logs. policy action: {}"
-            .format(iq_requests.get_policy_action()))
-      _exit(3)
+        spinner.fail("🐍 ")
+        __toggle_stdout(on=True)
+        print(Fore.RED +
+              "Received an error response from IQ Server, please check logs. policy action: {}"
+              .format(iq_requests.get_policy_action()))
+        exit_status_code = 3
+
+    # reset console colors, etc
+    print(Fore.RESET)
+    return exit_status_code
+
 
 def __sbom_control_flow(conda: bool, target: str) -> (bytes):
   """

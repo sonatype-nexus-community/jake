@@ -81,6 +81,7 @@ class IQ():
 
   def get_absolute_report_url(self):
     """get full (non-relative) url to IQ Server report"""
+    # urljoin() will ignore the first parameter (base) if the second parameter (url) is absolute
     return urllib.parse.urljoin(self._iq_url, self._report_url)
 
   def get_public_application_id(self) -> (str):

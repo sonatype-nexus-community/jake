@@ -334,8 +334,7 @@ def __iq_control_flow(args: dict, bom_str: bytes):
     spinner.text = "Reticulating splines..."
     iq_requests.poll_report(status_url)
 
-    exit_status_code = _show_summary(iq_requests, spinner)
-    _exit(exit_status_code)
+    _exit(_show_summary(iq_requests, spinner))
 
 
 def _show_summary(iq_requests, spinner):

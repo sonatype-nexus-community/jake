@@ -1,0 +1,16 @@
+{
+    "policyAction": "Warning",
+    "reportHtmlUrl": "http://localhost:8070/ui/links/application/my-app/report/95c4c14e",
+    "isError": false,
+    "componentsAffected": {
+        "critical": 1,
+        "severe": 0,
+        "moderate": 0
+    },
+    "openPolicyViolations": {
+        "critical": 2,
+        "severe": 1,
+        "moderate": 0
+    },
+    "grandfatheredPolicyViolations": 0
+}

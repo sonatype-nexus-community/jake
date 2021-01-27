@@ -18,6 +18,7 @@
 # pylint: disable=too-many-instance-attributes
 import json
 import logging
+import urllib
 
 from json import JSONDecodeError
 
@@ -77,6 +78,11 @@ class IQ():
   def get_report_url(self):
     """gets report url from IQ Server result"""
     return self._report_url
+
+  def get_absolute_report_url(self):
+    """get full (non-relative) url to IQ Server report"""
+    # urljoin() will ignore the first parameter (base) if the second parameter (url) is absolute
+    return urllib.parse.urljoin(self._iq_url, self._report_url)
 
   def get_public_application_id(self) -> (str):
     """gets public application id to use for IQ Server request"""

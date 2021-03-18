@@ -23,7 +23,7 @@ terminaltables==3.1.0
 tinydb==3.15.2
 toml==0.10.2
 typed-ast==1.4.1
-urllib3==1.26.2
+urllib3==1.26.4
 wimpy==0.6
 wrapt==1.12.1
 yaspin==0.16.0

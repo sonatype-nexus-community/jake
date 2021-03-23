@@ -14,12 +14,16 @@
 
 version: 2.1
 
+executors:
+  python:
+    docker:
+      - image: circleci/python:3.7
+
 jobs:
   publish:
-    docker: # run the steps with Docker
-      - image: circleci/python:3.7
-        environment: # environment variables for primary container
-          PIPENV_VENV_IN_PROJECT: true 
+    executor: python
+    environment:
+      PIPENV_VENV_IN_PROJECT: true
     steps:
       - add_ssh_keys:
           fingerprints:
@@ -30,10 +34,9 @@ jobs:
             .circleci/ci-publish.sh
 
   build:
-    docker: # run the steps with Docker
-      - image: circleci/python:3.7
-        environment: # environment variables for primary container
-          PIPENV_VENV_IN_PROJECT: true
+    executor: python
+    environment:
+      PIPENV_VENV_IN_PROJECT: true
     steps:
       - checkout
       - run:

@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.2.69 (2021-03-25)
+### Fix
+* CVE-2021-28957 in lxml==4.6.2 ([`6d4373c`](https://github.com/sonatype-nexus-community/jake/commit/6d4373cd8fe320a17d3f8ca95208a0d5b38888ee))
+
 ## v0.2.68 (2021-03-23)
 
 

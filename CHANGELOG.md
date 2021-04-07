@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.2.70 (2021-04-07)
+### Fix
+* CVE-2020-14343 in PyYAML==5.3.1 ([`11dc3c9`](https://github.com/sonatype-nexus-community/jake/commit/11dc3c90a2df876e2cda02be33a38c5f2a0c3fc4))
+
 ## v0.2.69 (2021-03-25)
 ### Fix
 * CVE-2021-28957 in lxml==4.6.2 ([`6d4373c`](https://github.com/sonatype-nexus-community/jake/commit/6d4373cd8fe320a17d3f8ca95208a0d5b38888ee))

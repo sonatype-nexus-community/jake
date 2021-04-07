@@ -15,7 +15,7 @@ pkginfo==1.5.0.1
 polling==0.3.1
 pyfiglet==0.8.post1
 pyparsing==2.4.7
-PyYAML==5.3.1
+PyYAML==5.4.1
 requests==2.25.0
 tabulate==0.8.7
 termcolor==1.1.0

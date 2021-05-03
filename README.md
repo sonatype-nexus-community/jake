@@ -59,11 +59,12 @@ Usage: jake ddt [OPTIONS]
       Conda scan: conda list | jake ddt -c
 
 Options:
-  -vv, --verbose      Set log level to verbose
-  -q, --quiet         Suppress cosmetic and informational output
-  -c, --conda         Resolve conda dependencies from std_in
-  -t, --targets TEXT  List of site packages containing modules to be evaluated
-  --help              Show this message and exit.
+  -vv, --verbose            Set log level to verbose
+  -q, --quiet               Suppress cosmetic and informational output
+  -c, --conda               Resolve conda dependencies from std_in
+  -t, --targets       TEXT  List of site packages containing modules to be evaluated
+  -r, --requirements  TEXT  Path of pip requirements file
+  --help                    Show this message and exit.
 ```
 
 `jake` can be run against either pypi or conda installed dependencies.
@@ -110,6 +111,7 @@ Options:
   -c, --conda                     Resolve conda dependencies from std_in
   -t, --targets TEXT              List of site packages containing modules to
                                   be evaluated
+  -r, --requirements  TEXT        Path of pip requirements file
 
   -i, --insecure                  Allow jake to communicate with insecure
                                   endpoints
@@ -234,7 +236,7 @@ If you do not have a virtual environment activated, `jake` will resolve the pip-
   [72/72] - pkg:pypi/python-apt@1.1.0b1%20ubuntu0.16.4.8?extension=tar.gz - no known vulnerabilities for this version
 ```
 
-You can install `jake` in a virtual environment and it will be scoped to the dependencies that python shell has access to, but you would end up getting a report that includes jake's own dependencies.  To get around this, we added the `-t, --targets` flag which allows you to pass in a list site/dist package directories containing modules outside of the scope that `jake` is executing in.
+You can install `jake` in a virtual environment and it will be scoped to the dependencies that python shell has access to, but you would end up getting a report that includes jake's own dependencies.  To get around this, we added the `-t, --targets` flag which allows you to pass in a list site/dist package directories containing modules outside of the scope that `jake` is executing in. Also you can pass the pip requirements file path using the `-r, --requirements` flag.
 
 To get the site packages available to a virtual environment:
 

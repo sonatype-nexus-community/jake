@@ -31,7 +31,7 @@ class Pip():
     self.requirements_file_path = requirements_file_path
     if targets:
       self._working_set = pkg_resources.WorkingSet(ast.literal_eval(targets))
-    self._coords = self.generate_dependencies()
+    self.__coords = self.generate_dependencies()
 
   def generate_dependencies(self, coords=Coordinates()) -> (Coordinates):
     """converts list of pkg_resource.working_set into purl coordinates"""

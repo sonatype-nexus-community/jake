@@ -41,7 +41,7 @@ class Pip():
     if self.requirements_file_path:
       with open(self.requirements_file_path, 'r') as requirements_file:
         for line in requirements_file.readlines():
-          name, version = line.split('==')
+          name, version = line.strip().split('==')
           coords.add_coordinate(name, version, self._format)
 
     if len(coords.get_coordinates()) == 0:

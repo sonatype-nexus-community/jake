@@ -16,6 +16,7 @@
 
 """ audit.py for all your audit py needs """
 # pylint: disable=no-else-return
+import json
 import logging
 
 from typing import List
@@ -33,12 +34,15 @@ class Audit:
     self._log = logging.getLogger("jake")
     self._quiet = quiet
 
-  def audit_results(self, results: List[CoordinateResults]):
+  def audit_results(self, results: List[CoordinateResults], output_format='hr'):
     """
     audit_results is the ingest point for the results from OSS Index,
     and handles control flow
     """
     self._log.debug("Results received, %s total results", len(results))
+
+    if output_format == 'json':
+      return self.print_results_json(results)
 
     total_vulns = 0
     pkg_num = 0
@@ -74,6 +78,21 @@ class Audit:
     print(table_instance.table)
 
     return total_vulns
+
+  @classmethod
+  def print_results_json(cls, results):
+    vulnerabilities = []
+    for result in results:
+      for vulnerability in result.get_vulnerabilities():
+        vulnerabilities.append({
+          "package": result.get_coordinates()[4:],
+          "title": vulnerability.get_title(),
+          "cvss_score": vulnerability.get_cvss_score(),
+          "cve": vulnerability.get_cve(),
+          "description": vulnerability.get_description(),
+        })
+    print(json.dumps(vulnerabilities))
+    return sum(len(x.get_vulnerabilities()) for x in results)
 
   def print_result(self, coordinate: CoordinateResults, number, length):
     """

@@ -64,6 +64,8 @@ Options:
   -c, --conda               Resolve conda dependencies from std_in
   -t, --targets       TEXT  List of site packages containing modules to be evaluated
   -r, --requirements  TEXT  Path of pip requirements file
+  -o, --output-format TEXT  Specify ddt output format(json or hr=human-
+                            readable)
   --help                    Show this message and exit.
 ```
 

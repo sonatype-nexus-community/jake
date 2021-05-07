@@ -395,7 +395,11 @@ def __sbom_control_flow(conda: bool, target: str, requirements_file_path: str) -
   """
   with yaspin(text="Loading", color="yellow") as spinner:
     spinner.text = "Collecting Dependencies from System..."
-    coords = Parse().get_deps_stdin(sys.stdin) if conda else Pip(target, requirements_file_path).get_dependencies()
+    coords = (
+        Parse().get_deps_stdin(sys.stdin)
+        if conda
+        else Pip(target, requirements_file_path).get_dependencies()
+    )
     spinner.ok("🐍 ")
     spinner.text = "Parsing Coordinates..."
     purls = coords.get_purls()

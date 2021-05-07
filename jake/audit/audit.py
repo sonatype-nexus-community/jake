@@ -80,7 +80,11 @@ class Audit:
     return total_vulns
 
   @classmethod
-  def print_results_json(cls, results):
+  def print_results_json(cls, results: List[CoordinateResults]):
+    """
+    print_json takes a list of coordinate results,
+    and prints a json array of all vulnerabilities
+    """
     vulnerabilities = []
     for result in results:
       for vulnerability in result.get_vulnerabilities():

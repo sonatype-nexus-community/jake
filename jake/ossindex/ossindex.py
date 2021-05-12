@@ -183,7 +183,7 @@ class OssIndex():
 
   def clean_cache(self):
     """removes all documents from the table"""
-    self._db.purge()
+    self._db.truncate()
     return True
 
   def close_db(self):

@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.2.71 (2021-05-13)
+### Fix
+* #49 allow newer version of dependencies ([#57](https://github.com/sonatype-nexus-community/jake/issues/57)) ([`15553d4`](https://github.com/sonatype-nexus-community/jake/commit/15553d43932feca9978931734cf70c655158417d))
+
 ## v0.2.70 (2021-04-07)
 ### Fix
 * CVE-2020-14343 in PyYAML==5.3.1 ([`11dc3c9`](https://github.com/sonatype-nexus-community/jake/commit/11dc3c90a2df876e2cda02be33a38c5f2a0c3fc4))

@@ -108,8 +108,13 @@ Options:
   -vv, --verbose                  Set log level to verbose
   -q, --quiet                     Suppress cosmetic and informational output
   -c, --conda                     Resolve conda dependencies from std_in
-  -t, --targets TEXT              List of site packages containing modules to
-                                  be evaluated
+  -t, --targets TEXT              Specify external site-packages to evaluate.
+                                  
+                                  "`python -c "import site;
+                                  print(site.getsitepackages())"`"
+                                  
+                                  Passing the above into -t targets site packages for the
+                                  current shell/venv
 
   -i, --insecure                  Allow jake to communicate with insecure
                                   endpoints
@@ -253,9 +258,15 @@ To get the site packages available to a virtual environment:
   ENABLE_USER_SITE: False
 ```
 
-The `-t` argument accepts a list as a string literal.  This is the best way I've found to do this, if you find a better way please create an issue :)
+The `-t` argument accepts a list as a string literal.  This is the best way I've found to do this, if you find a better way please create a PR :)
 
-Run the python command using the shell you want to target and export to an env var:
+You can either enter a virtual environment and run the python command to get the site packages in-line with the `-t` argument:
+```
+  $ source .venv/bin/activate
+  (.venv) $ jake ddt -t "`python -c "import site; print(site.getsitepackages())"`"
+```
+
+OR run the python command using the shell you want to target and export to an env var:
 
 ```
   # using target python shell for system or virtual environment
@@ -263,8 +274,6 @@ Run the python command using the shell you want to target and export to an env v
   # using whatever shell has access to the jake module, can be a global install or stand-alone virtual environment
   $ jake ddt -t "$JAKE_TARGET"
 ```
-
-In other words: activate the virtual environment, run the `site.getsitepackages()` command, and make the output accessible to your `jake` install
 
 This will work for the `ddt`, `iq`, and `sbom` subcommands when evaluating pip modules.
 

@@ -88,7 +88,10 @@ __shared_options = [
     click.option(
         '-t', '--targets',
         default=None,
-        help='List of site packages containing modules to be evaluated')
+        help="""Specify external site-packages to evaluate.\n
+                "`python -c "import site; print(site.getsitepackages())"`"\n
+                Passing the above into -t targets site packages for the current shell/venv
+             """)
 ]
 
 # decorators be parsed inside out which click handles, but no decorators on the shared options

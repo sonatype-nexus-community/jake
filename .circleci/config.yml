@@ -51,7 +51,7 @@ jobs:
           name: Run self scan
           command: |
             # audit jake with jake
-            source .venv_self_scan/bin/activate
+            source .venv_non_dev/bin/activate
             pip3 install -e .
             jake ddt -q
       - store_test_results: # Upload test results for display in Test Summary: https://circleci.com/docs/2.0/collect-test-data/

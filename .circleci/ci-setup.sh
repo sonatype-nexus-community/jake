@@ -3,28 +3,28 @@ set -e
 
 # intended to be run from directory above this one.
 
-# Setup a proper path, I call my virtualenv dir ".venv_self_scan"
-PATH=$WORKSPACE/.venv_self_scan/bin:$PATH
+# Setup a proper path, I call my virtualenv dir ".venv_non_dev"
+PATH=$WORKSPACE/.venv_non_dev/bin:$PATH
 python3 --version
-if [ ! -d ".venv_self_scan" ]; then
+if [ ! -d ".venv_non_dev" ]; then
         # use python3 to create .venv
-        python3 -m venv .venv_self_scan
+        python3 -m venv .venv_non_dev
 fi
-source .venv_self_scan/bin/activate
+source .venv_non_dev/bin/activate
 #pip3 install pipenv
 
 pip3 install python-semantic-release
 
 pip3 install -r requirements.txt
 
-# Setup a proper path, I call my virtualenv dir ".venv_test"
-PATH=$WORKSPACE/.venv_test/bin:$PATH
+# Setup a proper path, I call my virtualenv dir ".venv_dev"
+PATH=$WORKSPACE/.venv_dev/bin:$PATH
 python3 --version
-if [ ! -d ".venv_test" ]; then
+if [ ! -d ".venv_dev" ]; then
         # use python3 to create .venv
-        python3 -m venv .venv_test
+        python3 -m venv .venv_dev
 fi
-source .venv_test/bin/activate
+source .venv_dev/bin/activate
 #pip3 install pipenv
 
 pip3 install python-semantic-release

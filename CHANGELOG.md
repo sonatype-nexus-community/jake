@@ -2,6 +2,14 @@
 
 <!--next-version-placeholder-->
 
+## v0.2.72 (2021-05-13)
+### Fix
+* Inline targets help changes ([#58](https://github.com/sonatype-nexus-community/jake/issues/58)) ([`c146a7d`](https://github.com/sonatype-nexus-community/jake/commit/c146a7d87e0859040b01278de8a2d09eb9b8b1cb))
+
+## v0.2.71 (2021-05-13)
+### Fix
+* #49 allow newer version of dependencies ([#57](https://github.com/sonatype-nexus-community/jake/issues/57)) ([`15553d4`](https://github.com/sonatype-nexus-community/jake/commit/15553d43932feca9978931734cf70c655158417d))
+
 ## v0.2.70 (2021-04-07)
 ### Fix
 * CVE-2020-14343 in PyYAML==5.3.1 ([`11dc3c9`](https://github.com/sonatype-nexus-community/jake/commit/11dc3c90a2df876e2cda02be33a38c5f2a0c3fc4))

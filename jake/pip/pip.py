@@ -36,13 +36,14 @@ class Pip():
   def generate_dependencies(self, coords=Coordinates()) -> (Coordinates):
     """converts list of pkg_resource.working_set into purl coordinates"""
 
-    for i in iter(self._working_set):
-      coords.add_coordinate(i.project_name, i._version, self._format)
     if self.requirements_file_path:
       with open(self.requirements_file_path, 'r') as requirements_file:
         for line in requirements_file.readlines():
           name, version = line.strip().split('==')
           coords.add_coordinate(name, version, self._format)
+    else:
+      for i in iter(self._working_set):
+        coords.add_coordinate(i.project_name, i._version, self._format)
 
     if len(coords.get_coordinates()) == 0:
       return None

@@ -42,15 +42,17 @@ jobs:
       - run:
           name: Setup Python environment
           command: |
-            sudo .circleci/ci-setup.sh
+            .circleci/ci-setup.sh
       - run:
-          name: Run tests and self scan
+          name: Run tests
           command: |
             .circleci/ci-run.sh
+      - run:
+          name: Run self scan
+          command: |
             # audit jake with jake
+            source .venv_self_scan/bin/activate
             pip3 install -e .
-            # hot mess to uninstall dev requirements before we self scan. probably should move to pipenv
-            pip3 uninstall -r requirements-dev.txt -y
             jake ddt -q
       - store_test_results: # Upload test results for display in Test Summary: https://circleci.com/docs/2.0/collect-test-data/
           path: test-results

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-source .venv/bin/activate
+source .venv_test/bin/activate
 #pipenv shell
 
 pylint jake

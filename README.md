@@ -365,4 +365,3 @@ Looking to contribute to our code but need some help? There's a few ways to get 
 
 * Chat with us on [Gitter](https://gitter.im/sonatype/nexus-developers)
 
-

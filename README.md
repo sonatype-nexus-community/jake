@@ -360,4 +360,3 @@ Have fun creating and using `jake` and the [Sonatype OSS Index](https://ossindex
 Looking to contribute to our code but need some help? There's a few ways to get information:
 
 * Chat with us on [Gitter](https://gitter.im/sonatype/nexus-developers)
-

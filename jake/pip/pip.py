@@ -24,10 +24,11 @@ from ..types.coordinates import Coordinates
 
 class Pip():
   """pip.py gets installed pip dependencies"""
-  def __init__(self, targets=None):
+  def __init__(self, targets=None, requirements_file_path=None):
     self._log = logging.getLogger('jake')
     self._format = "pypi"
     self._working_set = pkg_resources.working_set
+    self.requirements_file_path = requirements_file_path
     if targets:
       self._working_set = pkg_resources.WorkingSet(ast.literal_eval(targets))
     self._coords = self.generate_dependencies()
@@ -35,8 +36,14 @@ class Pip():
   def generate_dependencies(self, coords=Coordinates()) -> (Coordinates):
     """converts list of pkg_resource.working_set into purl coordinates"""
 
-    for i in iter(self._working_set):
-      coords.add_coordinate(i.project_name, i._version, self._format)
+    if self.requirements_file_path:
+      with open(self.requirements_file_path, 'r') as requirements_file:
+        for line in requirements_file.readlines():
+          name, version = line.strip().split('==')
+          coords.add_coordinate(name, version, self._format)
+    else:
+      for i in iter(self._working_set):
+        coords.add_coordinate(i.project_name, i._version, self._format)
 
     if len(coords.get_coordinates()) == 0:
       return None

@@ -204,7 +204,10 @@ def sbom(verbose, quiet, conda, targets, requirements, output):
 # ddt (ossi) subcommand
 @main.command()
 @__add_options(__shared_options)
-def ddt(verbose, quiet, conda, targets, requirements):
+@click.option(
+    '-o', '--output-format',
+    help='Specify ddt output format(json or hr=human-readable)')
+def ddt(verbose, quiet, conda, targets, requirements, output_format='hr'):
   """SPECIAL MOVE\n
   Allows you to perform scans backed by Sonatype's OSS Index
 
@@ -212,9 +215,13 @@ def ddt(verbose, quiet, conda, targets, requirements):
       Python scan: jake ddt\n
       Conda scan: conda list | jake ddt -c\n
   """
-  __banner(quiet)
   __setup_logger(verbose)
   __check_stdin(conda)
+
+  if output_format == 'json':
+    __toggle_stdout(on=False)
+
+  __banner(quiet)
 
   with yaspin(text="Loading", color="yellow") as spinner:
     spinner.text = "Collecting Dependencies"
@@ -243,7 +250,7 @@ def ddt(verbose, quiet, conda, targets, requirements):
     audit = Audit(quiet)
     spinner.ok("🐍 ")
     __toggle_stdout(on=True)
-    code = audit.audit_results(response)
+    code = audit.audit_results(response, output_format=output_format)
     _exit(code)
 
 @main.command()
@@ -399,9 +406,9 @@ def __sbom_control_flow(conda: bool, target: str, requirements_file_path: str) -
   with yaspin(text="Loading", color="yellow") as spinner:
     spinner.text = "Collecting Dependencies from System..."
     coords = (
-        Parse().get_deps_stdin(sys.stdin)
-        if conda
-        else Pip(target, requirements_file_path).get_dependencies()
+      Parse().get_deps_stdin(sys.stdin)
+      if conda
+      else Pip(target, requirements_file_path).get_dependencies()
     )
     spinner.ok("🐍 ")
     spinner.text = "Parsing Coordinates..."

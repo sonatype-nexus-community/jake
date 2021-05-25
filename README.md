@@ -64,6 +64,8 @@ Options:
   -c, --conda               Resolve conda dependencies from std_in
   -t, --targets       TEXT  List of site packages containing modules to be evaluated
   -r, --requirements  TEXT  Path of pip requirements file
+  -o, --output-format TEXT  Specify ddt output format(json or hr=human-
+                            readable)
   --help                    Show this message and exit.
 ```
 
@@ -109,7 +111,7 @@ Options:
   -vv, --verbose                  Set log level to verbose
   -q, --quiet                     Suppress cosmetic and informational output
   -c, --conda                     Resolve conda dependencies from std_in
-  -r, --requirements  TEXT        Path of pip requirements file
+
   -t, --targets TEXT              Specify external site-packages to evaluate.
                                   
                                   "`python -c "import site;
@@ -117,6 +119,8 @@ Options:
                                   
                                   Passing the above into -t targets site packages for the
                                   current shell/venv
+
+  -r, --requirements  TEXT        Path of pip requirements file
 
   -i, --insecure                  Allow jake to communicate with insecure
                                   endpoints

@@ -2,6 +2,9 @@
 
 <!--next-version-placeholder-->
 
+## v0.2.73 (2021-05-25)
+
+
 ## v0.2.72 (2021-05-13)
 ### Fix
 * Inline targets help changes ([#58](https://github.com/sonatype-nexus-community/jake/issues/58)) ([`c146a7d`](https://github.com/sonatype-nexus-community/jake/commit/c146a7d87e0859040b01278de8a2d09eb9b8b1cb))

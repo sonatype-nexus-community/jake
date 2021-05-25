@@ -30,6 +30,10 @@ jobs:
             - "4f:7d:6b:26:dc:44:de:b0:4d:f1:96:50:2a:b5:bd:b3"
       - checkout
       - run:
+          name: Setup Python environment
+          command: |
+            .circleci/ci-setup.sh
+      - run:
           command: |
             .circleci/ci-publish.sh
 

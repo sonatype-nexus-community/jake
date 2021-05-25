@@ -317,6 +317,8 @@ This project also uses `pip3` for dependencies, so you will need to download mak
 
 Follow instructions in [Build from source](#build-from-source).
 
+Run `pip3 install -r dev-requirements.txt`
+
 Tests can be run with `python3 -m unittest discover`
 
 More TBD.

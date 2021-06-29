@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.2.76 (2021-06-29)
+### Fix
+* "ModuleNotFoundError: No module named 'typing_extensions'", occurring in 'python3.7/site-packages/tinydb/queries.py", line 28' on Jenkins CI ([#61](https://github.com/sonatype-nexus-community/jake/issues/61)) ([`a747750`](https://github.com/sonatype-nexus-community/jake/commit/a7477505a0e6d1b198461a75ef8d755cc37dfe12))
+
 ## v0.2.75 (2021-05-25)
 
 

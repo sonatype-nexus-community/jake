@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.2.77 (2021-07-06)
+### Fix
+* CVE-2021-33503 in urllib3 == 1.26.4 ([#62](https://github.com/sonatype-nexus-community/jake/issues/62)) ([`9dfbb1c`](https://github.com/sonatype-nexus-community/jake/commit/9dfbb1c18831a1456803299e2f98a95ba95ea2b8))
+
 ## v0.2.76 (2021-06-29)
 ### Fix
 * "ModuleNotFoundError: No module named 'typing_extensions'", occurring in 'python3.7/site-packages/tinydb/queries.py", line 28' on Jenkins CI ([#61](https://github.com/sonatype-nexus-community/jake/issues/61)) ([`a747750`](https://github.com/sonatype-nexus-community/jake/commit/a7477505a0e6d1b198461a75ef8d755cc37dfe12))

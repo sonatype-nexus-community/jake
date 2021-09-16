@@ -18,8 +18,6 @@
 #
 
 import argparse
-import os
-import sys
 from datetime import datetime
 from typing import Dict
 
@@ -28,7 +26,6 @@ from pyfiglet import figlet_format
 from termcolor import cprint
 
 from command import BaseCommand
-from command.config import ConfigCommand
 from command.iq import IqCommand
 from command.oss import OssCommand
 from command.sbom import SbomCommand
@@ -100,8 +97,8 @@ class JakeCmd:
         """ Prints the banner, most of the user facing commands start with this """
         cprint(figlet_format('Jake', font='isometric4'), 'green', attrs=[])
         cprint(figlet_format('..the snake..', font='invita'), 'blue', attrs=['dark'])
-        print("Jake version: v{}".format(JakeCmd._get_jake_version()))
-        print('Put your python dependencies in a chokehold.')
+        print("Jake Version: {}".format(JakeCmd._get_jake_version()))
+        print('Put your Python dependencies in a chokehold.')
         print('')
 
     @staticmethod

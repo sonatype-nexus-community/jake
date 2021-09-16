@@ -65,7 +65,7 @@ toml = ["toml"]
 
 [[package]]
 name = "cyclonedx-python-lib"
-version = "0.3.0"
+version = "0.4.0"
 description = "A library for producing CycloneDX SBOM (Software Bill of Materials) files."
 category = "main"
 optional = false
@@ -165,7 +165,7 @@ python-versions = "*"
 
 [[package]]
 name = "ossindex-lib"
-version = "0.1.1"
+version = "0.2.0"
 description = "A library for querying the OSS Index free catalogue of open source components to help developers identify vulnerabilities, understand risk, and keep their software safe."
 category = "main"
 optional = false
@@ -178,7 +178,7 @@ tinydb = ">=4.5.1,<5.0.0"
 
 [package.source]
 type = "file"
-url = "../../sonatype-nexus-community/ossindex-python/dist/ossindex_lib-0.1.1-py3-none-any.whl"
+url = "../../sonatype-nexus-community/ossindex-python/dist/ossindex_lib-0.2.0-py3-none-any.whl"
 
 [[package]]
 name = "packageurl-python"
@@ -443,7 +443,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6.2"
-content-hash = "c22aa8881d4f41d3b6ae9dc899880cdbf5bb3600efeef95adc0fd0cf08ea210d"
+content-hash = "2bcfd1a9dbe54ab90f1e7c40b869d12838bbb7039de5b01d565302ce6f0d9158"
 
 [metadata.files]
 "backports.entry-points-selectable" = [
@@ -521,8 +521,8 @@ coverage = [
     {file = "coverage-5.5.tar.gz", hash = "sha256:ebe78fe9a0e874362175b02371bdfbee64d8edc42a044253ddf4ee7d3c15212c"},
 ]
 cyclonedx-python-lib = [
-    {file = "cyclonedx-python-lib-0.3.0.tar.gz", hash = "sha256:193fe5b78f303cc5a992791a32e6385e2a93f34bc941fb70b654527613c17a2d"},
-    {file = "cyclonedx_python_lib-0.3.0-py3-none-any.whl", hash = "sha256:671b89038a5996826fd8243a35ce05a8ffb73ab1b26023514603e04247880cf3"},
+    {file = "cyclonedx-python-lib-0.4.0.tar.gz", hash = "sha256:3402f5077c1768ded58a340727ed679d6f764654395414661b794a153d86791e"},
+    {file = "cyclonedx_python_lib-0.4.0-py3-none-any.whl", hash = "sha256:c2c5830adbad18865dfa91cc2611a2d596df047e58d9c26434cc69e70c025666"},
 ]
 dataclasses = [
     {file = "dataclasses-0.8-py3-none-any.whl", hash = "sha256:0201d89fa866f68c8ebd9d08ee6ff50c0b255f8ec63a71c16fda7af82bb887bf"},
@@ -557,7 +557,7 @@ mccabe = [
     {file = "mccabe-0.6.1.tar.gz", hash = "sha256:dd8d182285a0fe56bace7f45b5e7d1a6ebcbf524e8f3bd87eb0f125271b8831f"},
 ]
 ossindex-lib = [
-    {file = "ossindex_lib-0.1.1-py3-none-any.whl", hash = "sha256:6e5cff9a66f7f756119e35107ed473d4f30a68a202b99a762db7b50f1cc28961"},
+    {file = "ossindex_lib-0.2.0-py3-none-any.whl", hash = "sha256:bc2ae26641fc6b7b3e6a9dd408198d5432d8713f47e97f13fdcfe7a56e4de2f9"},
 ]
 packageurl-python = [
     {file = "packageurl-python-0.9.4.tar.gz", hash = "sha256:bd0e829260baff12055c47e1898e0f4014469d09bdb380ddcb102b5d2392fb56"},

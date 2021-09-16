@@ -45,6 +45,7 @@ class OssCommand(BaseCommand):
 
         print('')
         self._print_oss_index_report(oss_index_results=oss_index_results)
+
         if self._arguments.oss_output_file:
             cyclonedx_output = get_instance(
                 bom=self._build_bom(oss_index_results=oss_index_results),
@@ -82,9 +83,13 @@ class OssCommand(BaseCommand):
                         id=oss_vuln.get_display_name(), source_name='OSSINDEX',
                         source_url=oss_vuln.get_oss_index_reference_url(), ratings=[
                             VulnerabilityRating(
-                                score_base=oss_vuln.get_cvss_score(), vector=oss_vuln.get_cvss_vector()
+                                score_base=oss_vuln.get_cvss_score(), vector=oss_vuln.get_cvss_vector(),
+                                method=VulnerabilitySourceType.get_from_vector(vector=oss_vuln.get_cvss_vector())
                             )
-                        ]
+                        ],
+                        description=oss_vuln.get_description(),
+                        cwes=[oss_vuln.get_cwe().replace('CWE-')] if oss_vuln.get_cwe() else [],
+                        advisories=oss_vuln.get_external_reference_urls()
                     ))
             bom.add_component(component=component)
 
@@ -131,7 +136,7 @@ class OssCommand(BaseCommand):
             ["ID", v.get_id()],
             ["Title", v.get_title()],
             ["Description", '\n'.join(wrap(v.get_description(), 100))],
-            ["CVSS Score", f"{v.get_cvss_score()} - {OssCommand.get_cvss_severity(v.get_cvss_score())}"],
+            ["CVSS Score", f"{v.get_cvss_score()} - {OssCommand._get_severity_for_cvss_score(v.get_cvss_score())}"],
         ]
         if v.get_cvss_vector():
             table_data.append(
@@ -141,7 +146,7 @@ class OssCommand(BaseCommand):
         table_data.extend(
             [
                 ["CWE", v.get_cwe()],
-                ["Reference", v.get_reference()]
+                ["Reference", v.get_oss_index_reference_url()]
             ]
         )
         table_instance = DoubleTable(table_data)

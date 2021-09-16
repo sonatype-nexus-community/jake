@@ -4,6 +4,7 @@ from cyclonedx.model.bom import Bom
 from cyclonedx.output import BaseOutput, get_instance, OutputFormat, SchemaVersion, DEFAULT_SCHEMA_VERSION
 from cyclonedx.parser import BaseParser
 from cyclonedx.parser.environment import EnvironmentParser
+from cyclonedx.parser.poetry import PoetryFileParser
 from cyclonedx.parser.requirements import RequirementsFileParser
 from . import BaseCommand
 
@@ -57,5 +58,8 @@ class SbomCommand(BaseCommand):
 
         if self._arguments.sbom_input_type == 'PIP':
             return RequirementsFileParser(requirements_file='requirements.txt')
+
+        if self._arguments.sbom_input_type == 'POETRY':
+            return PoetryFileParser(poetry_lock_filename='poetry.lock')
 
         raise NotImplementedError

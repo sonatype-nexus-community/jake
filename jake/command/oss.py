@@ -78,7 +78,7 @@ class OssCommand(BaseCommand):
             print('CycloneDX has been written to {}'.format(output_filename))
 
     def setup_argument_parser(self, subparsers: argparse._SubParsersAction):
-        parser = subparsers.add_parser('oss', help='perform a scan backed by OSS Index')
+        parser = subparsers.add_parser('ddt', help='perform a scan backed by OSS Index')
 
         parser.add_argument('-o', '--output-file', help='Specify a file to output the SBOM to. If not specified the '
                                                         'report will be output to the console. STDOUT is not supported.',

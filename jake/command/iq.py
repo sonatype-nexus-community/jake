@@ -212,7 +212,7 @@ class IqCommand(BaseCommand):
 
         print('')
         print('Your Sonatype Nexus IQ Lifecycle Report is available here:')
-        print('  HTML: {}/}'.format(self._arguments.iq_server_url, iq_response['reportHtmlUrl']))
+        print('  HTML: {}/{}'.format(self._arguments.iq_server_url, iq_response['reportHtmlUrl']))
         print('  PDF:  {}/{}'.format(self._arguments.iq_server_url, iq_response['reportPdfUrl']))
         print('')
 

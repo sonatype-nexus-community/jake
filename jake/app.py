@@ -72,7 +72,7 @@ class JakeCmd:
         }
 
     def _build_arg_parser(self):
-        self._arg_parser = argparse.ArgumentParser(description='CycloneDX SBOM Generator')
+        self._arg_parser = argparse.ArgumentParser(description='Put your Python dependencies in a chokehold')
 
         # Add global options
         self._arg_parser.add_argument('-v', '--version', help='show which version of jake you are running',
@@ -98,7 +98,7 @@ class JakeCmd:
         cprint(figlet_format('Jake', font='isometric4'), 'green', attrs=[])
         cprint(figlet_format('..the snake..', font='invita'), 'blue', attrs=['dark'])
         print("Jake Version: {}".format(JakeCmd._get_jake_version()))
-        print('Put your Python dependencies in a chokehold.')
+        print('Put your Python dependencies in a chokehold')
         print('')
 
     @staticmethod

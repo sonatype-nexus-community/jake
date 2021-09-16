@@ -165,7 +165,7 @@ python-versions = "*"
 
 [[package]]
 name = "ossindex-lib"
-version = "0.2.0"
+version = "0.2.1"
 description = "A library for querying the OSS Index free catalogue of open source components to help developers identify vulnerabilities, understand risk, and keep their software safe."
 category = "main"
 optional = false
@@ -175,10 +175,6 @@ python-versions = ">=3.6,<4.0"
 packageurl-python = ">=0.9.4,<0.10.0"
 requests = ">=2.26.0,<3.0.0"
 tinydb = ">=4.5.1,<5.0.0"
-
-[package.source]
-type = "file"
-url = "../../sonatype-nexus-community/ossindex-python/dist/ossindex_lib-0.2.0-py3-none-any.whl"
 
 [[package]]
 name = "packageurl-python"
@@ -443,7 +439,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6.2"
-content-hash = "a9feac53b495a857fce24967a8c3964705fef6655eec18a8a0b808f564a52bc1"
+content-hash = "575553f5a8679e93a7d7bcc0c6d25156b97896d54648272832f5b1fbf8f693b8"
 
 [metadata.files]
 "backports.entry-points-selectable" = [
@@ -557,7 +553,8 @@ mccabe = [
     {file = "mccabe-0.6.1.tar.gz", hash = "sha256:dd8d182285a0fe56bace7f45b5e7d1a6ebcbf524e8f3bd87eb0f125271b8831f"},
 ]
 ossindex-lib = [
-    {file = "ossindex_lib-0.2.0-py3-none-any.whl", hash = "sha256:bc2ae26641fc6b7b3e6a9dd408198d5432d8713f47e97f13fdcfe7a56e4de2f9"},
+    {file = "ossindex-lib-0.2.1.tar.gz", hash = "sha256:cce56009d83904df3e94bcbf701dea5977df1dad26c3ab2aa91ca50ffc100013"},
+    {file = "ossindex_lib-0.2.1-py3-none-any.whl", hash = "sha256:72a888d82272bab3eac050f2953fc1207133bb30c64b0a9b393a2f334d19d12a"},
 ]
 packageurl-python = [
     {file = "packageurl-python-0.9.4.tar.gz", hash = "sha256:bd0e829260baff12055c47e1898e0f4014469d09bdb380ddcb102b5d2392fb56"},

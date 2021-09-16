@@ -50,9 +50,9 @@ tinydb = "^4.5.1"
 PyYAML = "^5.4.1"
 requests = "^2.26.0"
 terminaltables = "^3.1.0"
-ossindex-lib = {path = "../../sonatype-nexus-community/ossindex-python/dist/ossindex_lib-0.2.0-py3-none-any.whl"}
 cyclonedx-python-lib = "^0.4.0"
 polling2 = "^0.5.0"
+ossindex-lib = "^0.2.1"
 
 [tool.poetry.dev-dependencies]
 tox = "^3.24.3"

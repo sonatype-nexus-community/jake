@@ -25,7 +25,7 @@ from colorama import Fore
 from cyclonedx.model.bom import Bom
 from cyclonedx.model.component import Component
 from cyclonedx.model.vulnerability import Vulnerability as CycloneDxVulnerability, VulnerabilityRating, \
-    VulnerabilitySeverity, VulnerabilitySourceType
+    VulnerabilitySourceType
 from cyclonedx.output import get_instance, OutputFormat, SchemaVersion
 from cyclonedx.parser.environment import EnvironmentParser
 from ossindex.model import OssIndexComponent, Vulnerability
@@ -81,7 +81,8 @@ class OssCommand(BaseCommand):
         parser = subparsers.add_parser('ddt', help='perform a scan backed by OSS Index')
 
         parser.add_argument('-o', '--output-file', help='Specify a file to output the SBOM to. If not specified the '
-                                                        'report will be output to the console. STDOUT is not supported.',
+                                                        'report will be output to the console. '
+                                                        'STDOUT is not supported.',
                             metavar='PATH/TO/FILE', dest='oss_output_file', default=None)
         parser.add_argument('--output-format', help='SBOM output format (default = xml)', choices={'json', 'xml'},
                             default='xml', dest='oss_output_format')
@@ -123,20 +124,16 @@ class OssCommand(BaseCommand):
         for oic in oss_index_results:
             if oic.has_known_vulnerabilities():
                 print(
-                    self._get_color_for_cvss_score(cvss_score=oic.get_max_cvss_score()) +
-                    f"[{i}/{total_packages}] - {oic.get_coordinates()} [VULNERABLE]" +
-                    Fore.RESET
+                    f"{self._get_color_for_cvss_score(cvss_score=oic.get_max_cvss_score())}[{i}/{total_packages}] - "
+                    f"{oic.get_coordinates()} [VULNERABLE]{Fore.RESET}"
                 )
                 print(f"{len(oic.get_vulnerabilities())} known vulnerabilities for this package version")
                 total_vulnerabilities += len(oic.get_vulnerabilities())
                 for v in oic.get_vulnerabilities():
                     OssCommand._print_vulnerability_as_table(v=v)
-            else:
-                print(
-                    self._get_color_for_cvss_score(cvss_score=oic.get_max_cvss_score()) +
-                    f"[{i}/{total_packages}] - {oic.get_coordinates()}" +
-                    Fore.RESET
-                )
+                else:
+                    print(f"{self._get_color_for_cvss_score(cvss_score=oic.get_max_cvss_score())}[{i}/{total_packages}]"
+                          f" - {oic.get_coordinates()}{Fore.RESET}")
 
             i += 1
 
@@ -144,7 +141,9 @@ class OssCommand(BaseCommand):
         table_data = [
             ["Audited Dependencies", len(oss_index_results)],
             ["Vulnerablities Found", total_vulnerabilities],
+
         ]
+
         table_instance = DoubleTable(table_data, "Summary")
         print(table_instance.table)
 

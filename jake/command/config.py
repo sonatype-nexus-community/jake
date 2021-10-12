@@ -12,9 +12,3 @@ class ConfigCommand(BaseCommand):
 
         parser_config.add_argument('oss', help='configure Nexus IQ Server or OSSIndex', nargs='?',
                                    choices=('iq', 'oss'))
-
-        # iq_group = parser_config.add_argument_group('iq')
-        # iq_group.
-
-
-

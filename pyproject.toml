@@ -34,7 +34,7 @@ keywords = [
 ]
 
 [tool.poetry.scripts]
-jake = 'jake.__main__:main'
+jake = 'jake.app:main'
 
 [tool.poetry.urls]
 "Bug Tracker" = "https://github.com/sonatype-nexus-community/jake/issues"
@@ -50,7 +50,7 @@ tinydb = "^4.5.1"
 PyYAML = "^5.4.1"
 requests = "^2.26.0"
 terminaltables = "^3.1.0"
-cyclonedx-python-lib = "^0.4.0"
+cyclonedx-python-lib = "^0.8.0"
 polling2 = "^0.5.0"
 ossindex-lib = "^0.2.1"
 

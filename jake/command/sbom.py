@@ -22,6 +22,7 @@ from cyclonedx.model.bom import Bom
 from cyclonedx.output import BaseOutput, get_instance, OutputFormat, SchemaVersion, DEFAULT_SCHEMA_VERSION
 from cyclonedx.parser import BaseParser
 from cyclonedx.parser.environment import EnvironmentParser
+from cyclonedx.parser.pipenv import PipEnvFileParser
 from cyclonedx.parser.poetry import PoetryFileParser
 from cyclonedx.parser.requirements import RequirementsFileParser
 from . import BaseCommand
@@ -59,9 +60,10 @@ class SbomCommand(BaseCommand):
         parser.add_argument('-it', '--input-type',
                             help='how jake should find the packages from which to generate your SBOM.'
                                  'ENV = Read from the current Python Environment; PIP = read from a requirements.txt; '
-                                 'POETRY = read from a poetry.lock. '
+                                 'PIPENV = read from Pipfile.lock; POETRY = read from a poetry.lock. '
                                  '(Default = ENV)',
-                            metavar='TYPE', choices={'ENV', 'PIP', 'POETRY'}, default='ENV', dest='sbom_input_type')
+                            metavar='TYPE', choices={'ENV', 'PIP', 'PIPENV', 'POETRY'}, default='ENV',
+                            dest='sbom_input_type')
         parser.add_argument('-o', '--output-file', help='Specify a file to output the SBOM to', metavar='PATH/TO/FILE',
                             dest='sbom_output_file')
         parser.add_argument('--output-format', help='SBOM output format (default = xml)', choices={'json', 'xml'},
@@ -76,6 +78,9 @@ class SbomCommand(BaseCommand):
 
         if self._arguments.sbom_input_type == 'PIP':
             return RequirementsFileParser(requirements_file='requirements.txt')
+
+        if self._arguments.sbom_input_type == 'PIPENV':
+            return PipEnvFileParser(pipenv_lock_filename='Pipfile.lock')
 
         if self._arguments.sbom_input_type == 'POETRY':
             return PoetryFileParser(poetry_lock_filename='poetry.lock')

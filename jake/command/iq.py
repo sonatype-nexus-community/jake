@@ -97,7 +97,7 @@ class IqCommand(BaseCommand):
         def _get_internal_application_id_from_public_application_id(self, iq_public_application_id: str) -> str:
             """
             Attempts to obtain the internal ID of the Application from Nexus IQ
-            
+
             """
             iq_response = self.__make_request(
                 uri='/api/v2/applications?publicId={}'.format(iq_public_application_id)
@@ -126,7 +126,7 @@ class IqCommand(BaseCommand):
                 else:
                     return False
             except ValueError:
-                    return False
+                return False
 
         def _submit_bom(self, bom: Bom, iq_internal_application_id: str, iq_scan_stage: str):
             self._logger.debug(
@@ -206,8 +206,7 @@ class IqCommand(BaseCommand):
                 spinner.text = 'Something slithers around your ankle! There are policy warnings from Sonatype Nexus IQ.'
                 spinner.ok('🧨')
             else:
-                spinner.text = 'Sonatype Nexus IQ Policy Evaluation complete with ZERO snakes.'.format(
-                    len(parser.get_components()))
+                spinner.text = 'Sonatype Nexus IQ Policy Evaluation complete with ZERO snakes.'
                 spinner.ok('🐍')
 
         print('')

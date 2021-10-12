@@ -63,6 +63,7 @@ _Other Python package managers are available._
 
 ```
 > jake --help
+usage: jake [-h] [-v] [-X]  ...
 
 Put your Python dependencies in a chokehold
 
@@ -72,11 +73,10 @@ optional arguments:
   -X             enable debug output
 
 Jake sub-commands:
-  
+
     iq           perform a scan backed by Nexus Lifecycle
     ddt          perform a scan backed by OSS Index
-    sbom         generate a CycloneDX software-bill-of-materials (no
-                 vulnerabilities)
+    sbom         generate a CycloneDX software-bill-of-materials (no vulnerabilities)
 ```
 
 ### Check for vulnerabilities using OSS Index
@@ -87,18 +87,17 @@ Optionally, it can create a CycloneDX software bill-of-materials at the same tim
 ```
 > jake ddt --help
 
-usage: app.py ddt [-h] [-o PATH/TO/FILE] [--output-format {json,xml}]
-                  [--schema-version {1.3,1.1,1.0,1.2}]
+usage: jake ddt [-h] [--clear-cache] [-o PATH/TO/FILE] [--output-format {xml,json}] [--schema-version {1.2,1.1,1.0,1.3}]
 
 optional arguments:
   -h, --help            show this help message and exit
+  --clear-cache         Clears any local cached OSS Index data prior to execution
   -o PATH/TO/FILE, --output-file PATH/TO/FILE
-                        Specify a file to output the SBOM to. If not specified
-                        the report will be output to the console. STDOUT is
-                        not supported.
-  --output-format {json,xml}
+                        Specify a file to output the SBOM to. If not specified the report will be output to the console. STDOUT is not supported.
+  --output-format {xml,json}
                         SBOM output format (default = xml)
-  --schema-version {1.3,1.1,1.0,1.2}
+  --schema-version {1.2,1.1,1.0,1.3}
+                        CycloneDX schema version to use (default = 1.3)
 ```
 
 So you can quickly get a report by running:
@@ -132,9 +131,6 @@ Put your Python dependencies in a chokehold.
 🐍 Successfully queried OSS Index for package and vulnerability info (0:00:00.59)
 🐍 Sane number of results from OSS Index
 
-[1/42] - pkg:pypi/zipp@3.5.0
-...
-[42/42] - pkg:pypi/cyclonedx-python-lib@0.4.0
 
 ╔Summary═══════════════╦════╗
 ║ Audited Dependencies ║ 42 ║
@@ -150,8 +146,7 @@ Access Sonatype's proprietary vulnerability data using `jake`:
 ```
 > jake iq --help
 
-usage: app.py iq [-h] -s https://localhost:8070 -i APP_ID -u USER_ID -p
-                 PASSWORD
+usage: jake iq [-h] -s https://localhost:8070 -i APP_ID -u USER_ID -p PASSWORD
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -197,8 +192,8 @@ Put your Python dependencies in a chokehold
 🧨 Something slithers around your ankle! There are policy warnings from Sonatype Nexus IQ. (0:00:11.50)
 
 Your Sonatype Nexus IQ Lifecycle Report is available here:
-  HTML: https://my-nexus-lifecyle/ui/links/application/jake__madpah/report/4831bcb7fbaa45c3a2481048e446b598
-  PDF:  https://my-nexus-lifecyle/ui/links/application/jake__madpah/report/4831bcb7fbaa45c3a2481048e446b598/pdf
+  HTML: https://my-nexus-lifecyle/ui/links/application/APP_ID/report/4831bcb7fbaa45c3a2481048e446b598
+  PDF:  https://my-nexus-lifecyle/ui/links/application/APP_ID/report/4831bcb7fbaa45c3a2481048e446b598/pdf
 ```
 
 ## Why Jake?

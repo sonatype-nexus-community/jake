@@ -25,10 +25,10 @@ import pkg_resources
 from pyfiglet import figlet_format
 from termcolor import cprint
 
-from command import BaseCommand
-from command.iq import IqCommand
-from command.oss import OssCommand
-from command.sbom import SbomCommand
+from .command import BaseCommand
+from .command.iq import IqCommand
+from .command.oss import OssCommand
+from .command.sbom import SbomCommand
 
 
 class JakeCmd:
@@ -60,14 +60,17 @@ class JakeCmd:
         JakeCmd._print_jake_header()
 
         # Determine primary command and then hand off to that Command handler
-        command = self._subcommands[self._arguments.cmd]
-        command.execute(arguments=self._arguments)
+        if self._arguments.cmd:
+            command = self._subcommands[self._arguments.cmd]
+            command.execute(arguments=self._arguments)
+        else:
+            self._arg_parser.print_help()
 
     def _load_subcommands(self):
         self._subcommands = {
             # 'config': ConfigCommand(),
             'iq': IqCommand(),
-            'oss': OssCommand(),
+            'ddt': OssCommand(),
             'sbom': SbomCommand()
         }
 

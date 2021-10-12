@@ -48,6 +48,11 @@ class OssCommand(BaseCommand):
         oss_index_results: List[OssIndexComponent] = None
         with yaspin(text='Querying OSS Index for details on your packages', color='yellow', timer=True) as spinner:
             oss = OssIndex()
+            if self._arguments.oss_clear_cache:
+                spinner.text = 'Clearing OSS Index local cache'
+                oss.purge_local_cache()
+                spinner.text = 'Querying OSS Index for details on your packages'
+
             oss_index_results = oss.get_component_report(
                 packages=list(map(lambda c: c.to_package_url(), parser.get_components())))
             spinner.text = 'Successfully queried OSS Index for package and vulnerability info'
@@ -79,6 +84,9 @@ class OssCommand(BaseCommand):
 
     def setup_argument_parser(self, subparsers: argparse._SubParsersAction):
         parser = subparsers.add_parser('ddt', help='perform a scan backed by OSS Index')
+
+        parser.add_argument('--clear-cache', help='Clears any local cached OSS Index data prior to execution',
+                            action='store_true', dest='oss_clear_cache', default=False)
 
         parser.add_argument('-o', '--output-file', help='Specify a file to output the SBOM to. If not specified the '
                                                         'report will be output to the console. '
@@ -113,6 +121,7 @@ class OssCommand(BaseCommand):
             bom.add_component(component=component)
 
         return bom
+
 
     def _print_oss_index_report(self, oss_index_results: List[OssIndexComponent]):
         total_vulnerabilities = 0

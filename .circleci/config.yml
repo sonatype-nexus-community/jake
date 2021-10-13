@@ -90,6 +90,9 @@ jobs:
       CIRCLECI: "true"
       GH_TOKEN: None
     steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "4f:7d:6b:26:dc:44:de:b0:4d:f1:96:50:2a:b5:bd:b3"
       - ensure_poetry_installed
       - run:
           name: "Install python-semantic-release"
@@ -123,13 +126,14 @@ workflows:
             parameters:
               python_version: ["39", "38", "37", "36"]
       - coding_standards
-#  release:
-#    jobs:
-#      - release_and_pypi_publish
-#    triggers:
-#      - schedule:
-#          cron: "* * * * *"
-#          filters:
-#            branches:
-#              only:
-#                - main
+  release:
+    jobs:
+      - release_and_pypi_publish:
+          context: jake
+    triggers:
+      - schedule:
+          cron: "* * * * *"
+          filters:
+            branches:
+              only:
+                - main

@@ -113,7 +113,7 @@ jobs:
           command: |
             git config user.email "community-group@sonatype.com"
             git config user.name "SonaBot"
-            semantic-release publish
+            semantic-release publish --patch
 
 workflows:
   cicd:

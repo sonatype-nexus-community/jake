@@ -48,13 +48,13 @@ jobs:
       - checkout
       - restore_cache: # ensure this step occurs *before* installing dependencies
           name: "Restore any valid cache"
-          key: dependencies-{{ .Branch }}-{{ checksum "poetry.lock" }}
+          key: dependencies-{{ .Branch }}-{{ parameters.python_version }}-{{ checksum "poetry.lock" }}
       - run:
           command: |
             poetry install
       - save_cache:
           name: "Cache dependencies"
-          key: dependencies-{{ .Branch }}-{{ checksum "poetry.lock" }}
+          key: dependencies-{{ .Branch }}-{{ parameters.python_version }}-{{ checksum "poetry.lock" }}
           paths:
             - /home/circleci/.cache/pypoetry/virtualenvs
       - run:
@@ -71,13 +71,13 @@ jobs:
       - checkout
       - restore_cache: # ensure this step occurs *before* installing dependencies
           name: "Restore any valid cache"
-          key: dependencies-{{ .Branch }}-{{ checksum "poetry.lock" }}
+          key: dependencies-{{ .Branch }}-{{ parameters.python_version }}-{{ checksum "poetry.lock" }}
       - run:
           command: |
             poetry install
       - save_cache:
           name: "Cache dependencies"
-          key: dependencies-{{ .Branch }}-{{ checksum "poetry.lock" }}
+          key: dependencies-{{ .Branch }}-{{ parameters.python_version }}-{{ checksum "poetry.lock" }}
           paths:
             - /home/circleci/.cache/pypoetry/virtualenvs
       - run:
@@ -99,7 +99,7 @@ jobs:
       - checkout
       - restore_cache: # ensure this step occurs *before* installing dependencies
           name: "Restore any valid cache"
-          key: dependencies-{{ .Branch }}-{{ checksum "poetry.lock" }}
+          key: dependencies-{{ .Branch }}-{{ parameters.python_version }}-{{ checksum "poetry.lock" }}
       - run:
           name: "Build for release"
           command: |
@@ -108,8 +108,6 @@ jobs:
       - run:
           name: "Semantic Release"
           command: |
-            git stash -u
-            git fetch && git reset --hard origin/main
             semantic-release --noop publish
 
 workflows:
@@ -123,3 +121,10 @@ workflows:
   release:
     jobs:
       - release_and_pypi_publish
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - main

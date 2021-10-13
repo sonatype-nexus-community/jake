@@ -109,13 +109,10 @@ jobs:
             poetry install
             poetry build
       - run:
-          name: "Set Git Author"
+          name: "Semantic Release"
           command: |
             git config user.email "community-group@sonatype.com"
             git config user.name "SonaBot"
-      - run:
-          name: "Semantic Release"
-          command: |
             semantic-release publish
 
 workflows:
@@ -129,11 +126,7 @@ workflows:
   release:
     jobs:
       - release_and_pypi_publish:
-          context: jake
-    triggers:
-      - schedule:
-          cron: "* * * * *"
+          context: pypi
           filters:
             branches:
-              only:
-                - main
+              only: main

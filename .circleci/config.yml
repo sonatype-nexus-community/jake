@@ -107,7 +107,7 @@ jobs:
             poetry build
       - run:
           name: "Set Git Author"
-          run: |
+          command: |
             git config user.email "community-group@sonatype.com"
             git config user.name "SonaBot"
       - run:

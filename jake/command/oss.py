@@ -122,7 +122,6 @@ class OssCommand(BaseCommand):
 
         return bom
 
-
     def _print_oss_index_report(self, oss_index_results: List[OssIndexComponent]):
         total_vulnerabilities = 0
         total_packages = len(oss_index_results)

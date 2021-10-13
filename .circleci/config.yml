@@ -108,7 +108,7 @@ jobs:
       - run:
           name: "Semantic Release"
           command: |
-            semantic-release --noop publish
+            semantic-release publish
 
 workflows:
   cicd:

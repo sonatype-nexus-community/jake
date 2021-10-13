@@ -125,7 +125,11 @@ workflows:
       - coding_standards
   release:
     jobs:
+      - manual_release:
+          type: approval
       - release_and_pypi_publish:
+          requires:
+            - manual_release
           context: pypi
           filters:
             branches:

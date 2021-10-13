@@ -99,7 +99,7 @@ jobs:
       - checkout
       - restore_cache: # ensure this step occurs *before* installing dependencies
           name: "Restore any valid cache"
-          key: dependencies-{{ .Branch }}-{{ parameters.python_version }}-{{ checksum "poetry.lock" }}
+          key: dependencies-{{ .Branch }}-39-{{ checksum "poetry.lock" }}
       - run:
           name: "Build for release"
           command: |

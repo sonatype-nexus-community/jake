@@ -123,13 +123,13 @@ workflows:
             parameters:
               python_version: ["39", "38", "37", "36"]
       - coding_standards
-  release:
-    jobs:
-      - release_and_pypi_publish
-    triggers:
-      - schedule:
-          cron: "* * * * *"
-          filters:
-            branches:
-              only:
-                - main
+#  release:
+#    jobs:
+#      - release_and_pypi_publish
+#    triggers:
+#      - schedule:
+#          cron: "* * * * *"
+#          filters:
+#            branches:
+#              only:
+#                - main

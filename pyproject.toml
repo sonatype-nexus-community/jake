@@ -68,6 +68,7 @@ version_variable = [
     "pyproject.toml:version"
 ]
 branch = "main"
+commit_author = 'SonaBot <community-group@sonatype.com>'
 upload_to_pypi = true
 upload_to_release = true
 build_command = "pip install poetry && poetry build"

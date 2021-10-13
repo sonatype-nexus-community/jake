@@ -22,347 +22,204 @@
 
 # Jake
 
-[![CircleCI](https://circleci.com/gh/sonatype-nexus-community/jake.svg?style=svg)](https://circleci.com/gh/sonatype-nexus-community/jake) 
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/sonatype-nexus-community/jake/Python%20CI)
+![Python Version Support](https://img.shields.io/badge/python-3.6+-blue)
+![PyPI Version](https://img.shields.io/pypi/v/jake?label=PyPI&logo=pypi)
+[![GitHub license](https://img.shields.io/github/license/sonatype-nexus-community/jake)](https://github.com/sonatype-nexus-community/jake/blob/main/LICENSE)
+[![GitHub issues](https://img.shields.io/github/issues/sonatype-nexus-community/jaken)](https://github.com/sonatype-nexus-community/jake/issues)
+[![GitHub forks](https://img.shields.io/github/forks/sonatype-nexus-community/jake)](https://github.com/sonatype-nexus-community/jake/network)
+[![GitHub stars](https://img.shields.io/github/stars/sonatype-nexus-community/jaken)](https://github.com/sonatype-nexus-community/jake/stargazers)
 
-`jake` is a tool to check for vulnerabilities in your Conda environments, powered by [Sonatype OSS Index](https://ossindex.sonatype.org/), that can also be used with [Sonatype's Nexus IQ Server](https://www.sonatype.com/product-nexus-lifecycle).
+----
 
-### Usage
+`jake` is a tool to check for your Python environments and applications that can:
+- produce CycloneDX software bill-of-materials
+- report on known vulnerabilities
 
-```
-$ jake --help
-Usage: jake [OPTIONS] COMMAND [ARGS]...
+`jake` is powered by [Sonatype OSS Index](https://ossindex.sonatype.org) and can also be used with 
+[Sonatype's Nexus IQ Server](https://www.sonatype.com/product-nexus-lifecycle).
 
-  Jake: Put your python deps in a chokehold.
+## Installation
 
-Options:
-  -v, --version  Print version and exit
-  --clear        Clear the OSS Index cache and exit
-  --help         Show this message and exit.
-
-Commands:
-  config  Allows a user to set Nexus IQ or OSS Index config params...
-  ddt     SPECIAL MOVE Allows you to perform scans backed by Sonatype's OSS...
-  iq      EXTRA SPECIAL MOVE Allows you to perform scans backed by...
-  sbom    Generates a purl only bom (no vulns) and outputs it to std_out by...
-
-$ jake ddt --help
-Usage: jake ddt [OPTIONS]
-
-  SPECIAL MOVE
-
-  Allows you to perform scans backed by Sonatype's OSS Index
-
-  Example usage:
-
-      Python scan: jake ddt
-
-      Conda scan: conda list | jake ddt -c
-
-Options:
-  -vv, --verbose            Set log level to verbose
-  -q, --quiet               Suppress cosmetic and informational output
-  -c, --conda               Resolve conda dependencies from std_in
-  -t, --targets       TEXT  List of site packages containing modules to be evaluated
-  -r, --requirements  TEXT  Path of pip requirements file
-  -o, --output-format TEXT  Specify ddt output format(json or hr=human-
-                            readable)
-  --help                    Show this message and exit.
-```
-
-`jake` can be run against either pypi or conda installed dependencies.
-
-Conda: `conda list | jake ddt -c`
-
-  Feeds your Conda dependencies from `conda list` by piping the output to `jake`
-
-PyPi: `jake ddt`
-
-  Feeds dependencies available to pip in the current scope (run `pip3 freeze` to see what those are)
-
-### Options
-
-You may also run `jake ddt` with `-vv` for a slew of debug data, in case you are running in to an odd situation, or you want to help out on development!
-
-You can also run `jake ddt --clear` to clean out your local cache if desired. We cache results from OSS Index for 12 hours to prevent you from potentially getting rate limited (as your dependencies likely won't change super often).
-
-You can also run `jake config ossi` to set optional configuration of your OSS Index username and API Key so that you can run more requests without getting rate limited. You may register for an account [at this link](https://ossindex.sonatype.org/user/register), and see [the information provided here](https://ossindex.sonatype.org/doc/rest) on Rate Limiting for why this is useful.
-
-#### Usage with Nexus IQ Server
+Install from pypi.org as you would any other Python module:
 
 ```
-$ jake iq --help
-Usage: jake iq [OPTIONS]
-
-  EXTRA SPECIAL MOVE
-
-  Allows you to perform scans backed by Sonatype's Nexus IQ Server
-
-  Example usage:
-
-      Python scan: jake iq -a <AppId>
-
-      Conda scan: conda list | jake iq -a <AppId> -c
-
-  Will pull values for other params from config unless overwritten here
-
-      To set the IQ config: jake config iq
-
-Options:
-  -vv, --verbose                  Set log level to verbose
-  -q, --quiet                     Suppress cosmetic and informational output
-  -c, --conda                     Resolve conda dependencies from std_in
-
-  -t, --targets TEXT              Specify external site-packages to evaluate.
-                                  
-                                  "`python -c "import site;
-                                  print(site.getsitepackages())"`"
-                                  
-                                  Passing the above into -t targets site packages for the
-                                  current shell/venv
-
-  -r, --requirements  TEXT        Path of pip requirements file
-
-  -i, --insecure                  Allow jake to communicate with insecure
-                                  endpoints
-
-  -a, --application TEXT          Supply an IQ Server Public Application ID
-                                  [required]
-
-  -s, --stage [develop|build|stage-release|release]
-                                  Specify a stage
-  -u, --user TEXT                 Set username for Sonatype IQ
-  -p, --password TEXT             Set password or token for associated user
-  -h, --host TEXT                 Specify an endpoint for Sonatype IQ
-  --help                          Show this message and exit.
+pip install jake
 ```
 
-`jake` can be used against Sonatype IQ if your company has an enterprise license.
-
-Run `jake config iq` to set the the endpoint and auth params.
-
-Once configured with proper credentials, run `jake iq -a <AppId>`, replacing `<AppId>` with the public ID of your application in Sonatype IQ. If a policy is violated that has the action set to `Fail` in IQ, `jake` will exit with a non-zero code which can be picked up by build automation or used to notify locally.
-
-If your Nexus IQ installation is using a self-signed certificate, you can run `jake` with the `-i` or `--insecure` flag to work with these types of installations.
-
-Each `jake` scan will generate a Software Bill of Materials (SBOM) in IQ and will output direct link to console.  The develop stage is used by default as opposed to other stages which usually correspond to component inventories of the latest build for a stage.
-
-Some examples of using `jake` with Sonatype IQ
-
-  1. (Onetime) Configure `jake` to use your Nexus IQ Server credentials:
-
-        ```
-        $ jake config iq
-        Please enter your username for your IQ Server account: admin
-        Please enter your user token for IQ Server: admin123
-        Please provide the location of your IQ Server: http://localhost:8070
-        ```
-
-  2. (PyPi) Run `jake` against the AppId which will submit your dependencies to IQ and generate a report.
-
-        ```
-        (.venv) $ jake iq -a sandbox-application
-                          ___           ___           ___     
-              ___        /  /\         /  /\         /  /\    
-             /__/\      /  /::\       /  /:/        /  /::\   
-             \__\:\    /  /:/\:\     /  /:/        /  /:/\:\  
-         ___ /  /::\  /  /::\ \:\   /  /::\____   /  /::\ \:\
-        /__/\  /:/\/ /__/:/\:\_\:\ /__/:/\:::::\ /__/:/\:\ \:\
-        \  \:\/:/~~  \__\/  \:\/:/ \__\/~|:|~~~~ \  \:\ \:\_\/
-         \  \::/          \__\::/     |  |:|      \  \:\ \:\  
-          \__\/           /  /:/      |  |:|       \  \:\_\/  
-                         /__/:/       |__|:|        \  \:\    
-                         \__\/         \__\|         \__\/
-        
-        
-                        /)                     /)             
-                    _/_(/    _     _  __   _  (/_   _         
-             o   o  (__/ )__(/_   /_)_/ (_(_(_/(___(/_ o   o  
-        
-        
-        
-        Jake version: v0.2.58
-        Put your python deps in a chokehold.
-        🐍  Collecting Dependencies from System...
-        🐍  Parsing Coordinates...
-        🐍  Generating CycloneDx BOM...
-        🐍  Submitting to Sonatype IQ...
-        🧨  Reticulating splines...
-        Something slithers around your ankle! There are policy warnings from Sonatype IQ.
-        Your IQ Server Report is available here: http://localhost:8070/ui/links/application/sandbox-application/report/d2ef2ebb08fd45daa520e149b8d413f3
-        ```
-  3. (Conda) Use `conda list` and the `-c` flag to pipe conda managed deps into `jake` to generate a report in Sonatype IQ
-        ```
-        $ conda list | jake iq -a conda-base -c
-                           ___           ___           ___
-               ___        /  /\         /  /\         /  /\
-              /__/\      /  /::\       /  /:/        /  /::\
-              \__\:\    /  /:/\:\     /  /:/        /  /:/\:\
-          ___ /  /::\  /  /::\ \:\   /  /::\____   /  /::\ \:\
-        /__/\  /:/\/ /__/:/\:\_\:\ /__/:/\:::::\ /__/:/\:\ \:\
-        \  \:\/:/~~  \__\/  \:\/:/ \__\/~|:|~~~~ \  \:\ \:\_\/
-         \  \::/          \__\::/     |  |:|      \  \:\ \:\
-          \__\/           /  /:/      |  |:|       \  \:\_\/
-                         /__/:/       |__|:|        \  \:\
-                         \__\/         \__\|         \__\/
-
-
-                       /)                     /)
-                   _/_(/    _     _  __   _  (/_   _
-            o   o  (__/ )__(/_   /_)_/ (_(_(_/(___(/_ o   o
-
-        Jake version: v0.1.4
-        Put your python deps in a chokehold.
-        🐍  Collecting Dependencies from System...
-        🐍  Parsing Coordinates...
-        🐍  Generating CycloneDx BOM...
-        🐍  Submitting to Sonatype IQ...
-        💥  Reticulating splines...
-        Snakes on the plane! There are policy failures from Sonatype IQ.
-        Your IQ Server Report is available here: http://localhost:8070/ui/links/application/conda-base/report/966f5ff7d2e44bb1bb14a6567e66b1ef
-        ```
-
-#### Usage with Virtual Environments
-
-`jake` will resolve dependencies based off of what the current pip scope has access to.
-
-If you do not have a virtual environment activated, `jake` will resolve the pip-managed pypi modules accessible to the system python shell:
+or 
 
 ```
-  $ jake ddt -q
-  🐍  Collecting Dependencies
-  🐍  Querying OSS Index
-  🐍  Auditing results from OSS Index
-  ...
-  [71/72] - pkg:pypi/pyjwt@1.3.0?extension=tar.gz [VULNERABLE] 1 known vulnerabilities forthis version
-  ID: 4dc8bf86-e2ee-45b0-881f-bb4f03748b5b
-  Title: [CVE-2017-11424]  Improper Access Control
-  Description: In PyJWT 1.5.0 and below the `invalid_strings` check in `HMACAlgorithm.prepare_key` does not account for all PEM encoded public keys. Specifically, the PKCS1 PEM encoded format would be allowed because it is prefaced with the string `-----BEGIN RSA PUBLIC KEY-----` which is not accounted for. This enables symmetric/asymmetric key confusion attacks against users using the PKCS1 PEM encoded public keys, which would allow an attacker to craft JWTs from scratch.
-  CVSS Score: 7.5 - High
-  CVSS Vector: CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:N
-  CVE: CVE-2017-11424
-  Reference: https://ossindex.sonatype.org/vuln/4dc8bf86-e2ee-45b0-881f-bb4f03748b5b
-  ----------------------------------------------------
-  [72/72] - pkg:pypi/python-apt@1.1.0b1%20ubuntu0.16.4.8?extension=tar.gz - no known vulnerabilities for this version
+poetry add jake
 ```
 
-You can install `jake` in a virtual environment and it will be scoped to the dependencies that python shell has access to, but you would end up getting a report that includes jake's own dependencies.  To get around this, we added the `-t, --targets` flag which allows you to pass in a list site/dist package directories containing modules outside of the scope that `jake` is executing in. Also you can pass the pip requirements file path using the `-r, --requirements` flag.
+_Other Python package managers are available._
 
-To get the site packages available to a virtual environment:
+## Usage
 
-```
-  $ source .venv/bin/activate
-  (.venv) $ python -m site
-  sys.path = [
-      '/home/ButterB0wl/git_repos/jake',
-      '/usr/lib/python37.zip',
-      '/usr/lib/python3.7',
-      '/usr/lib/python3.7/lib-dynload',
-      '/home/ButterB0wl/git_repos/jake/.venv/lib/python3.7/site-packages',
-  ]
-  USER_BASE: '/home/ButterB0wl/.local' (exists)
-  USER_SITE: '/home/ButterB0wl/.local/lib/python3.7/site-packages' (exists)
-  ENABLE_USER_SITE: False
-```
+### Getting Started
 
-The `-t` argument accepts a list as a string literal.  This is the best way I've found to do this, if you find a better way please create a PR :)
-
-You can either enter a virtual environment and run the python command to get the site packages in-line with the `-t` argument:
-```
-  $ source .venv/bin/activate
-  (.venv) $ jake ddt -t "`python -c "import site; print(site.getsitepackages())"`"
-```
-
-OR run the python command using the shell you want to target and export to an env var:
+`jake` can guide you...
 
 ```
-  # using target python shell for system or virtual environment
-  $ export JAKE_TARGET=`python -c "import site; print(site.getsitepackages())"`
-  # using whatever shell has access to the jake module, can be a global install or stand-alone virtual environment
-  $ jake ddt -t "$JAKE_TARGET"
+> jake --help
+usage: jake [-h] [-v] [-X]  ...
+
+Put your Python dependencies in a chokehold
+
+optional arguments:
+  -h, --help     show this help message and exit
+  -v, --version  show which version of jake you are running
+  -X             enable debug output
+
+Jake sub-commands:
+
+    iq           perform a scan backed by Nexus Lifecycle
+    ddt          perform a scan backed by OSS Index
+    sbom         generate a CycloneDX software-bill-of-materials (no vulnerabilities)
 ```
 
-This will work for the `ddt`, `iq`, and `sbom` subcommands when evaluating pip modules.
+### Check for vulnerabilities using OSS Index
 
-To target a conda environment, specify it using `conda list` piped into `jake` with the `-c` flag.
+`jake` will look at the packaged installed in your current Python environment and check these against OSS Index for you.
+Optionally, it can create a CycloneDX software bill-of-materials at the same time in a format that suits you.
+
+```
+> jake ddt --help
+
+usage: jake ddt [-h] [--clear-cache] [-o PATH/TO/FILE] [--output-format {xml,json}] [--schema-version {1.2,1.1,1.0,1.3}]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --clear-cache         Clears any local cached OSS Index data prior to execution
+  -o PATH/TO/FILE, --output-file PATH/TO/FILE
+                        Specify a file to output the SBOM to. If not specified the report will be output to the console. STDOUT is not supported.
+  --output-format {xml,json}
+                        SBOM output format (default = xml)
+  --schema-version {1.2,1.1,1.0,1.3}
+                        CycloneDX schema version to use (default = 1.3)
+```
+
+So you can quickly get a report by running:
+
+```
+> jake ddt
+
+                   ___           ___           ___     
+       ___        /  /\         /  /\         /  /\    
+      /__/\      /  /::\       /  /:/        /  /::\   
+      \__\:\    /  /:/\:\     /  /:/        /  /:/\:\  
+  ___ /  /::\  /  /::\ \:\   /  /::\____   /  /::\ \:\ 
+ /__/\  /:/\/ /__/:/\:\_\:\ /__/:/\:::::\ /__/:/\:\ \:\
+ \  \:\/:/~~  \__\/  \:\/:/ \__\/~|:|~~~~ \  \:\ \:\_\/
+  \  \::/          \__\::/     |  |:|      \  \:\ \:\  
+   \__\/           /  /:/      |  |:|       \  \:\_\/  
+                  /__/:/       |__|:|        \  \:\    
+                  \__\/         \__\|         \__\/    
+
+                                                  
+            /)                     /)             
+        _/_(/    _     _  __   _  (/_   _         
+ o   o  (__/ )__(/_   /_)_/ (_(_(_/(___(/_ o   o  
+                                                  
+                                                  
+
+Jake Version: 1.0.0
+Put your Python dependencies in a chokehold.
+
+🐍 Collected 42 packages from your environment (0:00:00.10)
+🐍 Successfully queried OSS Index for package and vulnerability info (0:00:00.59)
+🐍 Sane number of results from OSS Index
+
+
+╔Summary═══════════════╦════╗
+║ Audited Dependencies ║ 42 ║
+╠══════════════════════╬════╣
+║ Vulnerablities Found ║ 0  ║
+╚══════════════════════╩════╝
+```
+
+### Check for vulnerabilities using Sonatype Nexus Lifecycle
+
+Access Sonatype's proprietary vulnerability data using `jake`:
+
+```
+> jake iq --help
+
+usage: jake iq [-h] -s https://localhost:8070 -i APP_ID -u USER_ID -p PASSWORD
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -s https://localhost:8070, --server-url https://localhost:8070
+                        Full http(s):// URL to your Nexus Lifecycle server
+  -i APP_ID, --application-id APP_ID
+                        Public Application ID in Nexus Lifecycle
+  -u USER_ID, --username USER_ID
+                        Username for authentication to Nexus Lifecycle
+  -p PASSWORD, --password PASSWORD
+                        Password for authentication to Nexus Lifecycle
+```
+
+So passing parameters that suit your Nexus Lifecycle environment you can get a report:
+
+```
+> jake iq -s https://my-nexus-lifecyle -i APP_ID -u USERNAME -p PASSWORD
+
+                   ___           ___           ___     
+       ___        /  /\         /  /\         /  /\    
+      /__/\      /  /::\       /  /:/        /  /::\   
+      \__\:\    /  /:/\:\     /  /:/        /  /:/\:\  
+  ___ /  /::\  /  /::\ \:\   /  /::\____   /  /::\ \:\ 
+ /__/\  /:/\/ /__/:/\:\_\:\ /__/:/\:::::\ /__/:/\:\ \:\
+ \  \:\/:/~~  \__\/  \:\/:/ \__\/~|:|~~~~ \  \:\ \:\_\/
+  \  \::/          \__\::/     |  |:|      \  \:\ \:\  
+   \__\/           /  /:/      |  |:|       \  \:\_\/  
+                  /__/:/       |__|:|        \  \:\    
+                  \__\/         \__\|         \__\/    
+
+                                                  
+            /)                     /)             
+        _/_(/    _     _  __   _  (/_   _         
+ o   o  (__/ )__(/_   /_)_/ (_(_(_/(___(/_ o   o  
+                                                  
+                                                  
+
+Jake Version: 1.0.0
+Put your Python dependencies in a chokehold
+
+🐍 IQ Server at https://my-nexus-lifecyle is up and accessible (0:00:00.14)
+🐍 Collected 42 packages from your environment (0:00:00.09)
+🧨 Something slithers around your ankle! There are policy warnings from Sonatype Nexus IQ. (0:00:11.50)
+
+Your Sonatype Nexus IQ Lifecycle Report is available here:
+  HTML: https://my-nexus-lifecyle/ui/links/application/APP_ID/report/4831bcb7fbaa45c3a2481048e446b598
+  PDF:  https://my-nexus-lifecyle/ui/links/application/APP_ID/report/4831bcb7fbaa45c3a2481048e446b598/pdf
+```
 
 ## Why Jake?
 
 Jake The Snake was scared of Snakes. The finishing move was DDT. He finishes the Snake with DDT.
 
-Who better to wrangle those slippery deps in any virtual or real environment.
+Who better to wrangle those slippery dependencies in any virtual or real environment.
 
-## Installation
+## Python Support
 
-### Download from PyPI
+We endeavour to support all functionality for all [current actively supported Python versions](https://www.python.org/downloads/).
+However, some features may not be possible/present in older Python versions due to their lack of support.
 
-`pip3 install jake`
+## Changelog
 
-### Build from source
-
-* Clone the repo
-* Install Python 3.7 or higher
-* Ensure pip3 is installed (it should be)
-* Run `python3 -m venv .venv` (or whatever virtual environment you prefer)
-* Run `source .venv/bin/activate`
-* Run `pip3 install -r requirements.txt`
-* Run `pip3 install -e .`
-
-Once you've done this, you should have `jake` available to test with fairly globally, pointed at the local source you've cloned.
-
-## Development
-
-`jake` is written using Python 3.7
-
-This project also uses `pip3` for dependencies, so you will need to download make sure you have `pip3`.
-
-Follow instructions in [Build from source](#build-from-source).
-
-Run `pip3 install -r dev-requirements.txt`
-
-Tests can be run with `python3 -m unittest discover`
-
-More TBD.
-
-## Misc
-
-We have a nightly "internal" build that scans Jake using Nexus Lifecycle. Files related to this build are:
-
-   * [Jenkinsfile](./Jenkinsfile)
-   * [license-excludes.xml](./license-excludes.xml) - define which files to skip during header checks.
-
-You should be able to ignore these file for the most part.    
-    
-## Contributing
-
-We care a lot about making the world a safer place, and that's why we created `jake`. If you as well want to
-speed up the pace of software development by working on this project, jump on in! Before you start work, create
-a new issue, or comment on an existing issue, to let others know you are!
-
-## Releasing
-
-We use [python-semantic-release](https://python-semantic-release.readthedocs.io/en/latest/) to generate patch releases
-from commits to the `main` branch.
-
-For example, to perform a "patch" release, add a commit to `main` with a comment like:
-
-```
-fix: Resolve vulnerability: CVE-2020-27783 in lxml
-```
-
-To avoid performing a release after a commit to the `main` branch, be sure your commit message includes `[skip ci] `.
+See our [CHANGELOG](./CHANGELOG.md).
 
 ## The Fine Print
 
 Remember:
 
-* If you are a Sonatype customer, you may file Sonatype support tickets related to `jake` support in regard to this project
-  * We suggest you file issues here on GitHub as well, so that the community can pitch in
-* If you are not a Sonatype customer, Do NOT file Sonatype support tickets related to `jake` support in regard to this project, file an issue here on GitHub
+It is worth noting that this is **NOT SUPPORTED** by Sonatype, and is a contribution of ours to the open source
+community (read: you!)
 
-Have fun creating and using `jake` and the [Sonatype OSS Index](https://ossindex.sonatype.org/), we are glad to have you here!
+* Use this contribution at the risk tolerance that you have
+* Do NOT file Sonatype support tickets related to `ossindex-lib`
+* DO file issues here on GitHub, so that the community can pitch in
 
-## Getting help
-
-Looking to contribute to our code but need some help? There's a few ways to get information:
-
-* Chat with us on [Gitter](https://gitter.im/sonatype/nexus-developers)
+Phew, that was easier than I thought. Last but not least of all - have fun!

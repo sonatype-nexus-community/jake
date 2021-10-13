@@ -161,3 +161,6 @@ dmypy.json
 /.circleci/local-config.yml
 
 .DS_Store
+
+# .sonatype-config for VS Code plugin
+.sonatype-config

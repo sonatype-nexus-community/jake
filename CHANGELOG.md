@@ -2,6 +2,20 @@
 
 <!--next-version-placeholder-->
 
+## v1.0.0 (2021-10-18)
+### Feature
+* Sonatype Nexus IQ Lifecycle analysis is now migrated to using cyclonedx-python-lib ([`214d182`](https://github.com/sonatype-nexus-community/jake/commit/214d1821fa94ff895a2bfa4eac0f6961df093f46))
+* Support Poetry for gleaning packages within the current environment to generate an SBOM ([`b9a1e5d`](https://github.com/sonatype-nexus-community/jake/commit/b9a1e5d2f38963a033d102399827c5c4dfe786da))
+* Jake's OSS calls now utilising ossindex-lib and cyclonedx-python-lib ([`ec83583`](https://github.com/sonatype-nexus-community/jake/commit/ec83583520aa5ff8180b215b55846ed7a6fd487c))
+
+### Fix
+* Additional whitespace removed ([`709f7a2`](https://github.com/sonatype-nexus-community/jake/commit/709f7a2aa752668daba99c04b36ad9b8a6d271f2))
+* Runtime tweaks to make it more robust ([`13c9028`](https://github.com/sonatype-nexus-community/jake/commit/13c902838008377e11e4c47ed619401776b8f782))
+* Typos noted as updating documentation ([`0d65116`](https://github.com/sonatype-nexus-community/jake/commit/0d65116a17757b1ccf4c73bc463ee677eef0d5ff))
+
+### Breaking
+* `jake` has been re-written in large part to consume two new external libraries: - `cyclonedx-python-lib` which gives `jake` ability to more easily consume your depenedencies in a variety of manners (environment, Pipfile.lock, poetry.lock, requirements.txt) and support output in both JSON and XML at different schema versions - `ossindex-lib`: most of the functionallity for talking to OSS Index that was in `jake` has been externalised to this library to allow others to consume it ([`e11cb20`](https://github.com/sonatype-nexus-community/jake/commit/e11cb208c215169d6ce24fa8898a5aa2402d8791))
+
 ## v0.2.77 (2021-07-06)
 ### Fix
 * CVE-2021-33503 in urllib3 == 1.26.4 ([#62](https://github.com/sonatype-nexus-community/jake/issues/62)) ([`9dfbb1c`](https://github.com/sonatype-nexus-community/jake/commit/9dfbb1c18831a1456803299e2f98a95ba95ea2b8))

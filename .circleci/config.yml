@@ -111,8 +111,8 @@ jobs:
       - run:
           name: "Semantic Release"
           command: |
-            git config user.email "community-group@sonatype.com"
-            git config user.name "SonaBot"
+            git config user.name "$GITHUB_USERNAME"
+            git config user.email "$GITHUB_EMAIL"
             semantic-release publish
 
 workflows:

@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.0.1 (2021-10-20)
+### Fix
+* Update to support returning non-zero exit code when issues found (will return 1) ([`7667bac`](https://github.com/sonatype-nexus-community/jake/commit/7667bacb171803f7963bec12240520985103d06c))
+
 ## v1.0.0 (2021-10-18)
 ### Feature
 * Sonatype Nexus IQ Lifecycle analysis is now migrated to using cyclonedx-python-lib ([`214d182`](https://github.com/sonatype-nexus-community/jake/commit/214d1821fa94ff895a2bfa4eac0f6961df093f46))

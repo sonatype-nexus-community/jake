@@ -39,7 +39,9 @@ from . import BaseCommand
 
 class OssCommand(BaseCommand):
 
-    def handle_args(self):
+    def handle_args(self) -> int:
+        exit_code: int = 0
+
         with yaspin(text='Collecting packages in your Python Environment', color='yellow', timer=True) as spinner:
             parser = EnvironmentParser()
             spinner.text = 'Collected {} packages from your environment'.format(len(parser.get_components()))
@@ -81,6 +83,15 @@ class OssCommand(BaseCommand):
             cyclonedx_output.output_to_file(filename=output_filename, allow_overwrite=True)
             print('')
             print('CycloneDX has been written to {}'.format(output_filename))
+
+        # Update exit_code if warn only is not enabled and issues have been detected
+        if not self._arguments.warn_only:
+            for oic in oss_index_results:
+                if oic.has_known_vulnerabilities():
+                    exit_code = 1
+                    break
+
+        return exit_code
 
     def setup_argument_parser(self, subparsers: argparse._SubParsersAction):
         parser = subparsers.add_parser('ddt', help='perform a scan backed by OSS Index')

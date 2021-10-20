@@ -26,9 +26,9 @@
 ![Python Version Support](https://img.shields.io/badge/python-3.6+-blue)
 ![PyPI Version](https://img.shields.io/pypi/v/jake?label=PyPI&logo=pypi)
 [![GitHub license](https://img.shields.io/github/license/sonatype-nexus-community/jake)](https://github.com/sonatype-nexus-community/jake/blob/main/LICENSE)
-[![GitHub issues](https://img.shields.io/github/issues/sonatype-nexus-community/jaken)](https://github.com/sonatype-nexus-community/jake/issues)
+[![GitHub issues](https://img.shields.io/github/issues/sonatype-nexus-community/jake)](https://github.com/sonatype-nexus-community/jake/issues)
 [![GitHub forks](https://img.shields.io/github/forks/sonatype-nexus-community/jake)](https://github.com/sonatype-nexus-community/jake/network)
-[![GitHub stars](https://img.shields.io/github/stars/sonatype-nexus-community/jaken)](https://github.com/sonatype-nexus-community/jake/stargazers)
+[![GitHub stars](https://img.shields.io/github/stars/sonatype-nexus-community/jake)](https://github.com/sonatype-nexus-community/jake/stargazers)
 
 ----
 
@@ -68,16 +68,21 @@ usage: jake [-h] [-v] [-X]  ...
 Put your Python dependencies in a chokehold
 
 optional arguments:
-  -h, --help     show this help message and exit
-  -v, --version  show which version of jake you are running
-  -X             enable debug output
+  -h, --help        show this help message and exit
+  -v, --version     show which version of jake you are running
+  -w, --warn-only   prevents exit with non-zero code when issues have been
+                    detected
+  -X                enable debug output
 
 Jake sub-commands:
 
-    iq           perform a scan backed by Nexus Lifecycle
-    ddt          perform a scan backed by OSS Index
-    sbom         generate a CycloneDX software-bill-of-materials (no vulnerabilities)
+    iq              perform a scan backed by Nexus Lifecycle
+    ddt             perform a scan backed by OSS Index
+    sbom            generate a CycloneDX software-bill-of-materials (no vulnerabilities)
 ```
+
+`jake` will exit with code `0` under normal operation and `1` if vulnerabilities are found (OssIndex) or Policy 
+Violations are detected (Nexus IQ), unless you pass the `-w` flag in which case `jake` will always exit with code `0`....
 
 ### Check for vulnerabilities using OSS Index
 

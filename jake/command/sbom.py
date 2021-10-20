@@ -30,7 +30,7 @@ from . import BaseCommand
 
 class SbomCommand(BaseCommand):
 
-    def handle_args(self):
+    def handle_args(self) -> int:
         self._arguments.sbom_input_type
         bom = Bom.from_parser(self._get_parser())
 
@@ -50,6 +50,8 @@ class SbomCommand(BaseCommand):
         else:
             # Output to STDOUT
             print(output.output_as_string())
+
+        return 0
 
     def setup_argument_parser(self, subparsers: argparse._SubParsersAction):
         parser: argparse.ArgumentParser = subparsers.add_parser(

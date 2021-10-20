@@ -25,7 +25,7 @@ class BaseCommand(ABC):
     _arguments: argparse.Namespace
 
     @abstractmethod
-    def handle_args(self):
+    def handle_args(self) -> int:
         pass
 
     def execute(self, arguments: argparse.Namespace):

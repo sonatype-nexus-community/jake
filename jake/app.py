@@ -62,7 +62,8 @@ class JakeCmd:
         # Determine primary command and then hand off to that Command handler
         if self._arguments.cmd:
             command = self._subcommands[self._arguments.cmd]
-            command.execute(arguments=self._arguments)
+            exit_code: int = command.execute(arguments=self._arguments)
+            exit(exit_code)
         else:
             self._arg_parser.print_help()
 
@@ -80,7 +81,9 @@ class JakeCmd:
         # Add global options
         self._arg_parser.add_argument('-v', '--version', help='show which version of jake you are running',
                                       action='version',
-                                      version='%{prog}s 1.0-dev')
+                                      version=f'jake {JakeCmd._get_jake_version()}')
+        self._arg_parser.add_argument('-w', '--warn-only', action='store_true', dest='warn_only',
+                                      help='prevents exit with non-zero code when issues have been detected')
         self._arg_parser.add_argument('-X', action='store_true', help='enable debug output', dest='debug_enabled')
 
         subparsers = self._arg_parser.add_subparsers(title='Jake sub-commands', dest='cmd', metavar='')

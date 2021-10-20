@@ -71,7 +71,7 @@ class IqCommand(BaseCommand):
                     )
                 )
 
-        def scan_application_with_bom(self, bom: Bom, iq_public_application_id: str, iq_scan_stage: str = 'source'):
+        def scan_application_with_bom(self, bom: Bom, iq_public_application_id: str, iq_scan_stage: str = 'develop'):
             """
             This method is intentionally blocking.
 
@@ -177,7 +177,9 @@ class IqCommand(BaseCommand):
         super().__init__()
         self._iq_server = None
 
-    def handle_args(self):
+    def handle_args(self) -> int:
+        exit_code: int = 0
+
         with yaspin(text='Checking out your Nexus IQ Server', color='yellow', timer=True) as spinner:
             self._iq_server = self.IqServerApi(
                 server_url=self._arguments.iq_server_url,
@@ -202,7 +204,8 @@ class IqCommand(BaseCommand):
             if iq_response['policyAction'] == 'Failure':
                 spinner.text = 'Snakes on the plane! There are policy failures from Sonatype Nexus IQ.'
                 spinner.ok('💥')
-            elif iq_response['policyAction'] != 'Warning':
+                exit_code = 1
+            elif iq_response['policyAction'] == 'Warning':
                 spinner.text = 'Something slithers around your ankle! There are policy warnings from Sonatype Nexus IQ.'
                 spinner.ok('🧨')
             else:
@@ -214,6 +217,8 @@ class IqCommand(BaseCommand):
         print('  HTML: {}/{}'.format(self._arguments.iq_server_url, iq_response['reportHtmlUrl']))
         print('  PDF:  {}/{}'.format(self._arguments.iq_server_url, iq_response['reportPdfUrl']))
         print('')
+
+        return exit_code
 
     def setup_argument_parser(self, subparsers: argparse._SubParsersAction):
         parser: argparse.ArgumentParser = subparsers.add_parser('iq', help='perform a scan backed by Nexus Lifecycle')

@@ -86,9 +86,6 @@ jobs:
 
   release_and_pypi_publish:
     executor: python39
-    environment:
-      CIRCLECI: "true"
-      GH_TOKEN: None
     steps:
       - add_ssh_keys:
           fingerprints:

@@ -15,16 +15,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
 import argparse
+import sys
 
 from cyclonedx.model.bom import Bom
 from cyclonedx.output import BaseOutput, get_instance, OutputFormat, SchemaVersion, DEFAULT_SCHEMA_VERSION
 from cyclonedx.parser import BaseParser
+from cyclonedx.parser.conda import CondaListJsonParser, CondaListExplicitParser
 from cyclonedx.parser.environment import EnvironmentParser
-from cyclonedx.parser.pipenv import PipEnvFileParser
-from cyclonedx.parser.poetry import PoetryFileParser
-from cyclonedx.parser.requirements import RequirementsFileParser
+from cyclonedx.parser.pipenv import PipEnvParser, PipEnvFileParser
+from cyclonedx.parser.poetry import PoetryParser, PoetryFileParser
+from cyclonedx.parser.requirements import RequirementsParser, RequirementsFileParser
+
 from . import BaseCommand
 
 
@@ -59,13 +61,26 @@ class SbomCommand(BaseCommand):
             help='generate a CycloneDX software-bill-of-materials (no vulnerabilities)',
         )
 
-        parser.add_argument('-it', '--input-type',
+        parser.add_argument('-i', '--input', action='store', metavar='FILE_PATH',
+                            type=argparse.FileType('r'), default=(None if sys.stdin.isatty() else sys.stdin),
+                            help='Where to get input data from. If a path to a file is not specified directly here,'
+                                 'then we will attempt to read data from STDIN. If there is no data on STDIN, we will '
+                                 'then fall back to looking for standard files in the current directory that relate '
+                                 'to the type of input indicated by the -t flag.', dest='sbom_input_source',
+                            required=False)
+
+        parser.add_argument('-t', '--type', '-it', '--input-type',
                             help='how jake should find the packages from which to generate your SBOM.'
-                                 'ENV = Read from the current Python Environment; PIP = read from a requirements.txt; '
-                                 'PIPENV = read from Pipfile.lock; POETRY = read from a poetry.lock. '
+                                 'ENV = Read from the current Python Environment; '
+                                 'CONDA = Read output from `conda list --explicit`; '
+                                 'CONDA_JSON = Read output from `conda list --json`; '
+                                 'PIP = read from a requirements.txt; '
+                                 'PIPENV = read from Pipfile.lock; '
+                                 'POETRY = read from a poetry.lock. '
                                  '(Default = ENV)',
-                            metavar='TYPE', choices={'ENV', 'PIP', 'PIPENV', 'POETRY'}, default='ENV',
-                            dest='sbom_input_type')
+                            metavar='TYPE', choices={'CONDA', 'CONDA_JSON', 'ENV', 'PIP', 'PIPENV', 'POETRY'},
+                            default='ENV', dest='sbom_input_type')
+
         parser.add_argument('-o', '--output-file', help='Specify a file to output the SBOM to', metavar='PATH/TO/FILE',
                             dest='sbom_output_file')
         parser.add_argument('--output-format', help='SBOM output format (default = xml)', choices={'json', 'xml'},
@@ -78,13 +93,37 @@ class SbomCommand(BaseCommand):
         if self._arguments.sbom_input_type == 'ENV':
             return EnvironmentParser()
 
-        if self._arguments.sbom_input_type == 'PIP':
-            return RequirementsFileParser(requirements_file='requirements.txt')
+        # All other input types require INPUT - let's grab it now if provided via STDIN or supplied FILE
+        input_data_fh = self._arguments.sbom_input_source
+        if input_data_fh:
+            with input_data_fh:
+                input_data = input_data_fh.read()
+                input_data_fh.close()
 
-        if self._arguments.sbom_input_type == 'PIPENV':
-            return PipEnvFileParser(pipenv_lock_filename='Pipfile.lock')
+            if self._arguments.sbom_input_type == 'CONDA':
+                return CondaListExplicitParser(conda_data=input_data)
 
-        if self._arguments.sbom_input_type == 'POETRY':
-            return PoetryFileParser(poetry_lock_filename='poetry.lock')
+            if self._arguments.sbom_input_type == 'CONDA_JSON':
+                return CondaListJsonParser(conda_data=input_data)
+
+            if self._arguments.sbom_input_type == 'PIP':
+                return RequirementsParser(requirements_content=input_data)
+
+            if self._arguments.sbom_input_type == 'PIPENV':
+                return PipEnvParser(pipenv_contents=input_data)
+
+            if self._arguments.sbom_input_type == 'POETRY':
+                return PoetryParser(poetry_lock_contents=input_data)
+
+        else:
+            # No data available on STDIN or the supplied FILE, so we'll try standard filenames in the current directory
+            if self._arguments.sbom_input_type == 'PIP':
+                return RequirementsFileParser(requirements_file='requirements.txt')
+
+            if self._arguments.sbom_input_type == 'PIPENV':
+                return PipEnvFileParser(pipenv_lock_filename='Pipfile.lock')
+
+            if self._arguments.sbom_input_type == 'POETRY':
+                return PoetryFileParser(poetry_lock_filename='poetry.lock')
 
         raise NotImplementedError

@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.1.0 (2021-10-22)
+### Feature
+* Add support for conda #66 ([`a3495cb`](https://github.com/sonatype-nexus-community/jake/commit/a3495cb55fe835181ae57a1a48b9ff8cbe7b7415))
+
 ## v1.0.1 (2021-10-20)
 ### Fix
 * Update to support returning non-zero exit code when issues found (will return 1) ([`7667bac`](https://github.com/sonatype-nexus-community/jake/commit/7667bacb171803f7963bec12240520985103d06c))

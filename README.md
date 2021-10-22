@@ -22,9 +22,9 @@
 
 # Jake
 
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/sonatype-nexus-community/jake/Python%20CI)
+[![CircleCI](https://circleci.com/gh/sonatype-nexus-community/jake/tree/main.svg?style=svg)](https://circleci.com/gh/sonatype-nexus-community/jake/tree/main)
 ![Python Version Support](https://img.shields.io/badge/python-3.6+-blue)
-![PyPI Version](https://img.shields.io/pypi/v/jake?label=PyPI&logo=pypi)
+[![PyPI Version](https://img.shields.io/pypi/v/jake?label=PyPI&logo=pypi)](https://pypi.org/project/jake)
 [![GitHub license](https://img.shields.io/github/license/sonatype-nexus-community/jake)](https://github.com/sonatype-nexus-community/jake/blob/main/LICENSE)
 [![GitHub issues](https://img.shields.io/github/issues/sonatype-nexus-community/jake)](https://github.com/sonatype-nexus-community/jake/issues)
 [![GitHub forks](https://img.shields.io/github/forks/sonatype-nexus-community/jake)](https://github.com/sonatype-nexus-community/jake/network)
@@ -63,26 +63,77 @@ _Other Python package managers are available._
 
 ```
 > jake --help
-usage: jake [-h] [-v] [-X]  ...
+usage: jake [-h] [-v] [-w] [-X]  ...
 
 Put your Python dependencies in a chokehold
 
 optional arguments:
-  -h, --help        show this help message and exit
-  -v, --version     show which version of jake you are running
-  -w, --warn-only   prevents exit with non-zero code when issues have been
-                    detected
-  -X                enable debug output
+  -h, --help       show this help message and exit
+  -v, --version    show which version of jake you are running
+  -w, --warn-only  prevents exit with non-zero code when issues have been
+                   detected
+  -X               enable debug output
 
 Jake sub-commands:
-
-    iq              perform a scan backed by Nexus Lifecycle
-    ddt             perform a scan backed by OSS Index
-    sbom            generate a CycloneDX software-bill-of-materials (no vulnerabilities)
+  
+    iq             perform a scan backed by Nexus Lifecycle
+    ddt            perform a scan backed by OSS Index
+    sbom           generate a CycloneDX software-bill-of-materials (no
+                   vulnerabilities)
 ```
 
 `jake` will exit with code `0` under normal operation and `1` if vulnerabilities are found (OssIndex) or Policy 
 Violations are detected (Nexus IQ), unless you pass the `-w` flag in which case `jake` will always exit with code `0`....
+
+### Generating an SBOM
+
+`jake` can take data from various inputs (or just look at your current Python environment) and produce a CycloneDX for 
+you.
+
+```
+> jake sbom --help
+
+usage: jake sbom [-h] [-i FILE_PATH] [-t TYPE] [-o PATH/TO/FILE]
+                   [--output-format {json,xml}]
+                   [--schema-version {1.0,1.1,1.2,1.3}]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -i FILE_PATH, --input FILE_PATH
+                        Where to get input data from. If a path to a file is
+                        not specified directly here,then we will attempt to
+                        read data from STDIN. If there is no data on STDIN, we
+                        will then fall back to looking for standard files in
+                        the current directory that relate to the type of input
+                        indicated by the -t flag.
+  -t TYPE, --type TYPE, -it TYPE, --input-type TYPE
+                        how jake should find the packages from which to
+                        generate your SBOM.ENV = Read from the current Python
+                        Environment; CONDA = Read output from `conda list
+                        --explicit`; CONDA_JSON = Read output from `conda list
+                        --json`; PIP = read from a requirements.txt; PIPENV =
+                        read from Pipfile.lock; POETRY = read from a
+                        poetry.lock. (Default = ENV)
+  -o PATH/TO/FILE, --output-file PATH/TO/FILE
+                        Specify a file to output the SBOM to
+  --output-format {json,xml}
+                        SBOM output format (default = xml)
+  --schema-version {1.0,1.1,1.2,1.3}
+                        CycloneDX schema version to use (default = 1.3)
+```
+
+Check out these examples using STDIN:
+```
+conda list --explicit --md5 | jake sbom -t CONDA
+conda list --json | jake sbom -t CONDA_JSON
+cat /path/to/Pipfile.lock | python -m jake.app sbom -t PIPENV
+```
+
+Check out these examples specifying a manifest:
+```
+jake sbom -t PIP -i /path/to/requirements.txt
+jake sbom -t PIPENV -i /path/to/Pipfile.lock
+```
 
 ### Check for vulnerabilities using OSS Index
 
@@ -129,7 +180,7 @@ So you can quickly get a report by running:
                                                   
                                                   
 
-Jake Version: 1.0.0
+Jake Version: 1.1.0
 Put your Python dependencies in a chokehold.
 
 🐍 Collected 42 packages from your environment (0:00:00.10)
@@ -189,7 +240,7 @@ So passing parameters that suit your Nexus Lifecycle environment you can get a r
                                                   
                                                   
 
-Jake Version: 1.0.0
+Jake Version: 1.0.1
 Put your Python dependencies in a chokehold
 
 🐍 IQ Server at https://my-nexus-lifecyle is up and accessible (0:00:00.14)

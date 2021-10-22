@@ -63,7 +63,7 @@ _Other Python package managers are available._
 
 ```
 > jake --help
-usage: app.py [-h] [-v] [-w] [-X]  ...
+usage: jake [-h] [-v] [-w] [-X]  ...
 
 Put your Python dependencies in a chokehold
 

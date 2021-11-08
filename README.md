@@ -269,6 +269,19 @@ However, some features may not be possible/present in older Python versions due 
 
 See our [CHANGELOG](./CHANGELOG.md).
 
+## Releasing
+
+We use [python-semantic-release](https://python-semantic-release.readthedocs.io/en/latest/) to generate patch releases
+from commits to the `main` branch.
+
+For example, to perform a "patch" release, add a commit to `main` with a comment like:
+
+```
+fix: Resolve vulnerability: CVE-2020-27783 in lxml
+```
+
+To avoid performing a release after a commit to the `main` branch, be sure your commit message includes `[skip ci] `.
+
 ## The Fine Print
 
 Remember:

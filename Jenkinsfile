@@ -31,7 +31,7 @@ dockerizedBuildPipeline(
         usernameVariable: 'IQ_USERNAME', passwordVariable: 'IQ_PASSWORD')]) {
         sh '''
         poetry install --no-dev
-        poetry run jake iq --application jake --stage stage-release --user $IQ_USERNAME --password $IQ_PASSWORD ---server-url https://policy.ci.sonatype.dev        
+        poetry run jake iq --application jake --stage stage-release --user $IQ_USERNAME --password $IQ_PASSWORD --server-url https://policy.ci.sonatype.dev        
         #poetry run jake iq --application jake --stage stage-release --user $IQ_USERNAME --password $IQ_PASSWORD --server-url https://policy.ci.sonatype.dev || export jakeFailed=true        
         #cat ${HOME}/.ossindex/jake.combined.log
         '''

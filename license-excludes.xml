@@ -1,0 +1,15 @@
+<excludes>
+  <exclude>src/.circleci/circleci-readme.md</exclude>
+  <exclude>src/.github/**</exclude>
+  <exclude>src/.circleci/**.sh</exclude>
+  <exclude>src/Manifest.in</exclude>
+  <exclude>src/requirements.txt</exclude>
+  <exclude>src/setup.cfg</exclude>
+  <exclude>src/.pylint.rc</exclude>
+  <exclude>src/**/__init__.py</exclude>
+  <exclude>src/**/*.txt</exclude>
+  <exclude>src/.venv/**</exclude>
+  <exclude>src/**/*.xsd</exclude>
+  <exclude>src/CHANGELOG.md</exclude>
+  <exclude>src/SECURITY.md</exclude>
+</excludes>

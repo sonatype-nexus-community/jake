@@ -28,12 +28,8 @@ WORKDIR /home/jenkins
 
 ENV PATH=/home/jenkins/.local/bin:/home/jenkins/bin:$PATH
 
-COPY requirements.txt .
-
-RUN pip install -r requirements.txt
-
-RUN pip install pylint
-
-RUN pip install unittest-xml-reporting
+RUN python -m ensurepip --default-pip
+RUN pip install --upgrade pip
+RUN pip install poetry
 
 CMD ["/bin/bash"]

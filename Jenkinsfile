@@ -19,11 +19,9 @@
 dockerizedBuildPipeline(
   buildAndTest: {
     sh '''
-    # development only requirements
-    pip3 install -r requirements-dev.txt
-    python -m xmlrunner discover -o test-results/
-    # hot mess to uninstall dev requirements before we self scan. probably should move to pipenv
-    pip3 uninstall -r requirements-dev.txt -y
+    poetry install
+    poetry build
+    poetry run tox
     '''
   },
   deployBranch: 'main',

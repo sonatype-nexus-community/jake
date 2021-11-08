@@ -111,5 +111,5 @@ jobs:
           if-no-files-found: error
       - name: Run Jake on Jake
         run: >
-          poetry install --no-dev
+          poetry install --no-dev &&
           poetry run jake ddt

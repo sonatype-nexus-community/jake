@@ -30,8 +30,9 @@ dockerizedBuildPipeline(
       withCredentials([usernamePassword(credentialsId: 'policy.s integration account',
         usernameVariable: 'IQ_USERNAME', passwordVariable: 'IQ_PASSWORD')]) {
         sh '''
-        jake iq --application jake --stage stage-release --user $IQ_USERNAME --password $IQ_PASSWORD --host https://policy.ci.sonatype.dev        
-        #jake iq --application jake --stage stage-release --user $IQ_USERNAME --password $IQ_PASSWORD --host https://policy.ci.sonatype.dev || export jakeFailed=true        
+        poetry install --no-dev
+        poetry run jake iq --application jake --stage stage-release --user $IQ_USERNAME --password $IQ_PASSWORD --host https://policy.ci.sonatype.dev        
+        #poetry run jake iq --application jake --stage stage-release --user $IQ_USERNAME --password $IQ_PASSWORD --host https://policy.ci.sonatype.dev || export jakeFailed=true        
         #cat ${HOME}/.ossindex/jake.combined.log
         '''
       }

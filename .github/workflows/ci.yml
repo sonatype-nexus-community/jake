@@ -109,3 +109,7 @@ jobs:
           name: ${{ env.REPORTS_ARTIFACT }}
           path: ${{ env.REPORTS_DIR }}
           if-no-files-found: error
+      - name: Run Jake on Jake
+        run: >
+          poetry install --no-dev
+          poetry run jake ddt

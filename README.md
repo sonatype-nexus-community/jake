@@ -202,7 +202,7 @@ Access Sonatype's proprietary vulnerability data using `jake`:
 ```
 > jake iq --help
 
-usage: jake iq [-h] -s https://localhost:8070 -i APP_ID -u USER_ID -p PASSWORD
+usage: jake iq [-h] -s https://localhost:8070 -i APP_ID -u USER_ID -p PASSWORD [-t STAGE]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -214,6 +214,8 @@ optional arguments:
                         Username for authentication to Nexus Lifecycle
   -p PASSWORD, --password PASSWORD
                         Password for authentication to Nexus Lifecycle
+  -t STAGE, --stage STAGE
+                        The stage for the report
 ```
 
 So passing parameters that suit your Nexus Lifecycle environment you can get a report:

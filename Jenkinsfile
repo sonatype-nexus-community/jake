@@ -27,7 +27,7 @@ dockerizedBuildPipeline(
   deployBranch: 'main',
   vulnerabilityScan: {
     withDockerImage(env.DOCKER_IMAGE_ID, {
-      withCredentials([usernamePassword(credentialsId: 'policy.s integration account',
+      withCredentials([usernamePassword(credentialsId: 'jenkins-iq',
         usernameVariable: 'IQ_USERNAME', passwordVariable: 'IQ_PASSWORD')]) {
         sh '''
         poetry install --no-dev

@@ -71,7 +71,7 @@ class IqCommand(BaseCommand):
                     )
                 )
 
-        def scan_application_with_bom(self, bom: Bom, iq_public_application_id: str, iq_scan_stage: str = 'develop'):
+        def scan_application_with_bom(self, bom: Bom, iq_public_application_id: str, iq_scan_stage: str):
             """
             This method is intentionally blocking.
 
@@ -198,7 +198,7 @@ class IqCommand(BaseCommand):
             iq_response = self._iq_server.scan_application_with_bom(
                 bom=Bom.from_parser(parser=parser),
                 iq_public_application_id=self._arguments.iq_application_id,
-                iq_scan_stage='source'
+                iq_scan_stage=self._arguments.iq_scan_stage
             )
 
             if iq_response['policyAction'] == 'Failure':
@@ -236,4 +236,4 @@ class IqCommand(BaseCommand):
                             metavar='PASSWORD', required=True, dest='iq_password')
 
         parser.add_argument('-t', '--stage', help='The stage for the report',
-                            metavar='STAGE', required=False, dest='iq_scan_stage')
+                            metavar='STAGE', required=False, dest='iq_scan_stage', default='source')

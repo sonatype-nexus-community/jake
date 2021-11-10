@@ -28,9 +28,9 @@ class BaseCommand(ABC):
     def handle_args(self) -> int:
         pass
 
-    def execute(self, arguments: argparse.Namespace):
+    def execute(self, arguments: argparse.Namespace) -> int:
         self._arguments = arguments
-        self.handle_args()
+        return self.handle_args()
 
     @abstractmethod
     def setup_argument_parser(self, subparsers: argparse._SubParsersAction):

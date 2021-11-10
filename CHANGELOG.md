@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.1.3 (2021-11-10)
+### Fix
+* Return exit code up the call stack ([`12caad2`](https://github.com/sonatype-nexus-community/jake/commit/12caad22e2c5bca95d4f2a4bafae5b95b4a7fd2a))
+
 ## v1.1.2 (2021-11-10)
 ### Fix
 * Restore "stage" parameter for iq command, for realsies ([`f1d8c64`](https://github.com/sonatype-nexus-community/jake/commit/f1d8c64853c707ccd07dcceb5bd04bffbd4078db))

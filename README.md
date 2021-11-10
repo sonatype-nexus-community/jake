@@ -271,10 +271,9 @@ See our [CHANGELOG](./CHANGELOG.md).
 
 ## Releasing
 
-We perform a releases manually by clicking the "On Hold" button in the CircleCI web page.
+We perform releases manually by clicking the "On Hold" button in the CircleCI web page.
 
-If you see a feature in the code that we have not yet released, please speak up, and we'll be sure
-to click the magic button.
+If you see a feature in the code that we have not released, please speak up, and we'll be sure to click the magic button.
 
 We use [python-semantic-release](https://python-semantic-release.readthedocs.io/en/latest/) to generate releases
 from commits to the `main` branch.

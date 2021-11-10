@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.1.2 (2021-11-10)
+### Fix
+* Restore "stage" parameter for iq command, for realsies ([`f1d8c64`](https://github.com/sonatype-nexus-community/jake/commit/f1d8c64853c707ccd07dcceb5bd04bffbd4078db))
+
 ## v1.1.1 (2021-11-09)
 ### Fix
 * Restore "stage" parameter for iq command ([`01a41da`](https://github.com/sonatype-nexus-community/jake/commit/01a41dae1ca8f13d7f3837f695daa25792f9e834))

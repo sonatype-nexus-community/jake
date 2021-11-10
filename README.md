@@ -276,6 +276,15 @@ We perform a releases manually by clicking the "On Hold" button in the CircleCI 
 If you see a feature in the code that we have not yet released, please speak up, and we'll be sure
 to click the magic button.
 
+We use [python-semantic-release](https://python-semantic-release.readthedocs.io/en/latest/) to generate releases
+from commits to the `main` branch.
+
+For example, to perform a "patch" release, add a commit to `main` with a comment like below. The `fix: ` prefix matters.
+
+```
+fix: Resolve vulnerability: CVE-2020-27783 in lxml
+```
+
 ## The Fine Print
 
 Remember:

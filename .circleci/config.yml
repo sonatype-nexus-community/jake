@@ -58,7 +58,11 @@ jobs:
           paths:
             - /home/circleci/.cache/pypoetry/virtualenvs
       - run:
+          name: "Build Jake"
           command: |
+            # Poetry has no option to only install binary packages currently
+            # poetry export -f requirements.txt -o pinned.requirements.txt
+            # pip install --only-binary ':all:' -r pinned.requirements.txt
             poetry build
       - run:
           command: |

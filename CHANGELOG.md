@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.1.4 (2021-12-07)
+### Fix
+* Ensure dependencies can be installed from binary packages #72 ([`9e30ca8`](https://github.com/sonatype-nexus-community/jake/commit/9e30ca8d11bc6ee578749686ff3af30b1c805b10))
+
 ## v1.1.3 (2021-11-10)
 ### Fix
 * Return exit code up the call stack ([`12caad2`](https://github.com/sonatype-nexus-community/jake/commit/12caad22e2c5bca95d4f2a4bafae5b95b4a7fd2a))

@@ -31,15 +31,20 @@ from cyclonedx.parser.environment import EnvironmentParser
 from ossindex.model import OssIndexComponent, Vulnerability
 from ossindex.ossindex import OssIndex
 from packageurl import PackageURL
+from rich.console import Console
 from rich.progress import Progress
-from terminaltables import DoubleTable
+from rich.table import Table
 
 from . import BaseCommand
 
 
 class OssCommand(BaseCommand):
 
+    _console: Console
+
     def handle_args(self) -> int:
+        self._console = Console()
+
         exit_code: int = 0
 
         with Progress() as progress:
@@ -114,7 +119,6 @@ class OssCommand(BaseCommand):
 
         return exit_code
 
-
     def setup_argument_parser(self, subparsers: argparse._SubParsersAction):
         parser = subparsers.add_parser('ddt', help='perform a scan backed by OSS Index')
 
@@ -130,7 +134,6 @@ class OssCommand(BaseCommand):
         parser.add_argument('--schema-version', help='CycloneDX schema version to use (default = 1.3)',
                             choices={'1.3', '1.2', '1.1', '1.0'}, default='1.3',
                             dest='oss_schema_version')
-
 
     def _build_bom(self, oss_index_results: List[OssIndexComponent]) -> Bom:
         bom = Bom()
@@ -156,7 +159,6 @@ class OssCommand(BaseCommand):
 
         return bom
 
-
     def _print_oss_index_report(self, oss_index_results: List[OssIndexComponent]):
         total_vulnerabilities = 0
         total_packages = len(oss_index_results)
@@ -181,40 +183,37 @@ class OssCommand(BaseCommand):
             i += 1
 
         print('')
-        table_data = [
-            ["Audited Dependencies", len(oss_index_results)],
-            ["Vulnerablities Found", total_vulnerabilities],
 
-        ]
+        table = Table(title='Summary')
+        table.add_column("Audited Dependencies", justify="left", no_wrap=True)
+        table.add_column("Vulnerabilities Found", justify="left", no_wrap=True)
+        table.add_row('{}'.format(len(oss_index_results)), f'{total_vulnerabilities}')
 
-        table_instance = DoubleTable(table_data, "Summary")
-        print(table_instance.table)
+        self._console.print(table)
 
+    def _print_vulnerability_as_table(self, v: Vulnerability) -> None:
+        table = Table(title='Vulnerability Details')
+        table.add_column("ID", justify="center", no_wrap=True)
+        table.add_column("Title", justify="left", no_wrap=False)
+        table.add_column("Description", justify="left", no_wrap=False)
+        table.add_column("CVSS Score", justify="center", no_wrap=True)
+        table.add_column("CVSS Vector", justify="right", no_wrap=True)
+        table.add_column("CWE", justify="center", no_wrap=True)
+        table.add_column("Ref.", justify="left", no_wrap=True)
 
-    @staticmethod
-    def _print_vulnerability_as_table(v: Vulnerability) -> None:
-        table_data = [
-            ["ID", v.get_id()],
-            ["Title", v.get_title()],
-            ["Description", '\n'.join(wrap(v.get_description(), 100))],
-            ["CVSS Score", f"{v.get_cvss_score()} - {OssCommand._get_severity_for_cvss_score(v.get_cvss_score())}"],
-        ]
-        if v.get_cvss_vector():
-            table_data.append(
-                ["CVSS Vector", v.get_cvss_vector()]
-            )
-
-        table_data.extend(
-            [
-                ["CWE", v.get_cwe()],
-                ["Reference", v.get_oss_index_reference_url()]
-            ]
+        table.add_row(
+            v.get_id(),
+            v.get_title(),
+            v.get_description(),  # '\n'.join(wrap(v.get_description(), 100)),
+            f"{v.get_cvss_score()} - {OssCommand._get_severity_for_cvss_score(v.get_cvss_score())}",
+            v.get_cvss_vector() if v.get_cvss_vector() else 'Unknown',
+            v.get_cwe(),
+            v.get_oss_index_reference_url()
         )
-        table_instance = DoubleTable(table_data)
-        table_instance.inner_heading_row_border = False
-        table_instance.inner_row_border = True
-        print(OssCommand._get_color_for_cvss_score(cvss_score=v.get_cvss_score()) + table_instance.table + Fore.RESET)
 
+        print(OssCommand._get_color_for_cvss_score(cvss_score=v.get_cvss_score()))
+        self._console.print(table)
+        print(Fore.RESET)
 
     @staticmethod
     def _get_color_for_cvss_score(cvss_score: float = 0.0):
@@ -228,7 +227,6 @@ class OssCommand(BaseCommand):
             return Fore.CYAN
         else:
             return Fore.GREEN
-
 
     @staticmethod
     def _get_severity_for_cvss_score(cvss_score: float = None) -> str:

@@ -31,8 +31,8 @@ from cyclonedx.parser.environment import EnvironmentParser
 from ossindex.model import OssIndexComponent, Vulnerability
 from ossindex.ossindex import OssIndex
 from packageurl import PackageURL
+from rich.progress import Progress
 from terminaltables import DoubleTable
-from yaspin import yaspin
 
 from . import BaseCommand
 
@@ -42,31 +42,52 @@ class OssCommand(BaseCommand):
     def handle_args(self) -> int:
         exit_code: int = 0
 
-        with yaspin(text='Collecting packages in your Python Environment', color='yellow', timer=True) as spinner:
-            parser = EnvironmentParser()
-            spinner.text = 'Collected {} packages from your environment'.format(len(parser.get_components()))
-            spinner.ok('🐍')
+        with Progress() as progress:
+            task_parser = progress.add_task(
+                description="[yellow]Collecting packages in your Python Environment", start=False, total=10
+            )
+            task_query_ossi = progress.add_task(
+                description="[yellow]Querying OSS Index for details on your packages", start=False, total=10
+            )
+            task_sanity_checking = progress.add_task(
+                description="[cyan]Sanity checking...", start=False, total=10
+            )
 
-        oss_index_results: List[OssIndexComponent] = None
-        with yaspin(text='Querying OSS Index for details on your packages', color='yellow', timer=True) as spinner:
+            parser = EnvironmentParser()
+            total_packages_collected = len(parser.get_components())
+            progress.update(
+                task_parser, completed=10,
+                description=f'🐍 [green]Collected {total_packages_collected} packages from your environment'
+            )
+
+            oss_index_results: List[OssIndexComponent]
             oss = OssIndex()
             if self._arguments.oss_clear_cache:
-                spinner.text = 'Clearing OSS Index local cache'
+                progress.update(task_query_ossi, completed=1, description='Clearing OSS Index local cache')
                 oss.purge_local_cache()
-                spinner.text = 'Querying OSS Index for details on your packages'
+                progress.update(task_query_ossi, completed=2, description='Cleared OSS Index local cache')
+
+            progress.update(task_query_ossi, completed=3, description='Querying OSS Index for details on your packages')
 
             oss_index_results = oss.get_component_report(
-                packages=list(map(lambda c: c.to_package_url(), parser.get_components())))
-            spinner.text = 'Successfully queried OSS Index for package and vulnerability info'
-            spinner.ok('🐍')
+                packages=list(map(lambda c: c.to_package_url(), parser.get_components()))
+            )
+            progress.update(
+                task_query_ossi, completed=10,
+                description='🐍 [green]Successfully queried OSS Index for package and vulnerability info'
+            )
 
-        with yaspin(text='Sanity checking...', color='yellow') as spinner:
+            progress.update(task_sanity_checking, completed=1)
             if len(parser.get_components()) > len(oss_index_results):
-                spinner.text = 'Some components not identified by OSS Index - perhaps these are InnerSource?'
-                spinner.ok('🐍 !!! ')
+                progress.update(
+                    task_sanity_checking, completed=10,
+                    description="🐍 [red]Some components not identified by OSS Index - perhaps these are InnerSource?"
+                )
             else:
-                spinner.text = 'Sane number of results from OSS Index'
-                spinner.ok('🐍')
+                progress.update(
+                    task_sanity_checking, completed=10,
+                    description="🐍 [green]Sane number of results from OSS Index"
+                )
 
         print('')
         self._print_oss_index_report(oss_index_results=oss_index_results)
@@ -77,21 +98,22 @@ class OssCommand(BaseCommand):
                 output_format=OutputFormat[str(self._arguments.oss_output_format).upper()],
                 schema_version=SchemaVersion['V{}'.format(
                     str(self._arguments.oss_schema_version).replace('.', '_')
-                )]
-            )
+                )])
+
             output_filename = os.path.realpath(self._arguments.oss_output_file)
             cyclonedx_output.output_to_file(filename=output_filename, allow_overwrite=True)
             print('')
             print('CycloneDX has been written to {}'.format(output_filename))
 
-        # Update exit_code if warn only is not enabled and issues have been detected
-        if not self._arguments.warn_only:
-            for oic in oss_index_results:
-                if oic.has_known_vulnerabilities():
-                    exit_code = 1
-                    break
+            # Update exit_code if warn only is not enabled and issues have been detected
+            if not self._arguments.warn_only:
+                for oic in oss_index_results:
+                    if oic.has_known_vulnerabilities():
+                        exit_code = 1
+                        break
 
         return exit_code
+
 
     def setup_argument_parser(self, subparsers: argparse._SubParsersAction):
         parser = subparsers.add_parser('ddt', help='perform a scan backed by OSS Index')
@@ -108,6 +130,7 @@ class OssCommand(BaseCommand):
         parser.add_argument('--schema-version', help='CycloneDX schema version to use (default = 1.3)',
                             choices={'1.3', '1.2', '1.1', '1.0'}, default='1.3',
                             dest='oss_schema_version')
+
 
     def _build_bom(self, oss_index_results: List[OssIndexComponent]) -> Bom:
         bom = Bom()
@@ -132,6 +155,7 @@ class OssCommand(BaseCommand):
             bom.add_component(component=component)
 
         return bom
+
 
     def _print_oss_index_report(self, oss_index_results: List[OssIndexComponent]):
         total_vulnerabilities = 0
@@ -166,6 +190,7 @@ class OssCommand(BaseCommand):
         table_instance = DoubleTable(table_data, "Summary")
         print(table_instance.table)
 
+
     @staticmethod
     def _print_vulnerability_as_table(v: Vulnerability) -> None:
         table_data = [
@@ -190,6 +215,7 @@ class OssCommand(BaseCommand):
         table_instance.inner_row_border = True
         print(OssCommand._get_color_for_cvss_score(cvss_score=v.get_cvss_score()) + table_instance.table + Fore.RESET)
 
+
     @staticmethod
     def _get_color_for_cvss_score(cvss_score: float = 0.0):
         if cvss_score >= 9.0:
@@ -202,6 +228,7 @@ class OssCommand(BaseCommand):
             return Fore.CYAN
         else:
             return Fore.GREEN
+
 
     @staticmethod
     def _get_severity_for_cvss_score(cvss_score: float = None) -> str:

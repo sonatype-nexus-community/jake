@@ -23,9 +23,9 @@ import requests
 
 from polling2 import poll_decorator
 from requests.auth import HTTPBasicAuth
+from rich.progress import Progress
 from typing import Union
 from urllib.parse import urlparse
-from yaspin import yaspin
 
 from cyclonedx.model.bom import Bom
 from cyclonedx.parser.environment import EnvironmentParser
@@ -180,21 +180,38 @@ class IqCommand(BaseCommand):
     def handle_args(self) -> int:
         exit_code: int = 0
 
-        with yaspin(text='Checking out your Nexus IQ Server', color='yellow', timer=True) as spinner:
+        with Progress() as progress:
+            task_validate_iq = progress.add_task(
+                description="[yellow]Checking out your Nexus IQ Server", start=False, total=10
+            )
+            task_parser = progress.add_task(
+                description="[yellow]Collecting packages in your Python Environment", start=False, total=10
+            )
+            task_query_iq = progress.add_task(
+                description="[yellow]Submitting to Nexus Lifecycle for Policy Evaluation", start=False, total=10
+            )
+
+            # task_validate_iq
             self._iq_server = self.IqServerApi(
                 server_url=self._arguments.iq_server_url,
                 username=self._arguments.iq_username,
                 password=self._arguments.iq_password
             )
-            spinner.text = 'IQ Server at {} is up and accessible'.format(self._arguments.iq_server_url)
-            spinner.ok('🐍')
+            progress.update(
+                task_validate_iq, completed=10,
+                description=f"🐍 [green]IQ Server at {self._arguments.iq_server_url} is up and accessible"
+            )
 
-        with yaspin(text='Collecting packages in your Python Environment', color='yellow', timer=True) as spinner:
+            # task_parser
             parser = EnvironmentParser()
-            spinner.text = 'Collected {} packages from your environment'.format(len(parser.get_components()))
-            spinner.ok('🐍')
+            total_packages_collected = len(parser.get_components())
+            progress.update(
+                task_parser, completed=10,
+                description=f'🐍 [green]Collected {total_packages_collected} packages from your environment'
+            )
 
-        with yaspin(text='Submitting to Nexus IQ for Policy Evaluation', color='yellow', timer=True) as spinner:
+            # task_query_iq
+            progress.start_task(task_query_iq)
             iq_response = self._iq_server.scan_application_with_bom(
                 bom=Bom.from_parser(parser=parser),
                 iq_public_application_id=self._arguments.iq_application_id,
@@ -202,15 +219,22 @@ class IqCommand(BaseCommand):
             )
 
             if iq_response['policyAction'] == 'Failure':
-                spinner.text = 'Snakes on the plane! There are policy failures from Sonatype Nexus IQ.'
-                spinner.ok('💥')
+                progress.update(
+                    task_query_iq, completed=10,
+                    description=f'💥 [red]Snakes on the plane! There are policy failures from Sonatype Nexus IQ.'
+                )
                 exit_code = 1
             elif iq_response['policyAction'] == 'Warning':
-                spinner.text = 'Something slithers around your ankle! There are policy warnings from Sonatype Nexus IQ.'
-                spinner.ok('🧨')
+                progress.update(
+                    task_query_iq, completed=10,
+                    description=f'🧨 [orange]Something slithers around your ankle! '
+                                f'There are policy warnings from Sonatype Nexus IQ.'
+                )
             else:
-                spinner.text = 'Sonatype Nexus IQ Policy Evaluation complete with ZERO snakes.'
-                spinner.ok('🐍')
+                progress.update(
+                    task_query_iq, completed=10,
+                    description=f'🐍 [green]Sonatype Nexus IQ Policy Evaluation complete with ZERO snakes.'
+                )
 
         print('')
         print('Your Sonatype Nexus IQ Lifecycle Report is available here:')

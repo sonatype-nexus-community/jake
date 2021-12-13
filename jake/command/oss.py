@@ -30,7 +30,6 @@ from ossindex.model import OssIndexComponent, Vulnerability
 from ossindex.ossindex import OssIndex
 from packageurl import PackageURL
 from rich.console import Console
-from rich.layout import Layout
 from rich.panel import Panel
 from rich.progress import Progress
 from rich.table import Table

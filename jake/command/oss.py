@@ -18,10 +18,8 @@
 
 import argparse
 import os
-from textwrap import wrap
 from typing import List
 
-from colorama import Fore
 from cyclonedx.model.bom import Bom
 from cyclonedx.model.component import Component
 from cyclonedx.model.vulnerability import Vulnerability as CycloneDxVulnerability, VulnerabilityRating, \
@@ -32,14 +30,16 @@ from ossindex.model import OssIndexComponent, Vulnerability
 from ossindex.ossindex import OssIndex
 from packageurl import PackageURL
 from rich.console import Console
+from rich.layout import Layout
+from rich.panel import Panel
 from rich.progress import Progress
 from rich.table import Table
+from rich.tree import Tree
 
 from . import BaseCommand
 
 
 class OssCommand(BaseCommand):
-
     _console: Console
 
     def handle_args(self) -> int:
@@ -163,26 +163,31 @@ class OssCommand(BaseCommand):
         total_vulnerabilities = 0
         total_packages = len(oss_index_results)
 
-        oic: OssIndexComponent = None
-        v: Vulnerability = None
+        oic: OssIndexComponent
+        v: Vulnerability
         i: int = 1
         for oic in oss_index_results:
             if oic.has_known_vulnerabilities():
-                print(
-                    f"{self._get_color_for_cvss_score(cvss_score=oic.get_max_cvss_score())}[{i}/{total_packages}] - "
-                    f"{oic.get_coordinates()} [VULNERABLE]{Fore.RESET}"
+                self._console.print(
+                    f"[{i}/{total_packages}] - {oic.get_coordinates()} [VULNERABLE]",
+                    style=self._get_color_for_cvss_score(cvss_score=oic.get_max_cvss_score())
                 )
-                print(f"{len(oic.get_vulnerabilities())} known vulnerabilities for this package version")
+
                 total_vulnerabilities += len(oic.get_vulnerabilities())
-                for v in oic.get_vulnerabilities():
-                    OssCommand._print_vulnerability_as_table(v=v)
+                if oic.get_vulnerabilities():
+                    tree = Tree(f'Vulnerability Details for [bright_white]{oic.get_coordinates()}[white]')
+                    for v in oic.get_vulnerabilities():
+                        self._print_vulnerability(tree=tree, v=v)
+                    self._console.print(tree)
                 else:
-                    print(f"{self._get_color_for_cvss_score(cvss_score=oic.get_max_cvss_score())}[{i}/{total_packages}]"
-                          f" - {oic.get_coordinates()}{Fore.RESET}")
+                    self._console.print(
+                        f"[{i}/{total_packages}] - {oic.get_coordinates()}",
+                        style=self._get_color_for_cvss_score(cvss_score=oic.get_max_cvss_score())
+                    )
 
             i += 1
 
-        print('')
+        self._console.print('')
 
         table = Table(title='Summary')
         table.add_column("Audited Dependencies", justify="left", no_wrap=True)
@@ -191,42 +196,41 @@ class OssCommand(BaseCommand):
 
         self._console.print(table)
 
-    def _print_vulnerability_as_table(self, v: Vulnerability) -> None:
-        table = Table(title='Vulnerability Details')
-        table.add_column("ID", justify="center", no_wrap=True)
-        table.add_column("Title", justify="left", no_wrap=False)
-        table.add_column("Description", justify="left", no_wrap=False)
-        table.add_column("CVSS Score", justify="center", no_wrap=True)
-        table.add_column("CVSS Vector", justify="right", no_wrap=True)
-        table.add_column("CWE", justify="center", no_wrap=True)
-        table.add_column("Ref.", justify="left", no_wrap=True)
-
-        table.add_row(
-            v.get_id(),
-            v.get_title(),
-            v.get_description(),  # '\n'.join(wrap(v.get_description(), 100)),
-            f"{v.get_cvss_score()} - {OssCommand._get_severity_for_cvss_score(v.get_cvss_score())}",
-            v.get_cvss_vector() if v.get_cvss_vector() else 'Unknown',
-            v.get_cwe(),
-            v.get_oss_index_reference_url()
+    @staticmethod
+    def _print_vulnerability(tree: Tree, v: Vulnerability) -> None:
+        b = tree.add(
+            f':warning: [bright_red] ID: {v.get_id()}'
         )
 
-        print(OssCommand._get_color_for_cvss_score(cvss_score=v.get_cvss_score()))
-        self._console.print(table)
-        print(Fore.RESET)
+        severity_color = OssCommand._get_color_for_cvss_score(v.get_cvss_score())
+
+        content = f"""
+[bright_white]{v.get_description()}
+
+Details:
+  - CVSS Score: {v.get_cvss_score()} - [{severity_color}]{OssCommand._get_severity_for_cvss_score(v.get_cvss_score())}
+  [bright_white]- CVSS Vector: {v.get_cvss_vector() if v.get_cvss_vector() else 'Unknown'}
+  - CWE: {v.get_cwe() if v.get_cwe() else 'Unknown'}
+
+References:
+  - {v.get_oss_index_reference_url()}
+{os.linesep.join([f'  - {url}' for url in v.get_external_reference_urls()])}
+        """
+
+        b.add(Panel(content, title=f'[bright_white]{v.get_cve()}', title_align="left"))
 
     @staticmethod
-    def _get_color_for_cvss_score(cvss_score: float = 0.0):
+    def _get_color_for_cvss_score(cvss_score: float = 0.0) -> str:
         if cvss_score >= 9.0:
-            return Fore.RED
+            return 'bright_red'
         elif cvss_score >= 7.0:
-            return Fore.YELLOW
+            return 'bright_yellow'
         elif cvss_score >= 4.0:
-            return Fore.LIGHTYELLOW_EX
+            return 'yellow3'
         elif cvss_score > 0.0:
-            return Fore.CYAN
+            return 'bright_cyan'
         else:
-            return Fore.GREEN
+            return 'bright_green'
 
     @staticmethod
     def _get_severity_for_cvss_score(cvss_score: float = None) -> str:

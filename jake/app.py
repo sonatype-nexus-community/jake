@@ -19,11 +19,11 @@
 
 import argparse
 from datetime import datetime
+from rich.console import Console
 from typing import Dict
 
 import pkg_resources
 from pyfiglet import figlet_format
-from termcolor import cprint
 
 from .command import BaseCommand
 from .command.iq import IqCommand
@@ -44,7 +44,12 @@ class JakeCmd:
     # Sub Commands
     _subcommands: Dict[str, BaseCommand] = []
 
+    # Rich Console
+    _console: Console
+
     def __init__(self):
+        self._console = Console()
+
         # Build and parse command arguments
         self._load_subcommands()
         self._build_arg_parser()
@@ -57,7 +62,7 @@ class JakeCmd:
 
     def execute(self):
         # Show the Jake header
-        JakeCmd._print_jake_header()
+        self._print_jake_header()
 
         # Determine primary command and then hand off to that Command handler
         if self._arguments.cmd:
@@ -98,11 +103,10 @@ class JakeCmd:
     def _get_jake_version():
         return pkg_resources.get_distribution('jake').version
 
-    @staticmethod
-    def _print_jake_header():
+    def _print_jake_header(self):
         """ Prints the banner, most of the user facing commands start with this """
-        cprint(figlet_format('Jake', font='isometric4'), 'green', attrs=[])
-        cprint(figlet_format('..the snake..', font='invita'), 'blue', attrs=['dark'])
+        self._console.print(figlet_format('Jake', font='isometric4'), style='dark_green')
+        self._console.print(figlet_format('..the snake..', font='invita'), style='dark_green')
         print("Jake Version: {}".format(JakeCmd._get_jake_version()))
         print('Put your Python dependencies in a chokehold')
         print('')

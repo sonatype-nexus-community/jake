@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v1.1.5 (2021-12-09)
+### Fix
+* Bump required version of cyclonedx-python-lib to help lax transitive dependencies ([`f53407f`](https://github.com/sonatype-nexus-community/jake/commit/f53407fb72625420f015db59bb801cc12ab290cf))
+* Bump required version of cyclonedx-python-lib to help lax transitive dependencies ([`34e501d`](https://github.com/sonatype-nexus-community/jake/commit/34e501d062da5607f86879e136d1f988de6dd872))
+
 ## v1.1.4 (2021-12-07)
 ### Fix
 * Ensure dependencies can be installed from binary packages #72 ([`9e30ca8`](https://github.com/sonatype-nexus-community/jake/commit/9e30ca8d11bc6ee578749686ff3af30b1c805b10))

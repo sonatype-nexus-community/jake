@@ -221,19 +221,19 @@ class IqCommand(BaseCommand):
             if iq_response['policyAction'] == 'Failure':
                 progress.update(
                     task_query_iq, completed=10,
-                    description=f'💥 [red]Snakes on the plane! There are policy failures from Sonatype Nexus IQ.'
+                    description='💥 [red]Snakes on the plane! There are policy failures from Sonatype Nexus IQ.'
                 )
                 exit_code = 1
             elif iq_response['policyAction'] == 'Warning':
                 progress.update(
                     task_query_iq, completed=10,
-                    description=f'🧨 [orange]Something slithers around your ankle! '
-                                f'There are policy warnings from Sonatype Nexus IQ.'
+                    description='🧨 [orange]Something slithers around your ankle! '
+                                'There are policy warnings from Sonatype Nexus IQ.'
                 )
             else:
                 progress.update(
                     task_query_iq, completed=10,
-                    description=f'🐍 [green]Sonatype Nexus IQ Policy Evaluation complete with ZERO snakes.'
+                    description='🐍 [green]Sonatype Nexus IQ Policy Evaluation complete with ZERO snakes.'
                 )
 
         print('')

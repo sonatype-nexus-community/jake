@@ -2,6 +2,15 @@
 
 <!--next-version-placeholder-->
 
+## v1.2.0 (2021-12-13)
+### Feature
+* Replaced `yaspin`, `termcolor` and `terminaltable` with `rich` - see #72, #73, #77 ([`8534ad9`](https://github.com/sonatype-nexus-community/jake/commit/8534ad92acf6b70407492e55ec68ede3190a393b))
+* Removed `terminaltables` and replaced with `rich`s table implementation ([`416b03c`](https://github.com/sonatype-nexus-community/jake/commit/416b03c0c844a28512143826453ad956e98abd7c))
+* Removed `yaspin` and replaced with `rich` ([`76c4a54`](https://github.com/sonatype-nexus-community/jake/commit/76c4a5451e04c28612ab3c034bbd4a84fa413c94))
+
+### Fix
+* Removed f-strings as not required ([`b5b271e`](https://github.com/sonatype-nexus-community/jake/commit/b5b271ed78b97101e9fca2e31b2789540bf66fd4))
+
 ## v1.1.5 (2021-12-09)
 ### Fix
 * Bump required version of cyclonedx-python-lib to help lax transitive dependencies ([`f53407f`](https://github.com/sonatype-nexus-community/jake/commit/f53407fb72625420f015db59bb801cc12ab290cf))

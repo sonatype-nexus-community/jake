@@ -18,10 +18,8 @@
 
 import argparse
 import os
-from textwrap import wrap
 from typing import List
 
-from colorama import Fore
 from cyclonedx.model.bom import Bom
 from cyclonedx.model.component import Component
 from cyclonedx.model.vulnerability import Vulnerability as CycloneDxVulnerability, VulnerabilityRating, \
@@ -31,42 +29,69 @@ from cyclonedx.parser.environment import EnvironmentParser
 from ossindex.model import OssIndexComponent, Vulnerability
 from ossindex.ossindex import OssIndex
 from packageurl import PackageURL
-from terminaltables import DoubleTable
-from yaspin import yaspin
+from rich.console import Console
+from rich.panel import Panel
+from rich.progress import Progress
+from rich.table import Table
+from rich.tree import Tree
 
 from . import BaseCommand
 
 
 class OssCommand(BaseCommand):
+    _console: Console
 
     def handle_args(self) -> int:
+        self._console = Console()
+
         exit_code: int = 0
 
-        with yaspin(text='Collecting packages in your Python Environment', color='yellow', timer=True) as spinner:
-            parser = EnvironmentParser()
-            spinner.text = 'Collected {} packages from your environment'.format(len(parser.get_components()))
-            spinner.ok('🐍')
+        with Progress() as progress:
+            task_parser = progress.add_task(
+                description="[yellow]Collecting packages in your Python Environment", start=False, total=10
+            )
+            task_query_ossi = progress.add_task(
+                description="[yellow]Querying OSS Index for details on your packages", start=False, total=10
+            )
+            task_sanity_checking = progress.add_task(
+                description="[cyan]Sanity checking...", start=False, total=10
+            )
 
-        oss_index_results: List[OssIndexComponent] = None
-        with yaspin(text='Querying OSS Index for details on your packages', color='yellow', timer=True) as spinner:
+            parser = EnvironmentParser()
+            total_packages_collected = len(parser.get_components())
+            progress.update(
+                task_parser, completed=10,
+                description=f'🐍 [green]Collected {total_packages_collected} packages from your environment'
+            )
+
+            oss_index_results: List[OssIndexComponent]
             oss = OssIndex()
             if self._arguments.oss_clear_cache:
-                spinner.text = 'Clearing OSS Index local cache'
+                progress.update(task_query_ossi, completed=1, description='Clearing OSS Index local cache')
                 oss.purge_local_cache()
-                spinner.text = 'Querying OSS Index for details on your packages'
+                progress.update(task_query_ossi, completed=2, description='Cleared OSS Index local cache')
+
+            progress.update(task_query_ossi, completed=3, description='Querying OSS Index for details on your packages')
 
             oss_index_results = oss.get_component_report(
-                packages=list(map(lambda c: c.to_package_url(), parser.get_components())))
-            spinner.text = 'Successfully queried OSS Index for package and vulnerability info'
-            spinner.ok('🐍')
+                packages=list(map(lambda c: c.to_package_url(), parser.get_components()))
+            )
+            progress.update(
+                task_query_ossi, completed=10,
+                description='🐍 [green]Successfully queried OSS Index for package and vulnerability info'
+            )
 
-        with yaspin(text='Sanity checking...', color='yellow') as spinner:
+            progress.update(task_sanity_checking, completed=1)
             if len(parser.get_components()) > len(oss_index_results):
-                spinner.text = 'Some components not identified by OSS Index - perhaps these are InnerSource?'
-                spinner.ok('🐍 !!! ')
+                progress.update(
+                    task_sanity_checking, completed=10,
+                    description="🐍 [red]Some components not identified by OSS Index - perhaps these are InnerSource?"
+                )
             else:
-                spinner.text = 'Sane number of results from OSS Index'
-                spinner.ok('🐍')
+                progress.update(
+                    task_sanity_checking, completed=10,
+                    description="🐍 [green]Sane number of results from OSS Index"
+                )
 
         print('')
         self._print_oss_index_report(oss_index_results=oss_index_results)
@@ -77,19 +102,19 @@ class OssCommand(BaseCommand):
                 output_format=OutputFormat[str(self._arguments.oss_output_format).upper()],
                 schema_version=SchemaVersion['V{}'.format(
                     str(self._arguments.oss_schema_version).replace('.', '_')
-                )]
-            )
+                )])
+
             output_filename = os.path.realpath(self._arguments.oss_output_file)
             cyclonedx_output.output_to_file(filename=output_filename, allow_overwrite=True)
             print('')
             print('CycloneDX has been written to {}'.format(output_filename))
 
-        # Update exit_code if warn only is not enabled and issues have been detected
-        if not self._arguments.warn_only:
-            for oic in oss_index_results:
-                if oic.has_known_vulnerabilities():
-                    exit_code = 1
-                    break
+            # Update exit_code if warn only is not enabled and issues have been detected
+            if not self._arguments.warn_only:
+                for oic in oss_index_results:
+                    if oic.has_known_vulnerabilities():
+                        exit_code = 1
+                        break
 
         return exit_code
 
@@ -137,71 +162,74 @@ class OssCommand(BaseCommand):
         total_vulnerabilities = 0
         total_packages = len(oss_index_results)
 
-        oic: OssIndexComponent = None
-        v: Vulnerability = None
+        oic: OssIndexComponent
+        v: Vulnerability
         i: int = 1
         for oic in oss_index_results:
             if oic.has_known_vulnerabilities():
-                print(
-                    f"{self._get_color_for_cvss_score(cvss_score=oic.get_max_cvss_score())}[{i}/{total_packages}] - "
-                    f"{oic.get_coordinates()} [VULNERABLE]{Fore.RESET}"
+                self._console.print(
+                    f"[{i}/{total_packages}] - {oic.get_coordinates()} [VULNERABLE]",
+                    style=self._get_color_for_cvss_score(cvss_score=oic.get_max_cvss_score())
                 )
-                print(f"{len(oic.get_vulnerabilities())} known vulnerabilities for this package version")
+
                 total_vulnerabilities += len(oic.get_vulnerabilities())
-                for v in oic.get_vulnerabilities():
-                    OssCommand._print_vulnerability_as_table(v=v)
+                if oic.get_vulnerabilities():
+                    tree = Tree(f'Vulnerability Details for [bright_white]{oic.get_coordinates()}[white]')
+                    for v in oic.get_vulnerabilities():
+                        self._print_vulnerability(tree=tree, v=v)
+                    self._console.print(tree)
                 else:
-                    print(f"{self._get_color_for_cvss_score(cvss_score=oic.get_max_cvss_score())}[{i}/{total_packages}]"
-                          f" - {oic.get_coordinates()}{Fore.RESET}")
+                    self._console.print(
+                        f"[{i}/{total_packages}] - {oic.get_coordinates()}",
+                        style=self._get_color_for_cvss_score(cvss_score=oic.get_max_cvss_score())
+                    )
 
             i += 1
 
-        print('')
-        table_data = [
-            ["Audited Dependencies", len(oss_index_results)],
-            ["Vulnerablities Found", total_vulnerabilities],
+        self._console.print('')
 
-        ]
+        table = Table(title='Summary')
+        table.add_column("Audited Dependencies", justify="left", no_wrap=True)
+        table.add_column("Vulnerabilities Found", justify="left", no_wrap=True)
+        table.add_row('{}'.format(len(oss_index_results)), f'{total_vulnerabilities}')
 
-        table_instance = DoubleTable(table_data, "Summary")
-        print(table_instance.table)
+        self._console.print(table)
 
     @staticmethod
-    def _print_vulnerability_as_table(v: Vulnerability) -> None:
-        table_data = [
-            ["ID", v.get_id()],
-            ["Title", v.get_title()],
-            ["Description", '\n'.join(wrap(v.get_description(), 100))],
-            ["CVSS Score", f"{v.get_cvss_score()} - {OssCommand._get_severity_for_cvss_score(v.get_cvss_score())}"],
-        ]
-        if v.get_cvss_vector():
-            table_data.append(
-                ["CVSS Vector", v.get_cvss_vector()]
-            )
-
-        table_data.extend(
-            [
-                ["CWE", v.get_cwe()],
-                ["Reference", v.get_oss_index_reference_url()]
-            ]
+    def _print_vulnerability(tree: Tree, v: Vulnerability) -> None:
+        b = tree.add(
+            f':warning: [bright_red] ID: {v.get_id()}'
         )
-        table_instance = DoubleTable(table_data)
-        table_instance.inner_heading_row_border = False
-        table_instance.inner_row_border = True
-        print(OssCommand._get_color_for_cvss_score(cvss_score=v.get_cvss_score()) + table_instance.table + Fore.RESET)
+
+        severity_color = OssCommand._get_color_for_cvss_score(v.get_cvss_score())
+
+        content = f"""
+[bright_white]{v.get_description()}
+
+Details:
+  - CVSS Score: {v.get_cvss_score()} - [{severity_color}]{OssCommand._get_severity_for_cvss_score(v.get_cvss_score())}
+  [bright_white]- CVSS Vector: {v.get_cvss_vector() if v.get_cvss_vector() else 'Unknown'}
+  - CWE: {v.get_cwe() if v.get_cwe() else 'Unknown'}
+
+References:
+  - {v.get_oss_index_reference_url()}
+{os.linesep.join([f'  - {url}' for url in v.get_external_reference_urls()])}
+        """
+
+        b.add(Panel(content, title=f'[bright_white]{v.get_cve()}', title_align="left"))
 
     @staticmethod
-    def _get_color_for_cvss_score(cvss_score: float = 0.0):
+    def _get_color_for_cvss_score(cvss_score: float = 0.0) -> str:
         if cvss_score >= 9.0:
-            return Fore.RED
+            return 'bright_red'
         elif cvss_score >= 7.0:
-            return Fore.YELLOW
+            return 'bright_yellow'
         elif cvss_score >= 4.0:
-            return Fore.LIGHTYELLOW_EX
+            return 'yellow3'
         elif cvss_score > 0.0:
-            return Fore.CYAN
+            return 'bright_cyan'
         else:
-            return Fore.GREEN
+            return 'bright_green'
 
     @staticmethod
     def _get_severity_for_cvss_score(cvss_score: float = None) -> str:

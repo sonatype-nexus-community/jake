@@ -41,15 +41,12 @@ jake = 'jake.app:main'
 
 [tool.poetry.dependencies]
 python = "^3.6.2"
-click = "^8.0.1"
-pyfiglet = "^0.8.post1"
-tinydb = "^4.5.1"
-PyYAML = "^5.4.1"
-requests = "^2.26.0"
-cyclonedx-python-lib = "^0.12.3"
-polling2 = "^0.5.0"
-ossindex-lib = "^0.2.1"
-rich = "^10.15.2"
+cyclonedx-python-lib = ">= 0.12.3"
+ossindex-lib = ">= 0.2.1"
+polling2 = ">= 0.5.0"
+pyfiglet = ">= 0.8.post1"
+requests = "^>= 2.25.1"
+rich = ">= 10.15.2"
 
 [tool.poetry.dev-dependencies]
 tox = "^3.24.3"

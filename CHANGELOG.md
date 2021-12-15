@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.2.2 (2021-12-15)
+### Fix
+* Removed a number of direct dependencies that are now transitives, or no longer required ([`bcb0a3d`](https://github.com/sonatype-nexus-community/jake/commit/bcb0a3d222c23f88e92fc74c37fd2864e236d8d5))
+
 ## v1.2.1 (2021-12-15)
 ### Fix
 * Bumped dependencies to resolve wheel-only installation ([`4ac980d`](https://github.com/sonatype-nexus-community/jake/commit/4ac980d0d7696128e03f982de2dabdfaf7009e03))

@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.2.1 (2021-12-15)
+### Fix
+* Bumped dependencies to resolve wheel-only installation ([`4ac980d`](https://github.com/sonatype-nexus-community/jake/commit/4ac980d0d7696128e03f982de2dabdfaf7009e03))
+
 ## v1.2.0 (2021-12-13)
 ### Feature
 * Replaced `yaspin`, `termcolor` and `terminaltable` with `rich` - see #72, #73, #77 ([`8534ad9`](https://github.com/sonatype-nexus-community/jake/commit/8534ad92acf6b70407492e55ec68ede3190a393b))

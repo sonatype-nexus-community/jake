@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.2.3 (2021-12-22)
+### Fix
+* Resolved regression when running `jake ddt` where return code != 0 when vulnerabilities discovered ([`8a10e70`](https://github.com/sonatype-nexus-community/jake/commit/8a10e700cea51b649ef7f2271a44e42109264e9a))
+
 ## v1.2.2 (2021-12-15)
 ### Fix
 * Removed a number of direct dependencies that are now transitives, or no longer required ([`bcb0a3d`](https://github.com/sonatype-nexus-community/jake/commit/bcb0a3d222c23f88e92fc74c37fd2864e236d8d5))

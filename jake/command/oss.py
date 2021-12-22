@@ -109,12 +109,12 @@ class OssCommand(BaseCommand):
             print('')
             print('CycloneDX has been written to {}'.format(output_filename))
 
-            # Update exit_code if warn only is not enabled and issues have been detected
-            if not self._arguments.warn_only:
-                for oic in oss_index_results:
-                    if oic.has_known_vulnerabilities():
-                        exit_code = 1
-                        break
+        # Update exit_code if warn only is not enabled and issues have been detected
+        if not self._arguments.warn_only:
+            for oic in oss_index_results:
+                if oic.has_known_vulnerabilities():
+                    exit_code = 1
+                    break
 
         return exit_code
 

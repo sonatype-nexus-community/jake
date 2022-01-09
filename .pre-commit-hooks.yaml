@@ -1,0 +1,7 @@
+-   id: scan
+    name: jake oss scan
+    description: runs a sonatype oss index-backed scan
+    entry: jake ddt
+    language: python
+    types_or: [python, pyi]
+    pass_filenames: false

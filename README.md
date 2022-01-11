@@ -271,7 +271,7 @@ A pre-commit hook is also available for use
 
 ```Yaml
   - repo: https://github.com/sonatype-nexus-community/jake
-    rev: "v1.2.4"
+    rev: "v1.3.0"
     hooks:
       - id: scan
 ```

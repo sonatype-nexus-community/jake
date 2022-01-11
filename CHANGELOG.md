@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.3.0 (2022-01-11)
+### Feature
+* **pre-commit:** Add pre-commit hooks ([#85](https://github.com/sonatype-nexus-community/jake/issues/85)) ([`45f108e`](https://github.com/sonatype-nexus-community/jake/commit/45f108e018925f932768f29855b19342fcec2ac1))
+
 ## v1.2.3 (2021-12-22)
 ### Fix
 * Resolved regression when running `jake ddt` where return code != 0 when vulnerabilities discovered ([`8a10e70`](https://github.com/sonatype-nexus-community/jake/commit/8a10e700cea51b649ef7f2271a44e42109264e9a))

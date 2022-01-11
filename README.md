@@ -267,6 +267,15 @@ Vulnerability Details for pkg:pypi/cryptography@2.2
 └──────────────────────┴───────────────────────┘
 ```
 
+A pre-commit hook is also available for use
+
+```Yaml
+  - repo: https://github.com/sonatype-nexus-community/jake
+    rev: "v1.2.4"
+    hooks:
+      - id: scan
+```
+
 ### Check for vulnerabilities using Sonatype Nexus Lifecycle
 
 Access Sonatype's proprietary vulnerability data using `jake`:

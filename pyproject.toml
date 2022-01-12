@@ -41,7 +41,7 @@ jake = 'jake.app:main'
 
 [tool.poetry.dependencies]
 python = "^3.6.2"
-cyclonedx-python-lib = ">= 0.12.3"
+cyclonedx-bom = "^2.0.0rc1"
 ossindex-lib = ">= 0.2.1"
 polling2 = ">= 0.5.0"
 pyfiglet = ">= 0.8.post1"

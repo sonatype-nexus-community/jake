@@ -19,13 +19,12 @@
 
 import argparse
 from datetime import datetime
-from rich.console import Console
 from typing import Dict
 
-import pkg_resources
 from pyfiglet import figlet_format
+from rich.console import Console
 
-from .command import BaseCommand
+from .command import BaseCommand, _jake_version
 from .command.iq import IqCommand
 from .command.oss import OssCommand
 from .command.sbom import SbomCommand
@@ -86,7 +85,7 @@ class JakeCmd:
         # Add global options
         self._arg_parser.add_argument('-v', '--version', help='show which version of jake you are running',
                                       action='version',
-                                      version=f'jake {JakeCmd._get_jake_version()}')
+                                      version=f'jake {_jake_version}')
         self._arg_parser.add_argument('-w', '--warn-only', action='store_true', dest='warn_only',
                                       help='prevents exit with non-zero code when issues have been detected')
         self._arg_parser.add_argument('-X', action='store_true', help='enable debug output', dest='debug_enabled')
@@ -99,15 +98,11 @@ class JakeCmd:
         if self._DEBUG_ENABLED:
             print('[DEBUG] - {} - {}'.format(datetime.now(), message))
 
-    @staticmethod
-    def _get_jake_version():
-        return pkg_resources.get_distribution('jake').version
-
     def _print_jake_header(self):
         """ Prints the banner, most of the user facing commands start with this """
         self._console.print(figlet_format('Jake', font='isometric4'), style='dark_green')
         self._console.print(figlet_format('..the snake..', font='invita'), style='dark_green')
-        print("Jake Version: {}".format(JakeCmd._get_jake_version()))
+        print("Jake Version: {}".format(_jake_version))
         print('Put your Python dependencies in a chokehold')
         print('')
 

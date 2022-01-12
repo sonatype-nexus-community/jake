@@ -17,7 +17,18 @@
 #
 
 import argparse
+import sys
 from abc import ABC, abstractmethod
+
+if sys.version_info >= (3, 8):
+    from importlib.metadata import version as meta_version
+else:
+    from importlib_metadata import version as meta_version
+
+try:
+    _jake_version: Optional[str] = str(meta_version('jake'))  # type: ignore[no-untyped-call]
+except Exception as e:
+    _jake_version = 'DEVELOPMENT'
 
 
 class BaseCommand(ABC):

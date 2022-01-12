@@ -187,7 +187,7 @@ class OssCommand(BaseCommand):
         parser.add_argument('--output-format', help='SBOM output format (default = xml)', choices={'json', 'xml'},
                             default='xml', dest='oss_output_format')
         parser.add_argument('--schema-version', help='CycloneDX schema version to use (default = 1.3)',
-                            choices={'1.3', '1.2', '1.1', '1.0'}, default='1.3',
+                            choices={'1.4', '1.3', '1.2', '1.1', '1.0'}, default='1.3',
                             dest='oss_schema_version')
 
     @staticmethod
@@ -272,7 +272,8 @@ Ratings:
 
 References:
 {os.linesep.join([f'  - {reference.source.name if reference.source.name else ""} [Ref: {reference.id}]'
-                  f'    URL: {reference.source.url if reference.source.url else "None"}' for reference in v.references])}
+                  f'    URL: {reference.source.url if reference.source.url else "None"}'
+                  for reference in v.references])}
         """
 
         b.add(Panel(content, title=f'[bright_white]{v.id}', title_align="left"))

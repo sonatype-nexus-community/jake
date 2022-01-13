@@ -18,20 +18,18 @@
 
 import argparse
 import logging
-import pkg_resources
-import requests
-
-from polling2 import poll_decorator
-from requests.auth import HTTPBasicAuth
-from rich.progress import Progress
 from typing import Union
 from urllib.parse import urlparse
 
+import requests
 from cyclonedx.model.bom import Bom
-from cyclonedx.parser.environment import EnvironmentParser
 from cyclonedx.output import get_instance
+from cyclonedx_py.parser.environment import EnvironmentParser
+from polling2 import poll_decorator
+from requests.auth import HTTPBasicAuth
+from rich.progress import Progress
 
-from . import BaseCommand
+from . import BaseCommand, _jake_version
 
 
 class IqCommand(BaseCommand):
@@ -51,7 +49,7 @@ class IqCommand(BaseCommand):
         _auth: HTTPBasicAuth
 
         _default_headers = {
-            'User-Agent': 'jake/{}'.format(pkg_resources.get_distribution('jake').version)
+            'User-Agent': 'jake/{}'.format(_jake_version)
         }
 
         _max_wait_in_seconds: int = 300
@@ -182,13 +180,13 @@ class IqCommand(BaseCommand):
 
         with Progress() as progress:
             task_validate_iq = progress.add_task(
-                description="[yellow]Checking out your Nexus IQ Server", start=False, total=10
+                description="[yellow]Checking out your Nexus IQ Server", start=True, total=10
             )
             task_parser = progress.add_task(
-                description="[yellow]Collecting packages in your Python Environment", start=False, total=10
+                description="[yellow]Collecting packages in your Python Environment", start=True, total=10
             )
             task_query_iq = progress.add_task(
-                description="[yellow]Submitting to Nexus Lifecycle for Policy Evaluation", start=False, total=10
+                description="[yellow]Submitting to Nexus Lifecycle for Policy Evaluation", start=True, total=10
             )
 
             # task_validate_iq

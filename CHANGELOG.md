@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.4.0 (2022-01-13)
+### Feature
+* Support CycloneDX 1.4 ([#87](https://github.com/sonatype-nexus-community/jake/issues/87)) ([`20c62fc`](https://github.com/sonatype-nexus-community/jake/commit/20c62fcb70d1245e5c31df56ad3d71bc9e7fe0d0))
+
 ## v1.3.0 (2022-01-11)
 ### Feature
 * **pre-commit:** Add pre-commit hooks ([#85](https://github.com/sonatype-nexus-community/jake/issues/85)) ([`45f108e`](https://github.com/sonatype-nexus-community/jake/commit/45f108e018925f932768f29855b19342fcec2ac1))

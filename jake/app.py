@@ -115,6 +115,11 @@ class JakeCmd:
         self._arguments = self._arg_parser.parse_args()
 
 
+# only for testing
+def _create_cmd():
+    return JakeCmd()
+
+
 def main():
     JakeCmd().execute()
 

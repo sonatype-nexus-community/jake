@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.4.1 (2022-01-24)
+### Fix
+* `bom-ref` will always now be populated for Component and Vulnerability - bump of `cyclonedx-python-lib` solves this ([#92](https://github.com/sonatype-nexus-community/jake/issues/92)) ([`df2aad2`](https://github.com/sonatype-nexus-community/jake/commit/df2aad2fa23548e98d2857e2f038e4850067f9b6))
+
 ## v1.4.0 (2022-01-13)
 ### Feature
 * Support CycloneDX 1.4 ([#87](https://github.com/sonatype-nexus-community/jake/issues/87)) ([`20c62fc`](https://github.com/sonatype-nexus-community/jake/commit/20c62fcb70d1245e5c31df56ad3d71bc9e7fe0d0))

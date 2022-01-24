@@ -24,8 +24,9 @@ from typing import List, Optional
 from cyclonedx.model import XsUri
 from cyclonedx.model.bom import Bom
 from cyclonedx.model.component import Component
-from cyclonedx.model.vulnerability import Vulnerability, VulnerabilityRating, VulnerabilityReference, \
-    VulnerabilityScoreSource, VulnerabilitySeverity, VulnerabilitySource
+from cyclonedx.model.impact_analysis import ImpactAnalysisAffectedStatus
+from cyclonedx.model.vulnerability import BomTarget, BomTargetVersionRange, Vulnerability, VulnerabilityRating, \
+    VulnerabilityReference, VulnerabilityScoreSource, VulnerabilitySeverity, VulnerabilitySource
 from cyclonedx.output import get_instance, OutputFormat, SchemaVersion
 from cyclonedx_py.parser.environment import EnvironmentParser
 from ossindex.model import OssIndexComponent
@@ -143,6 +144,17 @@ class OssCommand(BaseCommand):
                                 vulnerability.add_reference(VulnerabilityReference(
                                     source=VulnerabilitySource(url=XsUri(ext_ref_url))
                                 ))
+
+                        vulnerability.affects = [
+                            BomTarget(
+                                ref=component.bom_ref,
+                                versions=[
+                                    BomTargetVersionRange(
+                                        version=component.version, status=ImpactAnalysisAffectedStatus.AFFECTED
+                                    )
+                                ]
+                            )
+                        ]
 
                         component.add_vulnerability(vulnerability=vulnerability)
 

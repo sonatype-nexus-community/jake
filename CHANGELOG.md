@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.4.2 (2022-01-31)
+### Fix
+* Corrected data placement for Vulnerabilities returned from OSS Index when generating an SBOM ([#94](https://github.com/sonatype-nexus-community/jake/issues/94)) ([`eb12286`](https://github.com/sonatype-nexus-community/jake/commit/eb1228602c63784da751749cce14ee9fec9f3d1f))
+
 ## v1.4.1 (2022-01-24)
 ### Fix
 * `bom-ref` will always now be populated for Component and Vulnerability - bump of `cyclonedx-python-lib` solves this ([#92](https://github.com/sonatype-nexus-community/jake/issues/92)) ([`df2aad2`](https://github.com/sonatype-nexus-community/jake/commit/df2aad2fa23548e98d2857e2f038e4850067f9b6))

@@ -25,8 +25,8 @@ from cyclonedx.model import XsUri
 from cyclonedx.model.bom import Bom
 from cyclonedx.model.component import Component
 from cyclonedx.model.impact_analysis import ImpactAnalysisAffectedStatus
-from cyclonedx.model.vulnerability import BomTarget, BomTargetVersionRange, Vulnerability, VulnerabilityRating, \
-    VulnerabilityReference, VulnerabilityScoreSource, VulnerabilitySeverity, VulnerabilitySource
+from cyclonedx.model.vulnerability import BomTarget, BomTargetVersionRange, Vulnerability, VulnerabilityAdvisory, \
+    VulnerabilityRating, VulnerabilityReference, VulnerabilityScoreSource, VulnerabilitySeverity, VulnerabilitySource
 from cyclonedx.output import get_instance, OutputFormat, SchemaVersion
 from cyclonedx_py.parser.environment import EnvironmentParser
 from ossindex.model import OssIndexComponent
@@ -113,7 +113,7 @@ class OssCommand(BaseCommand):
                             ratings.append(
                                 VulnerabilityRating(
                                     source=VulnerabilitySource(
-                                        name='Oss Index', url=XsUri(oic_vulnerability.get_oss_index_reference_url())
+                                        name='OSS Index', url=XsUri(oic_vulnerability.get_oss_index_reference_url())
                                     ),
                                     score=Decimal(
                                         oic_vulnerability.get_cvss_score()
@@ -130,20 +130,29 @@ class OssCommand(BaseCommand):
 
                         vulnerability: Vulnerability = Vulnerability(
                             bom_ref=str(oic_vulnerability.get_id()) if oic_vulnerability.get_id() else None,
-                            id=str(oic_vulnerability.get_cve()) if oic_vulnerability.get_cve() else None,
+                            id=str(oic_vulnerability.get_id()),
                             source=VulnerabilitySource(
-                                name='Oss Index', url=XsUri(oic_vulnerability.get_oss_index_reference_url())
+                                name='OSS Index', url=XsUri(oic_vulnerability.get_oss_index_reference_url())
                             ),
                             cwes=[int(oic_vulnerability.get_cwe())] if oic_vulnerability.get_cwe() else None,
                             description=oic_vulnerability.get_title(),
                             detail=oic_vulnerability.get_description(),
-                            ratings=ratings
+                            ratings=ratings,
+                            references=[
+                                VulnerabilityReference(
+                                    id=str(oic_vulnerability.get_cve()), source=VulnerabilitySource(
+                                        name='OSS Index', url=XsUri(oic_vulnerability.get_oss_index_reference_url())
+                                    )
+                                )
+                            ]
                         )
                         if oic_vulnerability.get_external_reference_urls():
+                            advisories: List[VulnerabilityAdvisory] = []
                             for ext_ref_url in oic_vulnerability.get_external_reference_urls():
-                                vulnerability.add_reference(VulnerabilityReference(
-                                    source=VulnerabilitySource(url=XsUri(ext_ref_url))
-                                ))
+                                advisories.append(
+                                    VulnerabilityAdvisory(url=XsUri(uri=ext_ref_url))
+                                )
+                            vulnerability.advisories = advisories
 
                         vulnerability.affects = [
                             BomTarget(

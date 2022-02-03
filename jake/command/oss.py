@@ -134,7 +134,7 @@ class OssCommand(BaseCommand):
                             source=VulnerabilitySource(
                                 name='OSS Index', url=XsUri(oic_vulnerability.get_oss_index_reference_url())
                             ),
-                            cwes=[int(oic_vulnerability.get_cwe())] if oic_vulnerability.get_cwe() else None,
+                            cwes=[int(oic_vulnerability.get_cwe()[4:])] if oic_vulnerability.get_cwe() else None,
                             description=oic_vulnerability.get_title(),
                             detail=oic_vulnerability.get_description(),
                             ratings=ratings,

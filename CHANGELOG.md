@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.4.3 (2022-02-03)
+### Fix
+* CWEs not passed as ints to CDX model ([#97](https://github.com/sonatype-nexus-community/jake/issues/97)) ([`6ec49a6`](https://github.com/sonatype-nexus-community/jake/commit/6ec49a6a7d2b22b2535346409ee49fc3cd5f2c8b))
+
 ## v1.4.2 (2022-01-31)
 ### Fix
 * Corrected data placement for Vulnerabilities returned from OSS Index when generating an SBOM ([#94](https://github.com/sonatype-nexus-community/jake/issues/94)) ([`eb12286`](https://github.com/sonatype-nexus-community/jake/commit/eb1228602c63784da751749cce14ee9fec9f3d1f))

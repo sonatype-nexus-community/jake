@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.4.4 (2022-02-08)
+### Fix
+* CWEs are `int` and needed to be stringified ([#102](https://github.com/sonatype-nexus-community/jake/issues/102)) ([`3e15cb1`](https://github.com/sonatype-nexus-community/jake/commit/3e15cb16c037d8bb09eb5c38dbd239dd345f09cc))
+
 ## v1.4.3 (2022-02-03)
 ### Fix
 * CWEs not passed as ints to CDX model ([#97](https://github.com/sonatype-nexus-community/jake/issues/97)) ([`6ec49a6`](https://github.com/sonatype-nexus-community/jake/commit/6ec49a6a7d2b22b2535346409ee49fc3cd5f2c8b))

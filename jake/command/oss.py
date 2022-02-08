@@ -287,12 +287,13 @@ class OssCommand(BaseCommand):
 {v.detail}
 
 Ratings:
-{os.linesep.join([f'   -  [{severity_color}]{rating.score} {rating.severity.name}: '
+{os.linesep.join([f'   -  [{severity_color}]{rating.score:.1f} {rating.severity.name} - '
                   f'Vector: {rating.vector if rating.vector else "Unknown"}, '
-                  f'CWEs: {",".join(v.cwes) if v.cwes else "Not Recorded"}[bright_white]' for rating in v.ratings])}
+                  f'CWEs: {",".join(list(map(lambda cwe: str(cwe), v.cwes))) if v.cwes else "None Recorded"}'
+                  f'[bright_white]' for rating in v.ratings])}
 
 References:
-{os.linesep.join([f'  - {reference.source.name if reference.source.name else ""} [Ref: {reference.id}]'
+{os.linesep.join([f'  - {reference.source.name if reference.source.name else ""} [Ref: {reference.id}]{os.linesep}'
                   f'    URL: {reference.source.url if reference.source.url else "None"}'
                   for reference in v.references])}
         """

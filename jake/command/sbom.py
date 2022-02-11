@@ -33,7 +33,7 @@ from . import BaseCommand, _jake_version
 
 
 ThisTool = Tool(vendor='Sonatype Nexus Community', name='jake', version=_jake_version or 'UNKNOWN')
-ThisTool.add_external_references(references=[
+ThisTool.external_references.update([
     ExternalReference(
         reference_type=ExternalReferenceType.BUILD_SYSTEM,
         url=XsUri('https://app.circleci.com/pipelines/github/sonatype-nexus-community/jake')
@@ -68,9 +68,9 @@ ThisTool.add_external_references(references=[
 class SbomCommand(BaseCommand):
 
     def handle_args(self) -> int:
-        self._arguments.sbom_input_type
-        bom = Bom.from_parser(self._get_parser())
-        bom.metadata.add_tool(ThisTool)
+        # self._arguments.sbom_input_type
+        bom = Bom.from_parser(parser=self._get_parser())
+        bom.metadata.tools.add(ThisTool)
 
         output_format = OutputFormat.XML
         if self._arguments.sbom_output_format == 'json':

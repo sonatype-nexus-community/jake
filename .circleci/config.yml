@@ -1,4 +1,5 @@
-# Copyright 2019-present Sonatype Inc.
+#
+# Copyright 2019-Present Sonatype Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,19 +12,22 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+#
 version: 2.1
 
 commands:
   ensure_poetry_installed:
-    description: "Installs Poetry ready for use"
+    description: "Install Poetry"
     steps:
       - run: |
           python -m ensurepip --default-pip
           pip install --upgrade pip
-          pip install poetry
+          pip install poetry==1.1.11
 
 executors:
+  python310:
+    docker:
+      - image: cimg/python:3.10
   python39:
     docker:
       - image: cimg/python:3.9
@@ -74,7 +78,7 @@ jobs:
             poetry run jake ddt
 
   coding_standards:
-    executor: python39
+    executor: python310
     steps:
       - ensure_poetry_installed
       - checkout
@@ -94,7 +98,7 @@ jobs:
             poetry run tox -eflake8
 
   release_and_pypi_publish:
-    executor: python39
+    executor: python310
     steps:
       - add_ssh_keys:
           fingerprints:
@@ -103,12 +107,11 @@ jobs:
       - run:
           name: "Install python-semantic-release"
           command: |
-            export
             pip install python-semantic-release
       - checkout
       - restore_cache: # ensure this step occurs *before* installing dependencies
           name: "Restore any valid cache"
-          key: dependencies-{{ .Branch }}-39-{{ checksum "poetry.lock" }}
+          key: dependencies-{{ .Branch }}-310-{{ checksum "poetry.lock" }}
       - run:
           name: "Build for release"
           command: |
@@ -127,7 +130,7 @@ workflows:
       - build_and_test:
           matrix:
             parameters:
-              python_version: ["39", "38", "37", "36"]
+              python_version: ["310", "39", "38", "37", "36"]
       - coding_standards
   release:
     jobs:

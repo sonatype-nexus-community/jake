@@ -195,7 +195,7 @@ python-versions = "*"
 
 [[package]]
 name = "ossindex-lib"
-version = "1.0.0rc1"
+version = "1.0.0rc2"
 description = "A library for querying the OSS Index free catalogue of open source components to help developers identify vulnerabilities, understand risk, and keep their software safe."
 category = "main"
 optional = false
@@ -636,8 +636,8 @@ mccabe = [
     {file = "mccabe-0.6.1.tar.gz", hash = "sha256:dd8d182285a0fe56bace7f45b5e7d1a6ebcbf524e8f3bd87eb0f125271b8831f"},
 ]
 ossindex-lib = [
-    {file = "ossindex-lib-1.0.0rc1.tar.gz", hash = "sha256:5d18bf333d964f6809b4777d6be4ec980f761b4657601900fc7432432cacb333"},
-    {file = "ossindex_lib-1.0.0rc1-py3-none-any.whl", hash = "sha256:da47c955b2ab302d8de68f75df33a193cb6dbb8577d9ee2f99bf7e36b8acd722"},
+    {file = "ossindex-lib-1.0.0rc2.tar.gz", hash = "sha256:cc4fa29ae9dd2fd393bcef9e4a54ca753bbf559f74d333e371186ab1225d0e4d"},
+    {file = "ossindex_lib-1.0.0rc2-py3-none-any.whl", hash = "sha256:ace4b6e2e3ffc76f4e33d603fe7508867096f762bec879e27c41456b17e03bba"},
 ]
 packageurl-python = [
     {file = "packageurl-python-0.9.7.tar.gz", hash = "sha256:d43db6af6a350099e32e9e05e737013d0409287b761fa59c58a03e55dbc3648a"},

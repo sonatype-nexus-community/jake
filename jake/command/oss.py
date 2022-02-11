@@ -102,53 +102,53 @@ class OssCommand(BaseCommand):
             components: List[Component] = []
             for component in parser.get_components():
                 oss_index_component: OssIndexComponent = list(filter(
-                    lambda oic: oic.get_package_url().to_string() == component.purl.to_string(), oss_index_results
+                    lambda oic_: oic_.get_package_url().to_string() == component.purl.to_string(), oss_index_results
                 )).pop()
 
-                if oss_index_component.has_known_vulnerabilities():
-                    for oic_vulnerability in oss_index_component.get_vulnerabilities():
+                if oss_index_component.vulnerabilities:
+                    for oic_vulnerability in oss_index_component.vulnerabilities:
 
                         ratings: List[VulnerabilityRating] = []
-                        if oic_vulnerability.get_cvss_score():
+                        if oic_vulnerability.cvss_score:
                             ratings.append(
                                 VulnerabilityRating(
                                     source=VulnerabilitySource(
-                                        name='OSS Index', url=XsUri(oic_vulnerability.get_oss_index_reference_url())
+                                        name='OSS Index', url=XsUri(oic_vulnerability.reference)
                                     ),
                                     score=Decimal(
-                                        oic_vulnerability.get_cvss_score()
-                                    ) if oic_vulnerability.get_cvss_score() else None,
+                                        oic_vulnerability.cvss_score
+                                    ) if oic_vulnerability.cvss_score else None,
                                     severity=VulnerabilitySeverity.get_from_cvss_scores(
-                                        (oic_vulnerability.get_cvss_score(),)
-                                    ) if oic_vulnerability.get_cvss_score() else None,
+                                        (oic_vulnerability.cvss_score,)
+                                    ) if oic_vulnerability.cvss_score else None,
                                     method=VulnerabilityScoreSource.get_from_vector(
-                                        vector=oic_vulnerability.get_cvss_vector()
-                                    ) if oic_vulnerability.get_cvss_vector() else None,
-                                    vector=oic_vulnerability.get_cvss_vector()
+                                        vector=oic_vulnerability.cvss_vector
+                                    ) if oic_vulnerability.cvss_vector else None,
+                                    vector=oic_vulnerability.cvss_vector
                                 )
                             )
 
                         vulnerability: Vulnerability = Vulnerability(
-                            bom_ref=str(oic_vulnerability.get_id()) if oic_vulnerability.get_id() else None,
-                            id=str(oic_vulnerability.get_id()),
+                            bom_ref=oic_vulnerability.id,
+                            id=oic_vulnerability.id,
                             source=VulnerabilitySource(
-                                name='OSS Index', url=XsUri(oic_vulnerability.get_oss_index_reference_url())
+                                name='OSS Index', url=XsUri(oic_vulnerability.reference)
                             ),
-                            cwes=[int(oic_vulnerability.get_cwe()[4:])] if oic_vulnerability.get_cwe() else None,
-                            description=oic_vulnerability.get_title(),
-                            detail=oic_vulnerability.get_description(),
+                            cwes=[int(oic_vulnerability.cwe[4:])] if oic_vulnerability.cwe else None,
+                            description=oic_vulnerability.title,
+                            detail=oic_vulnerability.description,
                             ratings=ratings,
                             references=[
                                 VulnerabilityReference(
-                                    id=str(oic_vulnerability.get_cve()), source=VulnerabilitySource(
-                                        name='OSS Index', url=XsUri(oic_vulnerability.get_oss_index_reference_url())
+                                    id=oic_vulnerability.display_name, source=VulnerabilitySource(
+                                        name='OSS Index', url=XsUri(oic_vulnerability.reference)
                                     )
                                 )
                             ]
                         )
-                        if oic_vulnerability.get_external_reference_urls():
+                        if oic_vulnerability.external_references:
                             advisories: List[VulnerabilityAdvisory] = []
-                            for ext_ref_url in oic_vulnerability.get_external_reference_urls():
+                            for ext_ref_url in oic_vulnerability.external_references:
                                 advisories.append(
                                     VulnerabilityAdvisory(url=XsUri(uri=ext_ref_url))
                                 )
@@ -189,13 +189,13 @@ class OssCommand(BaseCommand):
         # Update exit_code if warn only is not enabled and issues have been detected
         if not self._arguments.warn_only:
             for oic in oss_index_results:
-                if oic.has_known_vulnerabilities():
+                if oic.vulnerabilities:
                     exit_code = 1
                     break
 
         return exit_code
 
-    def setup_argument_parser(self, subparsers: argparse._SubParsersAction):
+    def setup_argument_parser(self, subparsers: argparse._SubParsersAction) -> None:
         parser = subparsers.add_parser('ddt', help='perform a scan backed by OSS Index')
 
         parser.add_argument('--clear-cache', help='Clears any local cached OSS Index data prior to execution',

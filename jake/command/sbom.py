@@ -29,10 +29,10 @@ from cyclonedx_py.parser.pipenv import PipEnvParser, PipEnvFileParser
 from cyclonedx_py.parser.poetry import PoetryParser, PoetryFileParser
 from cyclonedx_py.parser.requirements import RequirementsParser, RequirementsFileParser
 
-from . import BaseCommand, _jake_version
+from . import BaseCommand, jake_version
 
 
-ThisTool = Tool(vendor='Sonatype Nexus Community', name='jake', version=_jake_version or 'UNKNOWN')
+ThisTool = Tool(vendor='Sonatype Nexus Community', name='jake', version=jake_version or 'UNKNOWN')
 ThisTool.external_references.update([
     ExternalReference(
         reference_type=ExternalReferenceType.BUILD_SYSTEM,

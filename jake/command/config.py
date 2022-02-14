@@ -22,7 +22,10 @@ from . import BaseCommand
 
 class ConfigCommand(BaseCommand):
 
-    def setup_argument_parser(self, subparsers: argparse._SubParsersAction):
+    def handle_args(self) -> int:
+        pass
+
+    def setup_argument_parser(self, subparsers: argparse._SubParsersAction) -> None:
         parser_config: argparse.ArgumentParser = subparsers.add_parser(
             'config',
             help='configure jake for OSS Index or Nexus Lifecycle access'

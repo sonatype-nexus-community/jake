@@ -27,9 +27,9 @@ else:
     from importlib_metadata import version as meta_version
 
 try:
-    _jake_version: Optional[str] = str(meta_version('jake'))  # type: ignore[no-untyped-call]
+    jake_version: Optional[str] = str(meta_version('jake'))  # type: ignore[no-untyped-call]
 except Exception:
-    _jake_version = 'DEVELOPMENT'
+    jake_version = 'DEVELOPMENT'
 
 
 class BaseCommand(ABC):
@@ -45,5 +45,5 @@ class BaseCommand(ABC):
         return self.handle_args()
 
     @abstractmethod
-    def setup_argument_parser(self, subparsers: argparse._SubParsersAction):
+    def setup_argument_parser(self, subparsers: argparse._SubParsersAction) -> None:
         pass

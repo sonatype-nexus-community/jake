@@ -124,6 +124,23 @@ jobs:
             git config user.email "$GITHUB_EMAIL"
             semantic-release publish
 
+  static_code_analysis:
+    parameters:
+      python_version:
+        type: string
+      toxenv_factor:
+        type: string
+    executor: python<< parameters.python_version >>
+    steps:
+      - checkout
+      - ensure_poetry_installed
+      - run:
+          command: |
+            poetry install --no-root
+      - run:
+          command: |
+            poetry run tox -e mypy<< parameters.toxenv_factor >>
+
 workflows:
   cicd:
     jobs:
@@ -132,6 +149,11 @@ workflows:
             parameters:
               python_version: ["310", "39", "38", "37", "36"]
       - coding_standards
+      - static_code_analysis:
+          matrix:
+            parameters:
+              python_version: [ "310", "36" ]
+              toxenv_factor: [ "locked", "lowest" ]
   release:
     jobs:
       - manual_release:

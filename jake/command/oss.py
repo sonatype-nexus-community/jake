@@ -293,8 +293,9 @@ Ratings:
                   f'[bright_white]' for rating in v.ratings])}
 
 References:
-{os.linesep.join([f'  - {reference.source.name if reference.source.name else ""} [Ref: {reference.id}]{os.linesep}'
-                  f'    URL: {reference.source.url if reference.source.url else "None"}'
+{os.linesep.join([f'  - {reference.source.name if reference.source and reference.source.name else ""} '
+                  f'[Ref: {reference.id}]{os.linesep}'
+                  f'    URL: {reference.source.url if reference.source and reference.source.url else "None"}'
                   for reference in v.references])}
         """
 
@@ -314,7 +315,7 @@ References:
             return 'bright_green'
 
     @staticmethod
-    def _get_severity_for_cvss_score(cvss_score: float = None) -> str:
+    def _get_severity_for_cvss_score(cvss_score: float) -> str:
         if cvss_score >= 9.0:
             return 'Critical'
         elif cvss_score >= 7.0:

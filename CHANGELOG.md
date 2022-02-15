@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.4.5 (2022-02-15)
+### Fix
+* Pin some upstream dependencies to prevent #112 ([#113](https://github.com/sonatype-nexus-community/jake/issues/113)) ([`8a43e0a`](https://github.com/sonatype-nexus-community/jake/commit/8a43e0af074f797abaddcc0a542b5e08d8a75b36))
+
 ## v1.4.4 (2022-02-08)
 ### Fix
 * CWEs are `int` and needed to be stringified ([#102](https://github.com/sonatype-nexus-community/jake/issues/102)) ([`3e15cb1`](https://github.com/sonatype-nexus-community/jake/commit/3e15cb16c037d8bb09eb5c38dbd239dd345f09cc))

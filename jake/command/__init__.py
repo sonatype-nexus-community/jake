@@ -27,7 +27,7 @@ else:
 
 jake_version: str = 'TBC'
 try:
-    jake_version = str(meta_version('jake'))
+    jake_version = str(meta_version('jake'))  # type: ignore[no-untyped-call]
 except Exception:
     jake_version = 'DEVELOPMENT'
 

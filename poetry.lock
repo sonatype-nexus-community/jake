@@ -255,7 +255,7 @@ testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
 name = "polling2"
-version = "0.4.7"
+version = "0.5.0"
 description = "Updated polling utility with many configurable options"
 category = "main"
 optional = false
@@ -505,7 +505,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6.2"
-content-hash = "5057b427bfab6d34199d599edfe1f996f107e971ec0d7c7a7f41c3c56e90f536"
+content-hash = "88a8e71f9e4498d665368292fe9296f0ad9578f94677a1750a12c1052001de8d"
 
 [metadata.files]
 certifi = [
@@ -660,8 +660,8 @@ pluggy = [
     {file = "pluggy-1.0.0.tar.gz", hash = "sha256:4224373bacce55f955a878bf9cfa763c1e360858e330072059e10bad68531159"},
 ]
 polling2 = [
-    {file = "polling2-0.4.7-py2.py3-none-any.whl", hash = "sha256:b36d9ae09da0e916c6e7c63378fabf4c8259d59735981bb9264b5285bc6fc80f"},
-    {file = "polling2-0.4.7.tar.gz", hash = "sha256:d84ecf4f90da94dfe932bf676524ff4990cf8bddaeb80ec918b9419e1548f155"},
+    {file = "polling2-0.5.0-py2.py3-none-any.whl", hash = "sha256:ad86d56fbd7502f0856cac2d0109d595c18fa6c7fb12c88cee5e5d16c17286c1"},
+    {file = "polling2-0.5.0.tar.gz", hash = "sha256:90b7da82cf7adbb48029724d3546af93f21ab6e592ec37c8c4619aedd010e342"},
 ]
 py = [
     {file = "py-1.11.0-py2.py3-none-any.whl", hash = "sha256:607c53218732647dff4acdfcd50cb62615cedf612e72d1724fb1a0cc6405b378"},

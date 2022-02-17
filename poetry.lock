@@ -191,7 +191,7 @@ python-versions = "*"
 
 [[package]]
 name = "ossindex-lib"
-version = "1.0.0rc3"
+version = "1.0.0rc4"
 description = "A library for querying the OSS Index free catalogue of open source components to help developers identify vulnerabilities, understand risk, and keep their software safe."
 category = "main"
 optional = false
@@ -505,7 +505,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6.2"
-content-hash = "7a555d4ef8150e686f8a29a4c66d75f3ea8ed205d4feec5ed326cae3f14c25e9"
+content-hash = "2ef95579606271438cf69b4b7c43497407137f6d587fd9cfc8240a727466ad0e"
 
 [metadata.files]
 certifi = [
@@ -640,8 +640,8 @@ mypy-extensions = [
     {file = "mypy_extensions-0.4.3.tar.gz", hash = "sha256:2d82818f5bb3e369420cb3c4060a7970edba416647068eb4c5343488a6c604a8"},
 ]
 ossindex-lib = [
-    {file = "ossindex-lib-1.0.0rc3.tar.gz", hash = "sha256:32f3d3bcbf0c08e33bc8809bf6c7448d2e2c3c157cafd022b3fc6086c0991b88"},
-    {file = "ossindex_lib-1.0.0rc3-py3-none-any.whl", hash = "sha256:e3bb0e23a0afadfd4cefcd4f170e7df9e5168d6298a4ca19a3977f54b8d341e3"},
+    {file = "ossindex-lib-1.0.0rc4.tar.gz", hash = "sha256:89364c6e5dddd922f1648252cfe747d5065f01945ca5b289bbb5f41987a668b9"},
+    {file = "ossindex_lib-1.0.0rc4-py3-none-any.whl", hash = "sha256:a0dc209bb614fd09be111026ee5af6ed32c69c9a5f79d4c3598ffe2707cd3d23"},
 ]
 packageurl-python = [
     {file = "packageurl-python-0.9.9.tar.gz", hash = "sha256:872a0434b9a448b3fa97571711f69dd2a3fb72345ad66c90b17d827afea82f09"},

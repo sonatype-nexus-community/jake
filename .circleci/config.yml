@@ -139,7 +139,7 @@ jobs:
             poetry install --no-root
       - run:
           command: |
-            poetry run tox -e mypy<< parameters.toxenv_factor >>
+            poetry run tox -e mypy-<< parameters.toxenv_factor >>
 
 workflows:
   cicd:

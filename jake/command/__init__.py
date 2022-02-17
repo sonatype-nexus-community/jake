@@ -15,10 +15,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-import argparse
 import sys
 from abc import ABC, abstractmethod
+from argparse import ArgumentParser, Namespace
 from typing import Optional
 
 if sys.version_info >= (3, 8):
@@ -26,24 +25,42 @@ if sys.version_info >= (3, 8):
 else:
     from importlib_metadata import version as meta_version
 
+jake_version: str = 'TBC'
 try:
-    jake_version: Optional[str] = str(meta_version('jake'))  # type: ignore[no-untyped-call]
+    jake_version = str(meta_version('jake'))
 except Exception:
     jake_version = 'DEVELOPMENT'
 
 
 class BaseCommand(ABC):
-    # Parsed Arguments
-    _arguments: argparse.Namespace
+
+    def __init__(self) -> None:
+        super().__init__()
+        self._arguments: Optional[Namespace] = None
+
+    def execute(self, arguments: Namespace) -> int:
+        self._arguments = arguments
+        return self.handle_args()
 
     @abstractmethod
     def handle_args(self) -> int:
         pass
 
-    def execute(self, arguments: argparse.Namespace) -> int:
-        self._arguments = arguments
-        return self.handle_args()
+    @abstractmethod
+    def get_argument_parser_name(self) -> str:
+        pass
 
     @abstractmethod
-    def setup_argument_parser(self, subparsers: argparse._SubParsersAction) -> None:
+    def get_argument_parser_help(self) -> str:
         pass
+
+    @abstractmethod
+    def setup_argument_parser(self, arg_parser: ArgumentParser) -> None:
+        pass
+
+    @property
+    def arguments(self) -> Namespace:
+        if self._arguments:
+            return self._arguments
+
+        raise ValueError('Arguments have not been set yet - execute() has to be called first')

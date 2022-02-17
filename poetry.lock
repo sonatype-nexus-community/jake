@@ -49,18 +49,18 @@ toml = ["tomli"]
 
 [[package]]
 name = "cyclonedx-bom"
-version = "3.0.0rc0"
+version = "3.0.0rc3"
 description = "CycloneDX Software Bill of Materials (SBOM) generation utility"
 category = "main"
 optional = false
 python-versions = ">=3.6,<4.0"
 
 [package.dependencies]
-cyclonedx-python-lib = ">=2.0.0rc1,<3.0.0"
+cyclonedx-python-lib = ">=2.0.0rc4,<3.0.0"
 
 [[package]]
 name = "cyclonedx-python-lib"
-version = "2.0.0rc1"
+version = "2.0.0rc4"
 description = "A library for producing CycloneDX SBOM (Software Bill of Materials) files."
 category = "main"
 optional = false
@@ -191,7 +191,7 @@ python-versions = "*"
 
 [[package]]
 name = "ossindex-lib"
-version = "1.0.0rc2"
+version = "1.0.0rc3"
 description = "A library for querying the OSS Index free catalogue of open source components to help developers identify vulnerabilities, understand risk, and keep their software safe."
 category = "main"
 optional = false
@@ -206,7 +206,7 @@ types-setuptools = ">=57.0.0"
 
 [[package]]
 name = "packageurl-python"
-version = "0.9.8.1"
+version = "0.9.9"
 description = "A purl aka. Package URL parser and builder"
 category = "main"
 optional = false
@@ -416,7 +416,7 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "types-requests"
-version = "2.27.9"
+version = "2.27.10"
 description = "Typing stubs for requests"
 category = "main"
 optional = false
@@ -505,7 +505,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6.2"
-content-hash = "a449b555bfb951fe79531fa5a0bf76b6c50721cfdc9f11221b28cf707438ecc9"
+content-hash = "7a555d4ef8150e686f8a29a4c66d75f3ea8ed205d4feec5ed326cae3f14c25e9"
 
 [metadata.files]
 certifi = [
@@ -574,12 +574,12 @@ coverage = [
     {file = "coverage-6.2.tar.gz", hash = "sha256:e2cad8093172b7d1595b4ad66f24270808658e11acf43a8f95b41276162eb5b8"},
 ]
 cyclonedx-bom = [
-    {file = "cyclonedx-bom-3.0.0rc0.tar.gz", hash = "sha256:642096a6fb46618fa6a71f593963852293702eee6a0e523e704c7b7ce5eca441"},
-    {file = "cyclonedx_bom-3.0.0rc0-py3-none-any.whl", hash = "sha256:e1267d8bf380ad70913dfb40295d0c2fb00d59e711419d8353634cfe4221e5f8"},
+    {file = "cyclonedx-bom-3.0.0rc3.tar.gz", hash = "sha256:25a82d417cffc08996544fee82fa7f24c06fee69bb6a36eb86cbe5d4a1d0dd2e"},
+    {file = "cyclonedx_bom-3.0.0rc3-py3-none-any.whl", hash = "sha256:50cdafd0b66634d94537faca01e38756b8d22a137be36c9e3092db4a44c2eebd"},
 ]
 cyclonedx-python-lib = [
-    {file = "cyclonedx-python-lib-2.0.0rc1.tar.gz", hash = "sha256:5f2badb8f73e88607f9c79fcf2bbb04e69a9dbab610236efbc8114651224e5f8"},
-    {file = "cyclonedx_python_lib-2.0.0rc1-py3-none-any.whl", hash = "sha256:c32c9fab754161e19c599a11d23e396f64fa3f7a9541482197c735b9c69056e0"},
+    {file = "cyclonedx-python-lib-2.0.0rc4.tar.gz", hash = "sha256:3db3af890c1fd507f6668d8211d2ca3070dbd41ed476c33a1aaccb2b8d88a8fb"},
+    {file = "cyclonedx_python_lib-2.0.0rc4-py3-none-any.whl", hash = "sha256:2a2c749129441eca6d04634c85c92dba50e38b71973ed44794da2984d54832d4"},
 ]
 dataclasses = [
     {file = "dataclasses-0.8-py3-none-any.whl", hash = "sha256:0201d89fa866f68c8ebd9d08ee6ff50c0b255f8ec63a71c16fda7af82bb887bf"},
@@ -640,12 +640,12 @@ mypy-extensions = [
     {file = "mypy_extensions-0.4.3.tar.gz", hash = "sha256:2d82818f5bb3e369420cb3c4060a7970edba416647068eb4c5343488a6c604a8"},
 ]
 ossindex-lib = [
-    {file = "ossindex-lib-1.0.0rc2.tar.gz", hash = "sha256:cc4fa29ae9dd2fd393bcef9e4a54ca753bbf559f74d333e371186ab1225d0e4d"},
-    {file = "ossindex_lib-1.0.0rc2-py3-none-any.whl", hash = "sha256:ace4b6e2e3ffc76f4e33d603fe7508867096f762bec879e27c41456b17e03bba"},
+    {file = "ossindex-lib-1.0.0rc3.tar.gz", hash = "sha256:32f3d3bcbf0c08e33bc8809bf6c7448d2e2c3c157cafd022b3fc6086c0991b88"},
+    {file = "ossindex_lib-1.0.0rc3-py3-none-any.whl", hash = "sha256:e3bb0e23a0afadfd4cefcd4f170e7df9e5168d6298a4ca19a3977f54b8d341e3"},
 ]
 packageurl-python = [
-    {file = "packageurl-python-0.9.8.1.tar.gz", hash = "sha256:675e0ec8058fa0837a0405047178bdea6a7d0b46966983fa79e1c0a1afab1c9e"},
-    {file = "packageurl_python-0.9.8.1-py3-none-any.whl", hash = "sha256:3545c89efb19ef26246c69201c748e60e4395a055b83347760064853b60eb9d7"},
+    {file = "packageurl-python-0.9.9.tar.gz", hash = "sha256:872a0434b9a448b3fa97571711f69dd2a3fb72345ad66c90b17d827afea82f09"},
+    {file = "packageurl_python-0.9.9-py3-none-any.whl", hash = "sha256:07aa852d1c48b0e86e625f6a32d83f96427739806b269d0f8142788ee807114b"},
 ]
 packaging = [
     {file = "packaging-21.3-py3-none-any.whl", hash = "sha256:ef103e05f519cdc783ae24ea4e2e0f508a9c99b2d4969652eed6a2e1ea5bd522"},
@@ -742,8 +742,8 @@ typed-ast = [
     {file = "typed_ast-1.5.2.tar.gz", hash = "sha256:525a2d4088e70a9f75b08b3f87a51acc9cde640e19cc523c7e41aa355564ae27"},
 ]
 types-requests = [
-    {file = "types-requests-2.27.9.tar.gz", hash = "sha256:7368974534d297939492efdfdab232930440b11e2203f6df1f0c40e3242a87ea"},
-    {file = "types_requests-2.27.9-py3-none-any.whl", hash = "sha256:74070045418faf710f3154403d6a16c9e67db50e5119906ca6955f1658d20f7b"},
+    {file = "types-requests-2.27.10.tar.gz", hash = "sha256:5dcb088fcaa778efeee6b7fc46967037e983fbfb9fec02594578bd33fd75e555"},
+    {file = "types_requests-2.27.10-py3-none-any.whl", hash = "sha256:6cb4fb0bbcbc585c57eeee6ffe5a47638dc89706b8d290ec89a77213fc5bad1a"},
 ]
 types-setuptools = [
     {file = "types-setuptools-57.4.9.tar.gz", hash = "sha256:536ef74744f8e1e4be4fc719887f886e74e4cf3c792b4a06984320be4df450b5"},

@@ -15,8 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+from argparse import ArgumentParser
 
-import argparse
 from . import BaseCommand
 
 
@@ -25,11 +25,12 @@ class ConfigCommand(BaseCommand):
     def handle_args(self) -> int:
         pass
 
-    def setup_argument_parser(self, subparsers: argparse._SubParsersAction) -> None:
-        parser_config: argparse.ArgumentParser = subparsers.add_parser(
-            'config',
-            help='configure jake for OSS Index or Nexus Lifecycle access'
-        )
+    def get_argument_parser_name(self) -> str:
+        return 'config'
 
-        parser_config.add_argument('oss', help='configure Nexus IQ Server or OSSIndex', nargs='?',
-                                   choices=('iq', 'oss'))
+    def get_argument_parser_help(self) -> str:
+        return 'configure jake for OSS Index or Nexus Lifecycle access'
+
+    def setup_argument_parser(self, arg_parser: ArgumentParser) -> None:
+        arg_parser.add_argument('oss', help='configure Nexus IQ Server or OSSIndex', nargs='?',
+                                choices=('iq', 'oss'))

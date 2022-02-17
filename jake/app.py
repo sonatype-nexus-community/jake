@@ -17,6 +17,7 @@
 # limitations under the License.
 #
 import argparse
+from argparse import ArgumentParser
 from datetime import datetime
 from typing import Dict
 
@@ -47,8 +48,8 @@ class JakeCmd:
             self._debug_message('Parsed Arguments: {}'.format(self._arguments))
 
     @staticmethod
-    def get_arg_parser() -> argparse.ArgumentParser:
-        arg_parser = argparse.ArgumentParser(description='Put your Python dependencies in a chokehold')
+    def get_arg_parser() -> ArgumentParser:
+        arg_parser = ArgumentParser(description='Put your Python dependencies in a chokehold')
 
         # Add global options
         arg_parser.add_argument('-v', '--version', help='show which version of jake you are running',
@@ -60,7 +61,12 @@ class JakeCmd:
 
         subparsers = arg_parser.add_subparsers(title='Jake sub-commands', dest='cmd', metavar='')
         for subcommand in _SUB_COMMANDS.keys():
-            _SUB_COMMANDS[subcommand].setup_argument_parser(subparsers=subparsers)
+            _SUB_COMMANDS[subcommand].setup_argument_parser(
+                arg_parser=subparsers.add_parser(
+                    name=_SUB_COMMANDS[subcommand].get_argument_parser_name(),
+                    help=_SUB_COMMANDS[subcommand].get_argument_parser_help()
+                )
+            )
 
         return arg_parser
 

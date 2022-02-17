@@ -84,13 +84,13 @@ jobs:
       - checkout
       - restore_cache: # ensure this step occurs *before* installing dependencies
           name: "Restore any valid cache"
-          key: dependencies-{{ .Branch }}-<< parameters.python_version >>-{{ checksum "poetry.lock" }}
+          key: dependencies-{{ .Branch }}-310-{{ checksum "poetry.lock" }}
       - run:
           command: |
             poetry install
       - save_cache:
           name: "Cache dependencies"
-          key: dependencies-{{ .Branch }}-<< parameters.python_version >>-{{ checksum "poetry.lock" }}
+          key: dependencies-{{ .Branch }}-310-{{ checksum "poetry.lock" }}
           paths:
             - /home/circleci/.cache/pypoetry/virtualenvs
       - run:

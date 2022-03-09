@@ -133,6 +133,9 @@ workflows:
     jobs:
       - manual_release:
           type: approval
+          filters:
+            branches:
+              only: main
       - release_and_pypi_publish:
           requires:
             - manual_release

@@ -15,21 +15,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-import argparse
 import logging
-from typing import Union
+from argparse import ArgumentParser
+from typing import Any, Dict, Optional, Union
 from urllib.parse import urlparse
 
 import requests
 from cyclonedx.model.bom import Bom
 from cyclonedx.output import get_instance
 from cyclonedx_py.parser.environment import EnvironmentParser
-from polling2 import poll_decorator
+from polling2 import poll_decorator  # type: ignore
 from requests.auth import HTTPBasicAuth
 from rich.progress import Progress
 
-from . import BaseCommand, _jake_version
+from . import BaseCommand, jake_version
 
 
 class IqCommand(BaseCommand):
@@ -43,33 +42,28 @@ class IqCommand(BaseCommand):
 
         _logger: logging.Logger = logging.getLogger('jake.iq')
 
-        _server_url: str
-        _username: str
-        _password: str
-        _auth: HTTPBasicAuth
-
-        _default_headers = {
-            'User-Agent': 'jake/{}'.format(_jake_version)
+        _DEFAULT_HEADERS = {
+            'User-Agent': 'jake/{}'.format(jake_version)
         }
 
-        _max_wait_in_seconds: int = 300
-        _check_interval_seconds: int = 10
-
-        def __init__(self, server_url: str, username: str, password: str):
-            self._server_url = urlparse(server_url).geturl()
-            self._username = username
-            self._password = password
+        def __init__(self, server_url: str, username: str, password: str) -> None:
+            self._server_url: str = urlparse(server_url).geturl()
+            self._username: str = username
+            self._password: str = password
 
             if self._validate_server():
-                self._auth = HTTPBasicAuth(username, password)
+                self._auth: Optional[HTTPBasicAuth] = HTTPBasicAuth(username, password)
             else:
+                self._auth = None
                 self._logger.error(
                     'IQ server at {} does not appear accessible or in a ready-state to receive requests'.format(
                         self._server_url
                     )
                 )
 
-        def scan_application_with_bom(self, bom: Bom, iq_public_application_id: str, iq_scan_stage: str):
+        def scan_application_with_bom(self, bom: Bom, iq_public_application_id: str,
+                                      iq_scan_stage: str) -> Any:
+
             """
             This method is intentionally blocking.
 
@@ -105,7 +99,7 @@ class IqCommand(BaseCommand):
                 raise ValueError('Response from IQ is missing the \'applications\' key. Cannot parse')
 
             if len(iq_response['applications']) == 1:
-                return iq_response['applications'][0]['id']
+                return str(iq_response['applications'][0]['id'])
             else:
                 message = 'There were {} matching Applications found in IQ for {}'.format(
                     len(iq_response['applications']), iq_public_application_id
@@ -113,8 +107,8 @@ class IqCommand(BaseCommand):
                 self._logger.warning(message)
                 raise ValueError(message)
 
-        @poll_decorator(step=10, timeout=300, log_error=logging.DEBUG)
-        def _get_scan_report_results(self, status_uri: str):
+        @poll_decorator(step=10, timeout=300, log_error=logging.DEBUG)  # type: ignore
+        def _get_scan_report_results(self, status_uri: str) -> Union[Any, bool]:
             try:
                 response = self.__make_request(
                     uri='/{}'.format(status_uri)
@@ -126,7 +120,7 @@ class IqCommand(BaseCommand):
             except ValueError:
                 return False
 
-        def _submit_bom(self, bom: Bom, iq_internal_application_id: str, iq_scan_stage: str):
+        def _submit_bom(self, bom: Bom, iq_internal_application_id: str, iq_scan_stage: str) -> Any:
             self._logger.debug(
                 'Submitting BOM to IQ for Application {} at stage {}'.format(iq_internal_application_id, iq_scan_stage)
             )
@@ -149,9 +143,9 @@ class IqCommand(BaseCommand):
                 ))
                 return False
 
-        def __make_request(self, uri: str, body_data: object = None, additional_headers=None,
-                           method: str = 'GET'):
-            if additional_headers is None:
+        def __make_request(self, uri: str, body_data: Optional[str] = None,
+                           additional_headers: Optional[Dict[str, Any]] = None, method: str = 'GET') -> Any:
+            if not additional_headers:
                 additional_headers = {}
             self._logger.debug('Beginning request to IQ {}'.format(uri))
             response = requests.request(
@@ -159,7 +153,7 @@ class IqCommand(BaseCommand):
                 url='{}{}'.format(self._server_url, uri),
                 data=(body_data.encode('UTF-8') if body_data else None),
                 auth=self._auth,
-                headers={**self._default_headers, **additional_headers}
+                headers={**self._DEFAULT_HEADERS, **additional_headers}
             )
 
             if response.ok:
@@ -169,11 +163,9 @@ class IqCommand(BaseCommand):
             else:
                 raise ValueError(response.text)
 
-    _iq_server: Union[IqServerApi, None] = None
-
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
-        self._iq_server = None
+        self._iq_server: Union['IqCommand.IqServerApi', None] = None
 
     def handle_args(self) -> int:
         exit_code: int = 0
@@ -191,13 +183,13 @@ class IqCommand(BaseCommand):
 
             # task_validate_iq
             self._iq_server = self.IqServerApi(
-                server_url=self._arguments.iq_server_url,
-                username=self._arguments.iq_username,
-                password=self._arguments.iq_password
+                server_url=self.arguments.iq_server_url,
+                username=self.arguments.iq_username,
+                password=self.arguments.iq_password
             )
             progress.update(
                 task_validate_iq, completed=10,
-                description=f"🐍 [green]IQ Server at {self._arguments.iq_server_url} is up and accessible"
+                description=f"🐍 [green]IQ Server at {self.arguments.iq_server_url} is up and accessible"
             )
 
             # task_parser
@@ -212,8 +204,8 @@ class IqCommand(BaseCommand):
             progress.start_task(task_query_iq)
             iq_response = self._iq_server.scan_application_with_bom(
                 bom=Bom.from_parser(parser=parser),
-                iq_public_application_id=self._arguments.iq_application_id,
-                iq_scan_stage=self._arguments.iq_scan_stage
+                iq_public_application_id=self.arguments.iq_application_id,
+                iq_scan_stage=self.arguments.iq_scan_stage
             )
 
             if iq_response['policyAction'] == 'Failure':
@@ -236,26 +228,30 @@ class IqCommand(BaseCommand):
 
         print('')
         print('Your Sonatype Nexus IQ Lifecycle Report is available here:')
-        print('  HTML: {}/{}'.format(self._arguments.iq_server_url, iq_response['reportHtmlUrl']))
-        print('  PDF:  {}/{}'.format(self._arguments.iq_server_url, iq_response['reportPdfUrl']))
+        print('  HTML: {}/{}'.format(self.arguments.iq_server_url, iq_response['reportHtmlUrl']))
+        print('  PDF:  {}/{}'.format(self.arguments.iq_server_url, iq_response['reportPdfUrl']))
         print('')
 
         return exit_code
 
-    def setup_argument_parser(self, subparsers: argparse._SubParsersAction):
-        parser: argparse.ArgumentParser = subparsers.add_parser('iq', help='perform a scan backed by Nexus Lifecycle')
+    def get_argument_parser_name(self) -> str:
+        return 'iq'
 
-        parser.add_argument('-s', '--server-url', help='Full http(s):// URL to your Nexus Lifecycle server',
-                            metavar='https://localhost:8070', required=True, dest='iq_server_url')
+    def get_argument_parser_help(self) -> str:
+        return 'perform a scan backed by Sonatype Nexus Lifecycle'
 
-        parser.add_argument('-i', '--application-id', help='Public Application ID in Nexus Lifecycle',
-                            metavar='APP_ID', required=True, dest='iq_application_id')
+    def setup_argument_parser(self, arg_parser: ArgumentParser) -> None:
+        arg_parser.add_argument('-s', '--server-url', help='Full http(s):// URL to your Nexus Lifecycle server',
+                                metavar='https://localhost:8070', required=True, dest='iq_server_url')
 
-        parser.add_argument('-u', '--username', help='Username for authentication to Nexus Lifecycle',
-                            metavar='USER_ID', required=True, dest='iq_username')
+        arg_parser.add_argument('-i', '--application-id', help='Public Application ID in Nexus Lifecycle',
+                                metavar='APP_ID', required=True, dest='iq_application_id')
 
-        parser.add_argument('-p', '--password', help='Password for authentication to Nexus Lifecycle',
-                            metavar='PASSWORD', required=True, dest='iq_password')
+        arg_parser.add_argument('-u', '--username', help='Username for authentication to Nexus Lifecycle',
+                                metavar='USER_ID', required=True, dest='iq_username')
 
-        parser.add_argument('-t', '--stage', help='The stage for the report',
-                            metavar='STAGE', required=False, dest='iq_scan_stage', default='source')
+        arg_parser.add_argument('-p', '--password', help='Password for authentication to Nexus Lifecycle',
+                                metavar='PASSWORD', required=True, dest='iq_password')
+
+        arg_parser.add_argument('-t', '--stage', help='The stage for the report',
+                                metavar='STAGE', required=False, dest='iq_scan_stage', default='source')

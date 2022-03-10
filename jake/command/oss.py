@@ -15,11 +15,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-import argparse
 import os
+from argparse import ArgumentParser
 from decimal import Decimal
-from typing import List, Optional
+from typing import cast, Iterable, List, Set
 
 from cyclonedx.model import XsUri
 from cyclonedx.model.bom import Bom
@@ -27,10 +26,12 @@ from cyclonedx.model.component import Component
 from cyclonedx.model.impact_analysis import ImpactAnalysisAffectedStatus
 from cyclonedx.model.vulnerability import BomTarget, BomTargetVersionRange, Vulnerability, VulnerabilityAdvisory, \
     VulnerabilityRating, VulnerabilityReference, VulnerabilityScoreSource, VulnerabilitySeverity, VulnerabilitySource
-from cyclonedx.output import get_instance, OutputFormat, SchemaVersion
+from cyclonedx.output import get_instance, OutputFormat, SchemaVersion, LATEST_SUPPORTED_SCHEMA_VERSION
 from cyclonedx_py.parser.environment import EnvironmentParser
 from ossindex.model import OssIndexComponent
 from ossindex.ossindex import OssIndex
+# See https://github.com/package-url/packageurl-python/issues/65
+from packageurl import PackageURL  # type: ignore
 from rich.console import Console
 from rich.panel import Panel
 from rich.progress import Progress
@@ -68,7 +69,7 @@ class OssCommand(BaseCommand):
 
             oss_index_results: List[OssIndexComponent]
             oss = OssIndex()
-            if self._arguments.oss_clear_cache:
+            if self.arguments.oss_clear_cache:
                 progress.update(task_query_ossi, completed=1, description='Clearing OSS Index local cache')
                 oss.purge_local_cache()
                 progress.update(task_query_ossi, completed=2, description='Cleared OSS Index local cache')
@@ -76,7 +77,7 @@ class OssCommand(BaseCommand):
             progress.update(task_query_ossi, completed=3, description='Querying OSS Index for details on your packages')
 
             oss_index_results = oss.get_component_report(
-                packages=list(map(lambda c: c.purl if c.purl else None, parser.get_components()))
+                packages=list(map(lambda c: c.purl, filter(lambda c: c.purl, parser.get_components())))
             )
             progress.update(
                 task_query_ossi, completed=10,
@@ -101,69 +102,71 @@ class OssCommand(BaseCommand):
 
             components: List[Component] = []
             for component in parser.get_components():
-                oss_index_component: OssIndexComponent = list(filter(
-                    lambda oic: oic.get_package_url().to_string() == component.purl.to_string(), oss_index_results
-                )).pop()
+                if component.purl:
+                    oss_index_component: OssIndexComponent = list(filter(
+                        lambda oic_: oic_.get_package_url().to_string() == cast(PackageURL, component.purl).to_string(),
+                        oss_index_results
+                    )).pop()
+                else:
+                    continue
 
-                if oss_index_component.has_known_vulnerabilities():
-                    for oic_vulnerability in oss_index_component.get_vulnerabilities():
+                if oss_index_component.vulnerabilities:
+                    for oic_vulnerability in oss_index_component.vulnerabilities:
 
                         ratings: List[VulnerabilityRating] = []
-                        if oic_vulnerability.get_cvss_score():
+                        if oic_vulnerability.cvss_score:
                             ratings.append(
                                 VulnerabilityRating(
                                     source=VulnerabilitySource(
-                                        name='OSS Index', url=XsUri(oic_vulnerability.get_oss_index_reference_url())
+                                        name='OSS Index', url=XsUri(oic_vulnerability.reference)
                                     ),
                                     score=Decimal(
-                                        oic_vulnerability.get_cvss_score()
-                                    ) if oic_vulnerability.get_cvss_score() else None,
+                                        oic_vulnerability.cvss_score
+                                    ) if oic_vulnerability.cvss_score else None,
                                     severity=VulnerabilitySeverity.get_from_cvss_scores(
-                                        (oic_vulnerability.get_cvss_score(),)
-                                    ) if oic_vulnerability.get_cvss_score() else None,
+                                        (oic_vulnerability.cvss_score,)
+                                    ) if oic_vulnerability.cvss_score else None,
                                     method=VulnerabilityScoreSource.get_from_vector(
-                                        vector=oic_vulnerability.get_cvss_vector()
-                                    ) if oic_vulnerability.get_cvss_vector() else None,
-                                    vector=oic_vulnerability.get_cvss_vector()
+                                        vector=oic_vulnerability.cvss_vector
+                                    ) if oic_vulnerability.cvss_vector else None,
+                                    vector=oic_vulnerability.cvss_vector
                                 )
                             )
 
                         vulnerability: Vulnerability = Vulnerability(
-                            bom_ref=str(oic_vulnerability.get_id()) if oic_vulnerability.get_id() else None,
-                            id=str(oic_vulnerability.get_id()),
+                            bom_ref=oic_vulnerability.id,
+                            id=oic_vulnerability.id,
                             source=VulnerabilitySource(
-                                name='OSS Index', url=XsUri(oic_vulnerability.get_oss_index_reference_url())
+                                name='OSS Index', url=XsUri(oic_vulnerability.reference)
                             ),
-                            cwes=[int(oic_vulnerability.get_cwe()[4:])] if oic_vulnerability.get_cwe() else None,
-                            description=oic_vulnerability.get_title(),
-                            detail=oic_vulnerability.get_description(),
+                            cwes=[int(oic_vulnerability.cwe[4:])] if oic_vulnerability.cwe else None,
+                            description=oic_vulnerability.title,
+                            detail=oic_vulnerability.description,
                             ratings=ratings,
                             references=[
                                 VulnerabilityReference(
-                                    id=str(oic_vulnerability.get_cve()), source=VulnerabilitySource(
-                                        name='OSS Index', url=XsUri(oic_vulnerability.get_oss_index_reference_url())
+                                    id=oic_vulnerability.display_name, source=VulnerabilitySource(
+                                        name='OSS Index', url=XsUri(oic_vulnerability.reference)
                                     )
                                 )
                             ]
                         )
-                        if oic_vulnerability.get_external_reference_urls():
-                            advisories: List[VulnerabilityAdvisory] = []
-                            for ext_ref_url in oic_vulnerability.get_external_reference_urls():
-                                advisories.append(
-                                    VulnerabilityAdvisory(url=XsUri(uri=ext_ref_url))
-                                )
+                        if oic_vulnerability.external_references:
+                            advisories: Set[VulnerabilityAdvisory] = set()
+                            for ext_ref_url in oic_vulnerability.external_references:
+                                advisories.add(VulnerabilityAdvisory(url=XsUri(uri=ext_ref_url)))
                             vulnerability.advisories = advisories
 
-                        vulnerability.affects = [
+                        vulnerability.affects.add(
                             BomTarget(
-                                ref=component.bom_ref,
+                                ref=str(component.bom_ref),
                                 versions=[
                                     BomTargetVersionRange(
                                         version=component.version, status=ImpactAnalysisAffectedStatus.AFFECTED
                                     )
                                 ]
                             )
-                        ]
+                        )
 
                         component.add_vulnerability(vulnerability=vulnerability)
 
@@ -173,51 +176,59 @@ class OssCommand(BaseCommand):
         print('')
         self._print_oss_index_report(components=components)
 
-        if self._arguments.oss_output_file:
+        if self.arguments.oss_output_file:
             cyclonedx_output = get_instance(
                 bom=OssCommand._build_bom(components=components),
-                output_format=OutputFormat[str(self._arguments.oss_output_format).upper()],
+                output_format=OutputFormat[str(self.arguments.oss_output_format).upper()],
                 schema_version=SchemaVersion['V{}'.format(
-                    str(self._arguments.oss_schema_version).replace('.', '_')
+                    str(self.arguments.oss_schema_version).replace('.', '_')
                 )])
 
-            output_filename = os.path.realpath(self._arguments.oss_output_file)
+            output_filename = os.path.realpath(self.arguments.oss_output_file)
             cyclonedx_output.output_to_file(filename=output_filename, allow_overwrite=True)
             print('')
             print('CycloneDX has been written to {}'.format(output_filename))
 
         # Update exit_code if warn only is not enabled and issues have been detected
-        if not self._arguments.warn_only:
+        if not self.arguments.warn_only:
             for oic in oss_index_results:
-                if oic.has_known_vulnerabilities():
+                if oic.vulnerabilities:
                     exit_code = 1
                     break
 
         return exit_code
 
-    def setup_argument_parser(self, subparsers: argparse._SubParsersAction):
-        parser = subparsers.add_parser('ddt', help='perform a scan backed by OSS Index')
+    def get_argument_parser_name(self) -> str:
+        return 'ddt'
 
-        parser.add_argument('--clear-cache', help='Clears any local cached OSS Index data prior to execution',
-                            action='store_true', dest='oss_clear_cache', default=False)
+    def get_argument_parser_help(self) -> str:
+        return 'perform a scan backed by OSS Index'
 
-        parser.add_argument('-o', '--output-file', help='Specify a file to output the SBOM to. If not specified the '
-                                                        'report will be output to the console. '
-                                                        'STDOUT is not supported.',
-                            metavar='PATH/TO/FILE', dest='oss_output_file', default=None)
-        parser.add_argument('--output-format', help='SBOM output format (default = xml)', choices={'json', 'xml'},
-                            default='xml', dest='oss_output_format')
-        parser.add_argument('--schema-version', help='CycloneDX schema version to use (default = 1.3)',
-                            choices={'1.4', '1.3', '1.2', '1.1', '1.0'}, default='1.3',
-                            dest='oss_schema_version')
+    def setup_argument_parser(self, arg_parser: ArgumentParser) -> None:
+        arg_parser.add_argument('--clear-cache', help='Clears any local cached OSS Index data prior to execution',
+                                action='store_true', dest='oss_clear_cache', default=False)
+
+        arg_parser.add_argument('-o', '--output-file',
+                                help='Specify a file to output the SBOM to. If not specified the '
+                                     'report will be output to the console. '
+                                     'STDOUT is not supported.',
+                                metavar='PATH/TO/FILE', dest='oss_output_file', default=None)
+        arg_parser.add_argument('--output-format', help='SBOM output format (default = xml)', choices={'json', 'xml'},
+                                default='xml', dest='oss_output_format')
+        arg_parser.add_argument('--schema-version',
+                                help=f'CycloneDX schema version to use (default = '
+                                     f'{LATEST_SUPPORTED_SCHEMA_VERSION.to_version()})',
+                                choices={'1.4', '1.3', '1.2', '1.1', '1.0'},
+                                default=f'{LATEST_SUPPORTED_SCHEMA_VERSION.to_version()})',
+                                dest='oss_schema_version')
 
     @staticmethod
-    def _build_bom(components: List[Component]) -> Bom:
+    def _build_bom(components: Iterable[Component]) -> Bom:
         bom = Bom()
-        bom.components = components
+        bom.components = set(components)
         return bom
 
-    def _print_oss_index_report(self, components: List[Component]):
+    def _print_oss_index_report(self, components: List[Component]) -> None:
         total_vulnerabilities = 0
         total_packages = len(components)
 
@@ -261,12 +272,12 @@ class OssCommand(BaseCommand):
     def _get_max_cvss_score_for_vulnerability(vulnerability: Vulnerability) -> float:
         max_score: float = 0.0
         for rating in vulnerability.ratings:
-            if float(rating.score) > max_score:
+            if rating.score and float(rating.score) > max_score:
                 max_score = float(rating.score)
         return max_score
 
     @staticmethod
-    def _get_max_cvss_score(component: Component) -> Optional[float]:
+    def _get_max_cvss_score(component: Component) -> float:
         max_cvss_score: float = 0.0
         for v in component.get_vulnerabilities():
             max_cvss_score = OssCommand._get_max_cvss_score_for_vulnerability(vulnerability=v)
@@ -287,14 +298,15 @@ class OssCommand(BaseCommand):
 {v.detail}
 
 Ratings:
-{os.linesep.join([f'   -  [{severity_color}]{rating.score:.1f} {rating.severity.name} - '
+{os.linesep.join([f'   -  [{severity_color}]{rating.score:.1f} {rating.severity.name if rating.severity else ""} - '
                   f'Vector: {rating.vector if rating.vector else "Unknown"}, '
                   f'CWEs: {",".join(list(map(lambda cwe: str(cwe), v.cwes))) if v.cwes else "None Recorded"}'
                   f'[bright_white]' for rating in v.ratings])}
 
 References:
-{os.linesep.join([f'  - {reference.source.name if reference.source.name else ""} [Ref: {reference.id}]{os.linesep}'
-                  f'    URL: {reference.source.url if reference.source.url else "None"}'
+{os.linesep.join([f'  - {reference.source.name if reference.source and reference.source.name else ""} '
+                  f'[Ref: {reference.id}]{os.linesep}'
+                  f'    URL: {reference.source.url if reference.source and reference.source.url else "None"}'
                   for reference in v.references])}
         """
 
@@ -314,7 +326,7 @@ References:
             return 'bright_green'
 
     @staticmethod
-    def _get_severity_for_cvss_score(cvss_score: float = None) -> str:
+    def _get_severity_for_cvss_score(cvss_score: float) -> str:
         if cvss_score >= 9.0:
             return 'Critical'
         elif cvss_score >= 7.0:

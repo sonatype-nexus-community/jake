@@ -2,6 +2,17 @@
 
 <!--next-version-placeholder-->
 
+## v2.0.0 (2022-03-10)
+### Feature
+* Typing as per PEP-561 and other refactors ([#114](https://github.com/sonatype-nexus-community/jake/issues/114)) ([`a0ab7ee`](https://github.com/sonatype-nexus-community/jake/commit/a0ab7eecac96ea9dd1324117651556493247eb98))
+* Support for Python 3.10 ([#110](https://github.com/sonatype-nexus-community/jake/issues/110)) ([`671c8c4`](https://github.com/sonatype-nexus-community/jake/commit/671c8c4bb682b4b944568198ecf381818d49f3ac))
+
+### Fix
+* Resolve historic oss index caching issues ([`dc03aa9`](https://github.com/sonatype-nexus-community/jake/commit/dc03aa923cf2a8c48d0ad9e7e30cb188fb3a5a96))
+
+### Breaking
+* Notion of default schema version has been removed by upstream library and replaced with latest supported schema version ([`e437bb4`](https://github.com/sonatype-nexus-community/jake/commit/e437bb41ddbb84d7844f40b213878c67c071cc23))
+
 ## v1.4.5 (2022-02-15)
 ### Fix
 * Pin some upstream dependencies to prevent #112 ([#113](https://github.com/sonatype-nexus-community/jake/issues/113)) ([`8a43e0a`](https://github.com/sonatype-nexus-community/jake/commit/8a43e0af074f797abaddcc0a542b5e08d8a75b36))

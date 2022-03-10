@@ -34,6 +34,7 @@ CycloneDX is a lightweight BOM specification that is easily created, human-reada
    :caption: Contents:
 
    install
+   configuration
    usage
    support
    changelog

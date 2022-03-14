@@ -21,7 +21,6 @@ dockerizedBuildPipeline(
     sh '''
     poetry install
     poetry build
-    poetry run tox
     '''
   },
   deployBranch: 'main',

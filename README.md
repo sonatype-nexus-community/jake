@@ -276,6 +276,26 @@ A pre-commit hook is also available for use
       - id: scan
 ```
 
+#### Whitelisting
+
+Whitelisting of vulnerabilities can be done! To whitelist vulnerabilities add the `--whitelist` argument and pass a json file like this:
+
+```
+> jake ddt --whitelist jake-whitelist.json
+
+```
+
+The file should look like this:
+
+```json
+{"ignore": [{"id": "f19ff95c-cec5-4263-8d3b-e3e64698881e", "reason": "Insert reason here"}]}
+```
+
+The only field that actually matters is id and that is the ID you receive from OSS Index for a vulnerability.
+You can add fields such as reason so that you later can understand why you whitelisted a vulnerability.
+
+Any id that is whitelisted will be squelched from the results, and not cause a failure.
+
 ### Check for vulnerabilities using Sonatype Nexus Lifecycle
 
 Access Sonatype's proprietary vulnerability data using `jake`:

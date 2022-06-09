@@ -31,9 +31,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import json
 import os
 from argparse import ArgumentParser
 from decimal import Decimal
+from pathlib import Path
 from typing import cast, Iterable, List, Set
 
 from cyclonedx.model import XsUri
@@ -95,6 +97,16 @@ class OssCommand(BaseCommand):
             oss_index_results = oss.get_component_report(
                 packages=list(map(lambda c: c.purl, filter(lambda c: c.purl, parser.get_components())))
             )
+
+            if self.arguments.oss_whitelist_json_file:
+                with open(self.arguments.oss_whitelist_json_file) as f:
+                    json_data = json.load(f)
+                whitelisted_entries = json_data.get("ignore", [])
+                whitelisted_ids = {entry["id"] for entry in whitelisted_entries}
+                if whitelisted_ids:
+                    for oic in oss_index_results:
+                        oic.vulnerabilities = {v for v in oic.vulnerabilities if v.id not in whitelisted_ids}
+
             progress.update(
                 task_query_ossi, completed=10,
                 description='🐍 [green]Successfully queried OSS Index for package and vulnerability info'
@@ -237,6 +249,8 @@ class OssCommand(BaseCommand):
                                 choices={'1.4', '1.3', '1.2', '1.1', '1.0'},
                                 default=f'{LATEST_SUPPORTED_SCHEMA_VERSION.to_version()})',
                                 dest='oss_schema_version')
+        arg_parser.add_argument('--whitelist', help='Set path to whitelist json file', type=Path,
+                                dest='oss_whitelist_json_file')
 
     @staticmethod
     def _build_bom(components: Iterable[Component]) -> Bom:

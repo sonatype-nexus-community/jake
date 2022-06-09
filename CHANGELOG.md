@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v2.1.0 (2022-06-09)
+### Feature
+* Add support for vulnerability whitelist when running `jake ddt` - thanks @daviskirk! ([`80e1136`](https://github.com/sonatype-nexus-community/jake/commit/80e113620642a032a767bd064ec317a7f19b7de1))
+
 ## v2.0.0 (2022-03-10)
 ### Feature
 * Typing as per PEP-561 and other refactors ([#114](https://github.com/sonatype-nexus-community/jake/issues/114)) ([`a0ab7ee`](https://github.com/sonatype-nexus-community/jake/commit/a0ab7eecac96ea9dd1324117651556493247eb98))

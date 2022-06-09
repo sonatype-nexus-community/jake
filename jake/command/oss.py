@@ -235,7 +235,7 @@ class OssCommand(BaseCommand):
                                 help=f'CycloneDX schema version to use (default = '
                                      f'{LATEST_SUPPORTED_SCHEMA_VERSION.to_version()})',
                                 choices={'1.4', '1.3', '1.2', '1.1', '1.0'},
-                                default=f'{LATEST_SUPPORTED_SCHEMA_VERSION.to_version()})',
+                                default=f'{LATEST_SUPPORTED_SCHEMA_VERSION.to_version()}',
                                 dest='oss_schema_version')
 
     @staticmethod

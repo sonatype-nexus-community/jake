@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v2.1.1 (2022-06-09)
+### Fix
+* Removed typo from default value of `--schema-version` argument #117 ([`e9e4764`](https://github.com/sonatype-nexus-community/jake/commit/e9e47649ab87eacdd0a98d8ee9798615d8913fdf))
+
 ## v2.1.0 (2022-06-09)
 ### Feature
 * Add support for vulnerability whitelist when running `jake ddt` - thanks @daviskirk! ([`80e1136`](https://github.com/sonatype-nexus-community/jake/commit/80e113620642a032a767bd064ec317a7f19b7de1))

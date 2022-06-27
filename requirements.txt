@@ -25,4 +25,5 @@ types-requests==2.28.0
 types-setuptools==57.4.18
 types-urllib3==1.26.15
 urllib3==1.26.9
-djangorestframework==3.11.1
+djangorestframework==2.3.13
+

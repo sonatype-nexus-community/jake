@@ -26,12 +26,12 @@ dockerizedBuildPipeline(
   deployBranch: 'main',
   vulnerabilityScan: {
     withDockerImage(env.DOCKER_IMAGE_ID, {
-      withCredentials([usernamePassword(credentialsId: 'jenkins-iq',
+      withCredentials([usernamePassword(credentialsId: 'jenkins-community-iq',
         usernameVariable: 'IQ_USERNAME', passwordVariable: 'IQ_PASSWORD')]) {
         sh '''
         poetry install --no-dev
-        poetry run jake iq --application jake --stage release --username $IQ_USERNAME --password $IQ_PASSWORD --server-url https://iq.sonatype.dev        
-        #poetry run jake iq --application jake --stage release --username $IQ_USERNAME --password $IQ_PASSWORD --server-url https://iq.sonatype.dev || export jakeFailed=true        
+        poetry run jake iq --application jake --stage release --username $IQ_USERNAME --password $IQ_PASSWORD --server-url https://sonatype-community-app.cloud.sonatype.com
+        #poetry run jake iq --application jake --stage release --username $IQ_USERNAME --password $IQ_PASSWORD --server-url https://sonatype-community-app.cloud.sonatype.com || export jakeFailed=true
         #cat ${HOME}/.ossindex/jake.combined.log
         '''
       }

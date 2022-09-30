@@ -17,7 +17,6 @@
 @Library(['private-pipeline-library', 'jenkins-shared']) _
 
 dockerizedBuildPipeline(
-  agentLabel: 'ubuntu-zion-legacy',
   buildAndTest: {
     sh '''
     poetry install

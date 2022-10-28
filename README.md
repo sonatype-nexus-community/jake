@@ -106,7 +106,7 @@ optional arguments:
                         will then fall back to looking for standard files in
                         the current directory that relate to the type of input
                         indicated by the -t flag.
-  -t TYPE, --type TYPE, -it TYPE, --input-type TYPE
+  -it TYPE, --type TYPE, --input-type TYPE
                         how jake should find the packages from which to
                         generate your SBOM.ENV = Read from the current Python
                         Environment; CONDA = Read output from `conda list
@@ -147,6 +147,21 @@ usage: jake ddt [-h] [--clear-cache] [-o PATH/TO/FILE] [--output-format {xml,jso
 
 optional arguments:
   -h, --help            show this help message and exit
+  -i FILE_PATH, --input FILE_PATH
+                        Where to get input data from. If a path to a file is
+                        not specified directly here,then we will attempt to
+                        read data from STDIN. If there is no data on STDIN, we
+                        will then fall back to looking for standard files in
+                        the current directory that relate to the type of input
+                        indicated by the -t flag.
+  -it TYPE, --type TYPE, --input-type TYPE
+                        how jake should find the packages from which to
+                        generate your SBOM.ENV = Read from the current Python
+                        Environment; CONDA = Read output from `conda list
+                        --explicit`; CONDA_JSON = Read output from `conda list
+                        --json`; PIP = read from a requirements.txt; PIPENV =
+                        read from Pipfile.lock; POETRY = read from a
+                        poetry.lock. (Default = ENV)
   --clear-cache         Clears any local cached OSS Index data prior to execution
   -o PATH/TO/FILE, --output-file PATH/TO/FILE
                         Specify a file to output the SBOM to. If not specified the report will be output to the console. STDOUT is not supported.
@@ -307,9 +322,24 @@ usage: jake iq [-h] -s https://localhost:8070 -i APP_ID -u USER_ID -p PASSWORD [
 
 optional arguments:
   -h, --help            show this help message and exit
+  -i FILE_PATH, --input FILE_PATH
+                        Where to get input data from. If a path to a file is
+                        not specified directly here,then we will attempt to
+                        read data from STDIN. If there is no data on STDIN, we
+                        will then fall back to looking for standard files in
+                        the current directory that relate to the type of input
+                        indicated by the -t flag.
+  -it TYPE, --type TYPE, --input-type TYPE
+                        how jake should find the packages from which to
+                        generate your SBOM.ENV = Read from the current Python
+                        Environment; CONDA = Read output from `conda list
+                        --explicit`; CONDA_JSON = Read output from `conda list
+                        --json`; PIP = read from a requirements.txt; PIPENV =
+                        read from Pipfile.lock; POETRY = read from a
+                        poetry.lock. (Default = ENV)
   -s https://localhost:8070, --server-url https://localhost:8070
                         Full http(s):// URL to your Nexus Lifecycle server
-  -i APP_ID, --application-id APP_ID
+  -a APP_ID, --application-id APP_ID
                         Public Application ID in Nexus Lifecycle
   -u USER_ID, --username USER_ID
                         Username for authentication to Nexus Lifecycle

@@ -31,20 +31,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-import sys
-from argparse import ArgumentParser, FileType
+from argparse import ArgumentParser
 
-import cyclonedx.parser
-from cyclonedx.model import ExternalReference, ExternalReferenceType, Tool, XsUri
+from cyclonedx.model import ExternalReference
+from cyclonedx.model import ExternalReferenceType
+from cyclonedx.model import Tool
+from cyclonedx.model import XsUri
 from cyclonedx.model.bom import Bom
-from cyclonedx.output import BaseOutput, get_instance, OutputFormat, SchemaVersion, LATEST_SUPPORTED_SCHEMA_VERSION
-from cyclonedx_py.parser.conda import CondaListJsonParser, CondaListExplicitParser
-from cyclonedx_py.parser.environment import EnvironmentParser
-from cyclonedx_py.parser.pipenv import PipEnvParser, PipEnvFileParser
-from cyclonedx_py.parser.poetry import PoetryParser, PoetryFileParser
-from cyclonedx_py.parser.requirements import RequirementsParser, RequirementsFileParser
+from cyclonedx.output import BaseOutput
+from cyclonedx.output import LATEST_SUPPORTED_SCHEMA_VERSION
+from cyclonedx.output import OutputFormat
+from cyclonedx.output import SchemaVersion
+from cyclonedx.output import get_instance
 
-from . import BaseCommand, jake_version
+from . import BaseCommand
+from . import jake_version
+from . import parser_selector
 
 ThisTool = Tool(vendor='Sonatype Nexus Community', name='jake', version=jake_version or 'UNKNOWN')
 ThisTool.external_references.update([
@@ -82,7 +84,9 @@ ThisTool.external_references.update([
 class SbomCommand(BaseCommand):
 
     def handle_args(self) -> int:
-        bom = Bom.from_parser(parser=self._get_parser())
+        bom = Bom.from_parser(
+            parser=parser_selector.get_parser(self.arguments.sbom_input_type, self.arguments.sbom_input_source)
+        )
         bom.metadata.tools.add(ThisTool)
 
         output_format = OutputFormat.XML
@@ -111,26 +115,7 @@ class SbomCommand(BaseCommand):
         return 'generate a CycloneDX software-bill-of-materials (no vulnerabilities)'
 
     def setup_argument_parser(self, arg_parser: ArgumentParser) -> None:
-        arg_parser.add_argument('-i', '--input', action='store', metavar='FILE_PATH',
-                                type=FileType('r'), default=(None if sys.stdin.isatty() else sys.stdin),
-                                help='Where to get input data from. If a path to a file is not specified directly here,'
-                                     'then we will attempt to read data from STDIN. If there is no data on STDIN, we '
-                                     'will then fall back to looking for standard files in the current directory that '
-                                     'relate to the type of input indicated by the -t flag.', dest='sbom_input_source',
-                                required=False)
-
-        arg_parser.add_argument('-t', '--type', '-it', '--input-type',
-                                help='how jake should find the packages from which to generate your SBOM.'
-                                     'ENV = Read from the current Python Environment; '
-                                     'CONDA = Read output from `conda list --explicit`; '
-                                     'CONDA_JSON = Read output from `conda list --json`; '
-                                     'PIP = read from a requirements.txt; '
-                                     'PIPENV = read from Pipfile.lock; '
-                                     'POETRY = read from a poetry.lock. '
-                                     '(Default = ENV)',
-                                metavar='TYPE', choices={'CONDA', 'CONDA_JSON', 'ENV', 'PIP', 'PIPENV', 'POETRY'},
-                                default='ENV', dest='sbom_input_type')
-
+        parser_selector.add_parser_selector_arguments(arg_parser)
         arg_parser.add_argument('-o', '--output-file', help='Specify a file to output the SBOM to',
                                 metavar='PATH/TO/FILE',
                                 dest='sbom_output_file')
@@ -142,42 +127,3 @@ class SbomCommand(BaseCommand):
                                 choices={'1.4', '1.3', '1.2', '1.1', '1.0'},
                                 default=f'{LATEST_SUPPORTED_SCHEMA_VERSION.to_version()}',
                                 dest='sbom_schema_version')
-
-    def _get_parser(self) -> cyclonedx.parser.BaseParser:
-        if self.arguments.sbom_input_type == 'ENV':
-            return EnvironmentParser()
-
-        # All other input types require INPUT - let's grab it now if provided via STDIN or supplied FILE
-        input_data_fh = self.arguments.sbom_input_source
-        if input_data_fh:
-            with input_data_fh:
-                input_data = input_data_fh.read()
-                input_data_fh.close()
-
-            if self.arguments.sbom_input_type == 'CONDA':
-                return CondaListExplicitParser(conda_data=input_data)
-
-            if self.arguments.sbom_input_type == 'CONDA_JSON':
-                return CondaListJsonParser(conda_data=input_data)
-
-            if self.arguments.sbom_input_type == 'PIP':
-                return RequirementsParser(requirements_content=input_data)
-
-            if self.arguments.sbom_input_type == 'PIPENV':
-                return PipEnvParser(pipenv_contents=input_data)
-
-            if self.arguments.sbom_input_type == 'POETRY':
-                return PoetryParser(poetry_lock_contents=input_data)
-
-        else:
-            # No data available on STDIN or the supplied FILE, so we'll try standard filenames in the current directory
-            if self.arguments.sbom_input_type == 'PIP':
-                return RequirementsFileParser(requirements_file='requirements.txt')
-
-            if self.arguments.sbom_input_type == 'PIPENV':
-                return PipEnvFileParser(pipenv_lock_filename='Pipfile.lock')
-
-            if self.arguments.sbom_input_type == 'POETRY':
-                return PoetryFileParser(poetry_lock_filename='poetry.lock')
-
-        raise NotImplementedError

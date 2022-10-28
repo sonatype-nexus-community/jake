@@ -39,12 +39,12 @@ from urllib.parse import urlparse
 import requests
 from cyclonedx.model.bom import Bom
 from cyclonedx.output import get_instance
-from cyclonedx_py.parser.environment import EnvironmentParser
 from polling2 import poll_decorator  # type: ignore
 from requests.auth import HTTPBasicAuth
 from rich.progress import Progress
 
 from . import BaseCommand, jake_version
+from . import parser_selector
 
 
 class IqCommand(BaseCommand):
@@ -185,13 +185,14 @@ class IqCommand(BaseCommand):
 
     def handle_args(self) -> int:
         exit_code: int = 0
+        input_source_msg = "your python environment" if self.arguments.sbom_input_type == "ENV" else "provided specs"
 
         with Progress() as progress:
             task_validate_iq = progress.add_task(
                 description="[yellow]Checking out your Nexus IQ Server", start=True, total=10
             )
             task_parser = progress.add_task(
-                description="[yellow]Collecting packages in your Python Environment", start=True, total=10
+                description=f"[yellow]Collecting packages in {input_source_msg}", start=True, total=10
             )
             task_query_iq = progress.add_task(
                 description="[yellow]Submitting to Nexus Lifecycle for Policy Evaluation", start=True, total=10
@@ -209,11 +210,13 @@ class IqCommand(BaseCommand):
             )
 
             # task_parser
-            parser = EnvironmentParser()
+            parser = parser_selector.get_parser(
+                self.arguments.sbom_input_type, self.arguments.sbom_input_source
+            )
             total_packages_collected = len(parser.get_components())
             progress.update(
                 task_parser, completed=10,
-                description=f'🐍 [green]Collected {total_packages_collected} packages from your environment'
+                description=f'🐍 [green]Collected {total_packages_collected} packages from {input_source_msg}'
             )
 
             # task_query_iq
@@ -257,10 +260,11 @@ class IqCommand(BaseCommand):
         return 'perform a scan backed by Sonatype Nexus Lifecycle'
 
     def setup_argument_parser(self, arg_parser: ArgumentParser) -> None:
+        parser_selector.add_parser_selector_arguments(arg_parser)
         arg_parser.add_argument('-s', '--server-url', help='Full http(s):// URL to your Nexus Lifecycle server',
                                 metavar='https://localhost:8070', required=True, dest='iq_server_url')
 
-        arg_parser.add_argument('-i', '--application-id', help='Public Application ID in Nexus Lifecycle',
+        arg_parser.add_argument('-a', '--application-id', help='Public Application ID in Nexus Lifecycle',
                                 metavar='APP_ID', required=True, dest='iq_application_id')
 
         arg_parser.add_argument('-u', '--username', help='Username for authentication to Nexus Lifecycle',

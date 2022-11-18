@@ -22,7 +22,7 @@ commands:
       - run: |
           python -m ensurepip --default-pip
           pip install --upgrade pip
-          pip install poetry==1.1.11
+          pip install poetry==1.2.2
 
 executors:
   python310:
@@ -71,11 +71,11 @@ jobs:
       - run:
           command: |
             poetry run tox -e py<< parameters.python_version >>
-#      - run:
-#          name: "Run Jake on Jake"
-#          command: |
-#            poetry install --no-dev
-#            poetry run jake ddt
+      - run:
+          name: "Run Jake on Jake"
+          command: |
+            poetry install --no-dev
+            poetry run jake ddt --whitelist jake-whitelist.json
 
   coding_standards:
     executor: python310

@@ -71,11 +71,11 @@ jobs:
       - run:
           command: |
             poetry run tox -e py<< parameters.python_version >>
-      - run:
-          name: "Run Jake on Jake"
-          command: |
-            poetry install --no-dev
-            poetry run jake ddt --whitelist jake-whitelist.json
+#      - run:
+#          name: "Run Jake on Jake"
+#          command: |
+#            poetry install --no-dev
+#            poetry run jake ddt --whitelist jake-whitelist.json
 
   coding_standards:
     executor: python310

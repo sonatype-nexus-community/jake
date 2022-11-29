@@ -93,7 +93,7 @@ you.
 ```
 > jake sbom --help
 
-usage: jake sbom [-h] [-i FILE_PATH] [-t TYPE] [-o PATH/TO/FILE]
+usage: jake sbom [-h] [-f FILE_PATH] [-t TYPE] [-o PATH/TO/FILE]
                    [--output-format {json,xml}]
                    [--schema-version {1.0,1.1,1.2,1.3}]
 

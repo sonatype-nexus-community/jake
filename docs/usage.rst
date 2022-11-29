@@ -64,7 +64,7 @@ you.
 
     optional arguments:
       -h, --help            show this help message and exit
-      -f FILE_PATH, --input FILE_PATH
+      -f FILE_PATH, --input-file FILE_PATH
                             Where to get input data from. If a path to a file is
                             not specified directly here,then we will attempt to
                             read data from STDIN. If there is no data on STDIN, we
@@ -260,7 +260,7 @@ Check out these examples specifying a manifest:
 
 .. code-block::
 
-    jake ddr -t PIP -f /path/to/requirements.txt
+    jake ddt -t PIP -f /path/to/requirements.txt
     jake ddt -t PIPENV -f /path/to/Pipfile.lock
 
 

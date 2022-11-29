@@ -352,7 +352,7 @@ optional arguments:
 So passing parameters that suit your Nexus Lifecycle environment you can get a report:
 
 ```
-> jake iq -s https://my-nexus-lifecyle -i APP_ID -u USERNAME -p PASSWORD
+> jake iq -s https://my-nexus-lifecyle -a APP_ID -u USERNAME -p PASSWORD
 
                    ___           ___           ___     
        ___        /  /\         /  /\         /  /\    

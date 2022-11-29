@@ -99,7 +99,7 @@ usage: jake sbom [-h] [-f FILE_PATH] [-t TYPE] [-o PATH/TO/FILE]
 
 optional arguments:
   -h, --help            show this help message and exit
-  -i FILE_PATH, --input FILE_PATH
+  -f FILE_PATH, --input FILE_PATH
                         Where to get input data from. If a path to a file is
                         not specified directly here,then we will attempt to
                         read data from STDIN. If there is no data on STDIN, we
@@ -143,11 +143,14 @@ Optionally, it can create a CycloneDX software bill-of-materials at the same tim
 ```
 > jake ddt --help
 
-usage: jake ddt [-h] [--clear-cache] [-o PATH/TO/FILE] [--output-format {xml,json}] [--schema-version {1.2,1.1,1.0,1.3}]
+usage: jake ddt [-h] [-f FILE_PATH] [-t TYPE] [--clear-cache] [-o PATH/TO/FILE] 
+                   [--output-format {xml,json}]
+                   [--schema-version {1.2,1.1,1.0,1.3}]
+                   [--whitelist OSS_WHITELIST_JSON_FILE]
 
 optional arguments:
   -h, --help            show this help message and exit
-  -i FILE_PATH, --input FILE_PATH
+  -f FILE_PATH, --input-file FILE_PATH
                         Where to get input data from. If a path to a file is
                         not specified directly here,then we will attempt to
                         read data from STDIN. If there is no data on STDIN, we
@@ -169,6 +172,8 @@ optional arguments:
                         SBOM output format (default = xml)
   --schema-version {1.2,1.1,1.0,1.3}
                         CycloneDX schema version to use (default = 1.3)
+  --whitelist OSS_WHITELIST_JSON_FILE
+                        Set path to whitelist json file
 ```
 
 So you can quickly get a report by running:
@@ -282,6 +287,19 @@ Vulnerability Details for pkg:pypi/cryptography@2.2
 └──────────────────────┴───────────────────────┘
 ```
 
+Check out these examples using STDIN:
+```
+conda list --explicit --md5 | jake ddt -t CONDA
+conda list --json | jake ddt -t CONDA_JSON
+cat /path/to/Pipfile.lock | python -m jake.app ddt -t PIPENV
+```
+
+Check out these examples specifying a manifest:
+```
+jake ddt -t PIP -i /path/to/requirements.txt
+jake ddt -t PIPENV -i /path/to/Pipfile.lock
+```
+
 A pre-commit hook is also available for use
 
 ```Yaml
@@ -318,11 +336,11 @@ Access Sonatype's proprietary vulnerability data using `jake`:
 ```
 > jake iq --help
 
-usage: jake iq [-h] -s https://localhost:8070 -i APP_ID -u USER_ID -p PASSWORD [-st STAGE]
+usage: jake iq [-h] [-f FILE_PATH] [-t TYPE] -s https://localhost:8070 -i APP_ID -u USER_ID -p PASSWORD [-st STAGE]
 
 optional arguments:
   -h, --help            show this help message and exit
-  -i FILE_PATH, --input FILE_PATH
+  -f FILE_PATH, --input-file FILE_PATH
                         Where to get input data from. If a path to a file is
                         not specified directly here,then we will attempt to
                         read data from STDIN. If there is no data on STDIN, we
@@ -427,4 +445,3 @@ community (read: you!)
 * DO file issues here on GitHub, so that the community can pitch in
 
 Phew, that was easier than I thought. Last but not least of all - have fun!
-

@@ -339,7 +339,7 @@ optional arguments:
                         poetry.lock. (Default = ENV)
   -s https://localhost:8070, --server-url https://localhost:8070
                         Full http(s):// URL to your Nexus Lifecycle server
-  -a APP_ID, --application-id APP_ID
+  -i APP_ID, --application-id APP_ID
                         Public Application ID in Nexus Lifecycle
   -u USER_ID, --username USER_ID
                         Username for authentication to Nexus Lifecycle
@@ -352,7 +352,7 @@ optional arguments:
 So passing parameters that suit your Nexus Lifecycle environment you can get a report:
 
 ```
-> jake iq -s https://my-nexus-lifecyle -a APP_ID -u USERNAME -p PASSWORD
+> jake iq -s https://my-nexus-lifecyle -i APP_ID -u USERNAME -p PASSWORD
 
                    ___           ___           ___     
        ___        /  /\         /  /\         /  /\    

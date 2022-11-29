@@ -57,8 +57,8 @@ def get_parser(input_type: str, input_data_fh: Optional[TextIO]) -> BaseParser:
 
 def add_parser_selector_arguments(arg_parser: ArgumentParser) -> None:
     arg_parser.add_argument(
-        '-i',
-        '--input',
+        '-f',
+        '--input-file',
         action='store',
         metavar='FILE_PATH',
         type=FileType('r'),

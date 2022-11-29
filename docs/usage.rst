@@ -58,13 +58,13 @@ you.
 
     > jake sbom --help
 
-    usage: jake sbom [-h] [-i FILE_PATH] [-t TYPE] [-o PATH/TO/FILE]
+    usage: jake sbom [-h] [-f FILE_PATH] [-t TYPE] [-o PATH/TO/FILE]
                        [--output-format {json,xml}]
                        [--schema-version {1.0,1.1,1.2,1.3}]
 
     optional arguments:
       -h, --help            show this help message and exit
-      -i FILE_PATH, --input FILE_PATH
+      -f FILE_PATH, --input FILE_PATH
                             Where to get input data from. If a path to a file is
                             not specified directly here,then we will attempt to
                             read data from STDIN. If there is no data on STDIN, we
@@ -99,8 +99,8 @@ Check out these examples specifying a manifest:
 
 .. code-block::
 
-    jake sbom -t PIP -i /path/to/requirements.txt
-    jake sbom -t PIPENV -i /path/to/Pipfile.lock
+    jake sbom -t PIP -f /path/to/requirements.txt
+    jake sbom -t PIPENV -f /path/to/Pipfile.lock
 
 
 Check for vulnerabilities using OSS Index
@@ -113,17 +113,25 @@ you.
 
     > jake ddt --help
 
-    usage: jake ddt [-h] [--clear-cache] [-o PATH/TO/FILE] [--output-format {xml,json}] [--schema-version {1.2,1.1,1.0,1.3}]
+    usage: jake ddt [-h] [-f FILE_PATH] [-t TYPE] [--clear-cache] [-o PATH/TO/FILE] [--output-format {json,xml}] [--schema-version {1.2,1.3,1.4,1.1,1.0}] [--whitelist OSS_WHITELIST_JSON_FILE]
 
-    optional arguments:
+    options:
       -h, --help            show this help message and exit
+      -f FILE_PATH, --input-file FILE_PATH
+                            Where to get input data from. If a path to a file is not specified directly here,then we will attempt to read data from STDIN. If there is no data on STDIN, we will then fall back to looking for standard
+                            files in the current directory that relate to the type of input indicated by the -t flag.
+      -t TYPE, -it TYPE, --type TYPE, --input-type TYPE
+                            how jake should find the packages from which to generate your SBOM.ENV = Read from the current Python Environment; CONDA = Read output from `conda list --explicit`; CONDA_JSON = Read output from `conda list
+                            --json`; PIP = read from a requirements.txt; PIPENV = read from Pipfile.lock; POETRY = read from a poetry.lock. (Default = ENV)
       --clear-cache         Clears any local cached OSS Index data prior to execution
       -o PATH/TO/FILE, --output-file PATH/TO/FILE
                             Specify a file to output the SBOM to. If not specified the report will be output to the console. STDOUT is not supported.
-      --output-format {xml,json}
+      --output-format {json,xml}
                             SBOM output format (default = xml)
-      --schema-version {1.2,1.1,1.0,1.3}
-                            CycloneDX schema version to use (default = 1.3)
+      --schema-version {1.2,1.3,1.4,1.1,1.0}
+                            CycloneDX schema version to use (default = 1.4)
+      --whitelist OSS_WHITELIST_JSON_FILE
+                            Set path to whitelist json file
 
 So you can quickly get a report by running:
 
@@ -150,7 +158,7 @@ So you can quickly get a report by running:
 
 
 
-    Jake Version: 1.1.0
+    Jake Version: 2.1.1
     Put your Python dependencies in a chokehold.
 
     🐍 Collected 42 packages from your environment (0:00:00.10)
@@ -187,12 +195,13 @@ This is what ``jake`` will output if any bad things are found:
 
 
 
-    Jake Version: 1.1.5
+    Jake Version: 2.1.1
     Put your Python dependencies in a chokehold
 
-    🐍 Collected 69 packages from your environment                       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% -:--:--
+    🐍 Collected 69 packages from your python environment                ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% -:--:--
     🐍 Successfully queried OSS Index for package and vulnerability info ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% -:--:--
     🐍 Sane number of results from OSS Index                             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% -:--:--
+    🐍 Munching & crunching data...                                      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% -:--:--
 
     [59/69] - pkg:pypi/cryptography@2.2 [VULNERABLE]
     Vulnerability Details for pkg:pypi/cryptography@2.2
@@ -238,6 +247,23 @@ This is what ``jake`` will output if any bad things are found:
     └──────────────────────┴───────────────────────┘
 
 
+Check out these examples using STDIN:
+
+.. code-block::
+
+    conda list --explicit --md5 | jake ddt -t CONDA
+    conda list --json | jake ddt -t CONDA_JSON
+    cat /path/to/Pipfile.lock | jake ddt -t PIPENV
+
+
+Check out these examples specifying a manifest:
+
+.. code-block::
+
+    jake ddr -t PIP -f /path/to/requirements.txt
+    jake ddt -t PIPENV -f /path/to/Pipfile.lock
+
+
 Pre-commit Hook
 ~~~~~~~~~~~~~~~
 
@@ -259,13 +285,19 @@ Access Sonatype's proprietary vulnerability data using ``jake``:
 
     > jake iq --help
 
-    usage: jake iq [-h] -s https://localhost:8070 -a APP_ID -u USER_ID -p PASSWORD [-st STAGE]
+    usage: jake iq [-h] [-f FILE_PATH] [-t TYPE] -s https://localhost:8070 -i APP_ID -u USER_ID -p PASSWORD [-st STAGE]
 
-    optional arguments:
+    options:
       -h, --help            show this help message and exit
+      -f FILE_PATH, --input-file FILE_PATH
+                            Where to get input data from. If a path to a file is not specified directly here,then we will attempt to read data from STDIN. If there is no data on STDIN, we will then fall back to looking for standard
+                            files in the current directory that relate to the type of input indicated by the -t flag.
+      -t TYPE, -it TYPE, --type TYPE, --input-type TYPE
+                            how jake should find the packages from which to generate your SBOM.ENV = Read from the current Python Environment; CONDA = Read output from `conda list --explicit`; CONDA_JSON = Read output from `conda list
+                            --json`; PIP = read from a requirements.txt; PIPENV = read from Pipfile.lock; POETRY = read from a poetry.lock. (Default = ENV)
       -s https://localhost:8070, --server-url https://localhost:8070
                             Full http(s):// URL to your Nexus Lifecycle server
-      -a APP_ID, --application-id APP_ID
+      -i APP_ID, --application-id APP_ID
                             Public Application ID in Nexus Lifecycle
       -u USER_ID, --username USER_ID
                             Username for authentication to Nexus Lifecycle
@@ -278,7 +310,7 @@ So passing parameters that suit your Nexus Lifecycle environment you can get a r
 
 .. code-block::
 
-    > jake iq -s https://my-nexus-lifecyle -a APP_ID -u USERNAME -p PASSWORD
+    > jake iq -s https://my-nexus-lifecyle -i APP_ID -u USERNAME -p PASSWORD
 
                        ___           ___           ___
            ___        /  /\         /  /\         /  /\
@@ -299,7 +331,7 @@ So passing parameters that suit your Nexus Lifecycle environment you can get a r
 
 
 
-    Jake Version: 1.0.1
+    Jake Version: 2.1.1
     Put your Python dependencies in a chokehold
 
     🐍 IQ Server at https://my-nexus-lifecyle is up and accessible (0:00:00.14)

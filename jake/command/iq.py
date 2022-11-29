@@ -264,7 +264,7 @@ class IqCommand(BaseCommand):
         arg_parser.add_argument('-s', '--server-url', help='Full http(s):// URL to your Nexus Lifecycle server',
                                 metavar='https://localhost:8070', required=True, dest='iq_server_url')
 
-        arg_parser.add_argument('-a', '--application-id', help='Public Application ID in Nexus Lifecycle',
+        arg_parser.add_argument('-i', '--application-id', help='Public Application ID in Nexus Lifecycle',
                                 metavar='APP_ID', required=True, dest='iq_application_id')
 
         arg_parser.add_argument('-u', '--username', help='Username for authentication to Nexus Lifecycle',

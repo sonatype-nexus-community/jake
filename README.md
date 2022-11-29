@@ -106,7 +106,7 @@ optional arguments:
                         will then fall back to looking for standard files in
                         the current directory that relate to the type of input
                         indicated by the -t flag.
-  -it TYPE, --type TYPE, --input-type TYPE
+  -t TYPE, --type TYPE, -it TYPE, --input-type TYPE
                         how jake should find the packages from which to
                         generate your SBOM.ENV = Read from the current Python
                         Environment; CONDA = Read output from `conda list
@@ -154,7 +154,7 @@ optional arguments:
                         will then fall back to looking for standard files in
                         the current directory that relate to the type of input
                         indicated by the -t flag.
-  -it TYPE, --type TYPE, --input-type TYPE
+  -t TYPE, --type TYPE, -it TYPE, --input-type TYPE
                         how jake should find the packages from which to
                         generate your SBOM.ENV = Read from the current Python
                         Environment; CONDA = Read output from `conda list
@@ -318,7 +318,7 @@ Access Sonatype's proprietary vulnerability data using `jake`:
 ```
 > jake iq --help
 
-usage: jake iq [-h] -s https://localhost:8070 -i APP_ID -u USER_ID -p PASSWORD [-t STAGE]
+usage: jake iq [-h] -s https://localhost:8070 -i APP_ID -u USER_ID -p PASSWORD [-st STAGE]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -329,7 +329,7 @@ optional arguments:
                         will then fall back to looking for standard files in
                         the current directory that relate to the type of input
                         indicated by the -t flag.
-  -it TYPE, --type TYPE, --input-type TYPE
+  -t TYPE, --type TYPE, -it TYPE, --input-type TYPE
                         how jake should find the packages from which to
                         generate your SBOM.ENV = Read from the current Python
                         Environment; CONDA = Read output from `conda list
@@ -345,7 +345,7 @@ optional arguments:
                         Username for authentication to Nexus Lifecycle
   -p PASSWORD, --password PASSWORD
                         Password for authentication to Nexus Lifecycle
-  -t STAGE, --stage STAGE
+  -st STAGE, --stage STAGE
                         The stage for the report
 ```
 

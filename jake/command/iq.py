@@ -273,5 +273,5 @@ class IqCommand(BaseCommand):
         arg_parser.add_argument('-p', '--password', help='Password for authentication to Nexus Lifecycle',
                                 metavar='PASSWORD', required=True, dest='iq_password')
 
-        arg_parser.add_argument('-t', '--stage', help='The stage for the report',
+        arg_parser.add_argument('-st', '--stage', help='The stage for the report',
                                 metavar='STAGE', required=False, dest='iq_scan_stage', default='source')

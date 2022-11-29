@@ -71,6 +71,7 @@ def add_parser_selector_arguments(arg_parser: ArgumentParser) -> None:
         required=False
     )
     arg_parser.add_argument(
+        '-t',
         '-it',
         '--type',
         '--input-type',

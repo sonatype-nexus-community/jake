@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v3.0.0 (2022-12-02)
+### Feature
+* Support for all input formats when running jake ddt or jake iq ([#125](https://github.com/sonatype-nexus-community/jake/issues/125)) ([`9a597b5`](https://github.com/sonatype-nexus-community/jake/commit/9a597b59c7f3f042f7188a5cd6a7f6c8c0482f97))
+
+### Fix
+* Restore running jake on jake ([`675b359`](https://github.com/sonatype-nexus-community/jake/commit/675b35927a892755ec5fced019646c043ff3d671))
+
+### Breaking
+* changed iq -t switch to -st, use common `-f` argument for input file ([`9a597b5`](https://github.com/sonatype-nexus-community/jake/commit/9a597b59c7f3f042f7188a5cd6a7f6c8c0482f97))
+
 ## v2.1.1 (2022-06-09)
 ### Fix
 * Removed typo from default value of `--schema-version` argument #117 ([`e9e4764`](https://github.com/sonatype-nexus-community/jake/commit/e9e47649ab87eacdd0a98d8ee9798615d8913fdf))

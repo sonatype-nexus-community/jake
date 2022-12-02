@@ -45,7 +45,6 @@ from cyclonedx.model.impact_analysis import ImpactAnalysisAffectedStatus
 from cyclonedx.model.vulnerability import BomTarget, BomTargetVersionRange, Vulnerability, VulnerabilityAdvisory, \
     VulnerabilityRating, VulnerabilityReference, VulnerabilityScoreSource, VulnerabilitySeverity, VulnerabilitySource
 from cyclonedx.output import get_instance, OutputFormat, SchemaVersion, LATEST_SUPPORTED_SCHEMA_VERSION
-from cyclonedx_py.parser.environment import EnvironmentParser
 from ossindex.model import OssIndexComponent
 from ossindex.ossindex import OssIndex
 # See https://github.com/package-url/packageurl-python/issues/65
@@ -57,6 +56,7 @@ from rich.table import Table
 from rich.tree import Tree
 
 from . import BaseCommand
+from . import parser_selector
 
 
 class OssCommand(BaseCommand):
@@ -66,10 +66,11 @@ class OssCommand(BaseCommand):
         self._console = Console()
 
         exit_code: int = 0
+        input_source_msg = "your python environment" if self.arguments.sbom_input_type == "ENV" else "provided specs"
 
         with Progress() as progress:
             task_parser = progress.add_task(
-                description="[yellow]Collecting packages in your Python Environment", start=True, total=10
+                description=f"[yellow]Collecting packages in {input_source_msg}", start=True, total=10
             )
             task_query_ossi = progress.add_task(
                 description="[yellow]Querying OSS Index for details on your packages", start=True, total=10
@@ -78,11 +79,13 @@ class OssCommand(BaseCommand):
                 description="[cyan]Sanity checking...", start=True, total=10
             )
 
-            parser = EnvironmentParser()
+            parser = parser_selector.get_parser(
+                self.arguments.sbom_input_type, self.arguments.sbom_input_source
+            )
             total_packages_collected = len(parser.get_components())
             progress.update(
                 task_parser, completed=10,
-                description=f'🐍 [green]Collected {total_packages_collected} packages from your environment'
+                description=f'🐍 [green]Collected {total_packages_collected} packages from {input_source_msg}'
             )
 
             oss_index_results: List[OssIndexComponent]
@@ -233,6 +236,7 @@ class OssCommand(BaseCommand):
         return 'perform a scan backed by OSS Index'
 
     def setup_argument_parser(self, arg_parser: ArgumentParser) -> None:
+        parser_selector.add_parser_selector_arguments(arg_parser)
         arg_parser.add_argument('--clear-cache', help='Clears any local cached OSS Index data prior to execution',
                                 action='store_true', dest='oss_clear_cache', default=False)
 

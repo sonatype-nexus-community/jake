@@ -1,0 +1,16 @@
+{
+  "ignore": [
+    {
+      "id": "sonatype-2014-0148",
+      "reason": "get build passing, Symlink paths could be troublesome outside this project"
+    },
+    {
+      "id": "CVE-2018-20225",
+      "reason": "get build passing, Disputed: pip --extra-index-url Improper Input Validation"
+    },
+    {
+      "id": "sonatype-2022-6046",
+      "reason": "get build passing, wheel - Denial of Service (DoS) could be troublesome outside this project"
+    }
+  ]
+}

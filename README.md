@@ -131,8 +131,8 @@ cat /path/to/Pipfile.lock | python -m jake.app sbom -t PIPENV
 
 Check out these examples specifying a manifest:
 ```
-jake sbom -t PIP -i /path/to/requirements.txt
-jake sbom -t PIPENV -i /path/to/Pipfile.lock
+jake sbom -t PIP -f /path/to/requirements.txt
+jake sbom -t PIPENV -f /path/to/Pipfile.lock
 ```
 
 ### Check for vulnerabilities using OSS Index
@@ -296,8 +296,8 @@ cat /path/to/Pipfile.lock | python -m jake.app ddt -t PIPENV
 
 Check out these examples specifying a manifest:
 ```
-jake ddt -t PIP -i /path/to/requirements.txt
-jake ddt -t PIPENV -i /path/to/Pipfile.lock
+jake ddt -t PIP -f /path/to/requirements.txt
+jake ddt -t PIPENV -f /path/to/Pipfile.lock
 ```
 
 A pre-commit hook is also available for use

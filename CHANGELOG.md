@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v3.0.2 (2023-03-06)
+### Fix
+* ValueError fixed
+
 ## v3.0.0 (2022-12-02)
 ### Feature
 * Support for all input formats when running jake ddt or jake iq ([#125](https://github.com/sonatype-nexus-community/jake/issues/125)) ([`9a597b5`](https://github.com/sonatype-nexus-community/jake/commit/9a597b59c7f3f042f7188a5cd6a7f6c8c0482f97))

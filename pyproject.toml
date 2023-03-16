@@ -44,10 +44,11 @@ classifiers = [
     'Programming Language :: Python :: 3.8',
     'Programming Language :: Python :: 3.9',
     'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
     'Typing :: Typed'
 ]
 keywords = [
-    "BOM", "SBOM", "SCA", "OWASP"
+    "BOM", "SBOM", "SCA", "OWASP", "ossindex", "sonatype", "jake"
 ]
 
 [tool.poetry.scripts]

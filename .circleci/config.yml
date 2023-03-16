@@ -37,9 +37,6 @@ executors:
   python37:
     docker:
       - image: cimg/python:3.7
-  python36:
-    docker:
-      - image: cimg/python:3.6
 
 jobs:
   build_and_test:
@@ -148,12 +145,12 @@ workflows:
       - build_and_test:
           matrix:
             parameters:
-              python_version: ["310", "39", "38", "37", "36"]
+              python_version: ["310", "39", "38", "37"]
       - coding_standards
       - static_code_analysis:
           matrix:
             parameters:
-              python_version: [ "310", "36" ]
+              python_version: [ "310", "37" ]
               toxenv_factor: [ "locked", "lowest" ]
   release:
     jobs:

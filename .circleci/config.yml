@@ -57,7 +57,7 @@ jobs:
             rm -rf ~/.cache/pypoetry
             rm -rf /home/circleci/.cache/pypoetry
             rm poetry.lock
-            poetry -vvv install
+            poetry -vvv --no-ansi install
       - save_cache:
           name: "Cache dependencies"
           key: dependencies-{{ .Branch }}-<< parameters.python_version >>-{{ checksum "poetry.lock" }}

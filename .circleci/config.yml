@@ -133,7 +133,7 @@ jobs:
       - ensure_poetry_installed
       - run:
           command: |
-            poetry update
+            poetry update --no-ansi 
             poetry install --no-ansi --no-root
       - run:
           command: |

@@ -22,7 +22,7 @@ commands:
       - run: |
           python -m ensurepip --default-pip
           pip install --upgrade pip
-          pip install poetry==1.1.15
+          pip install poetry==1.4.2
 
 executors:
   python310:
@@ -52,7 +52,6 @@ jobs:
           key: dependencies-{{ .Branch }}-<< parameters.python_version >>-{{ checksum "poetry.lock" }}
       - run:
           command: |
-            poetry update
             poetry install
       - save_cache:
           name: "Cache dependencies"

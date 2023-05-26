@@ -52,12 +52,7 @@ jobs:
           key: dependencies-{{ .Branch }}-<< parameters.python_version >>-{{ checksum "poetry.lock" }}
       - run:
           command: |
-            python --version
-            poetry --version
-            rm -rf ~/.cache/pypoetry
-            rm -rf /home/circleci/.cache/pypoetry
-            rm poetry.lock
-            poetry -vvv --no-ansi install
+            poetry install --no-ansi
       - save_cache:
           name: "Cache dependencies"
           key: dependencies-{{ .Branch }}-<< parameters.python_version >>-{{ checksum "poetry.lock" }}
@@ -76,7 +71,7 @@ jobs:
       - run:
           name: "Run Jake on Jake"
           command: |
-            poetry install --no-dev
+            poetry install --no-ansi --no-dev
             poetry run jake ddt --whitelist jake-whitelist.json
 
   coding_standards:
@@ -90,7 +85,7 @@ jobs:
       - run:
           command: |
             poetry update
-            poetry install
+            poetry install --no-ansi
       - save_cache:
           name: "Cache dependencies"
           key: dependencies-{{ .Branch }}-310-{{ checksum "poetry.lock" }}
@@ -118,7 +113,7 @@ jobs:
       - run:
           name: "Build for release"
           command: |
-            poetry install
+            poetry install --no-ansi
             poetry build
       - run:
           name: "Semantic Release"
@@ -139,7 +134,7 @@ jobs:
       - ensure_poetry_installed
       - run:
           command: |
-            poetry install --no-root
+            poetry install --no-ansi --no-root
       - run:
           command: |
             poetry run tox -e mypy-<< parameters.toxenv_factor >>

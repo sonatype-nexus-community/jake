@@ -55,6 +55,7 @@ jobs:
             python --version
             poetry --version
             rm -rf ~/.cache/pypoetry
+            rm -rf /home/circleci/.cache/pypoetry
             poetry -vvv install
       - save_cache:
           name: "Cache dependencies"

@@ -84,6 +84,7 @@ jobs:
           key: dependencies-{{ .Branch }}-310-{{ checksum "poetry.lock" }}
       - run:
           command: |
+            poetry update
             poetry install
       - save_cache:
           name: "Cache dependencies"

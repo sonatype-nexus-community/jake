@@ -51,8 +51,9 @@ jobs:
           name: "Restore any valid cache"
           key: dependencies-{{ .Branch }}-<< parameters.python_version >>-{{ checksum "poetry.lock" }}
       - run:
-          command: |            
-            poetry -vvv install || true
+          command: |
+            python3 -m venv .venv
+            poetry -vvv install
       - save_cache:
           name: "Cache dependencies"
           key: dependencies-{{ .Branch }}-<< parameters.python_version >>-{{ checksum "poetry.lock" }}

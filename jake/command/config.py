@@ -24,7 +24,7 @@ from . import BaseCommand
 class ConfigCommand(BaseCommand):
 
     def handle_args(self) -> int:
-        return
+        return 0
 
     def get_argument_parser_name(self) -> str:
         return 'config'

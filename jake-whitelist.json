@@ -11,6 +11,10 @@
     {
       "id": "sonatype-2022-6046",
       "reason": "get build passing, wheel - Denial of Service (DoS) could be troublesome outside this project"
+    },
+    {
+      "id": "CVE-2022-42969",
+      "reason": "jake does not call the InfoSvnCommand class in the py library"
     }
   ]
 }

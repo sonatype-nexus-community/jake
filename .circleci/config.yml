@@ -52,7 +52,9 @@ jobs:
           key: dependencies-{{ .Branch }}-<< parameters.python_version >>-{{ checksum "poetry.lock" }}
       - run:
           command: |
-            python3 -m venv .venv
+            python --version
+            poetry --version
+            rm -rf ~/.cache/pypoetry
             poetry -vvv install
       - save_cache:
           name: "Cache dependencies"

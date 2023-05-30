@@ -22,7 +22,7 @@ commands:
       - run: |
           python -m ensurepip --default-pip
           pip install --upgrade pip
-          pip install poetry==1.1.15
+          pip install poetry==1.5
 
 executors:
   python310:
@@ -37,9 +37,6 @@ executors:
   python37:
     docker:
       - image: cimg/python:3.7
-  python36:
-    docker:
-      - image: cimg/python:3.6
 
 jobs:
   build_and_test:
@@ -55,7 +52,7 @@ jobs:
           key: dependencies-{{ .Branch }}-<< parameters.python_version >>-{{ checksum "poetry.lock" }}
       - run:
           command: |
-            poetry install
+            poetry install --no-ansi
       - save_cache:
           name: "Cache dependencies"
           key: dependencies-{{ .Branch }}-<< parameters.python_version >>-{{ checksum "poetry.lock" }}
@@ -74,7 +71,7 @@ jobs:
       - run:
           name: "Run Jake on Jake"
           command: |
-            poetry install --no-dev
+            poetry install --no-ansi --no-dev
             poetry run jake ddt --whitelist jake-whitelist.json
 
   coding_standards:
@@ -87,7 +84,7 @@ jobs:
           key: dependencies-{{ .Branch }}-310-{{ checksum "poetry.lock" }}
       - run:
           command: |
-            poetry install
+            poetry install --no-ansi
       - save_cache:
           name: "Cache dependencies"
           key: dependencies-{{ .Branch }}-310-{{ checksum "poetry.lock" }}
@@ -115,7 +112,7 @@ jobs:
       - run:
           name: "Build for release"
           command: |
-            poetry install
+            poetry install --no-ansi
             poetry build
       - run:
           name: "Semantic Release"
@@ -136,7 +133,7 @@ jobs:
       - ensure_poetry_installed
       - run:
           command: |
-            poetry install --no-root
+            poetry install --no-ansi --no-root
       - run:
           command: |
             poetry run tox -e mypy-<< parameters.toxenv_factor >>
@@ -147,12 +144,12 @@ workflows:
       - build_and_test:
           matrix:
             parameters:
-              python_version: ["310", "39", "38", "37", "36"]
+              python_version: ["310", "39", "38", "37"]
       - coding_standards
       - static_code_analysis:
           matrix:
             parameters:
-              python_version: [ "310", "36" ]
+              python_version: [ "310", "37" ]
               toxenv_factor: [ "locked", "lowest" ]
   release:
     jobs:

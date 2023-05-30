@@ -2,6 +2,19 @@
 
 <!--next-version-placeholder-->
 
+## v3.0.1 (2023-05-30)
+### Fix
+
+* Handle CWE name suffixed with 'noinfo' ([#129](https://github.com/sonatype-nexus-community/jake/issues/129)) ([`a5d0f11`](https://github.com/sonatype-nexus-community/jake/commit/a5d0f11b9e91e0c00ebd4c227115f38e9eab5eb2))
+* CVE-2022-23491 in transitive dependency certifi 2022.5.18.1 by upgrading the version in the lock file. ([`1815487`](https://github.com/sonatype-nexus-community/jake/commit/181548736b0ed0021d78466b2c85413b5b5b6448))
+* CVE-2022-23491 in certifi 2022.5.18.1 ([`d964732`](https://github.com/sonatype-nexus-community/jake/commit/d9647329337d5cb47c02eaa884c613228e8b1bec))
+* More source file header cleanups ([`261a991`](https://github.com/sonatype-nexus-community/jake/commit/261a9914b019a96c895eb1ad4878d3a0482eb4d5))
+* Source file header cleanups ([`6ebf12d`](https://github.com/sonatype-nexus-community/jake/commit/6ebf12d87e6966876575524853247dd50dc9b49f))
+
+### Documentation
+
+* Fix -f switch in the examples ([#126](https://github.com/sonatype-nexus-community/jake/issues/126)) ([`80ac509`](https://github.com/sonatype-nexus-community/jake/commit/80ac50983c6e7e426d84944b31b3d768c7d3517f))
+
 ## v3.0.0 (2022-12-02)
 ### Feature
 * Support for all input formats when running jake ddt or jake iq ([#125](https://github.com/sonatype-nexus-community/jake/issues/125)) ([`9a597b5`](https://github.com/sonatype-nexus-community/jake/commit/9a597b59c7f3f042f7188a5cd6a7f6c8c0482f97))

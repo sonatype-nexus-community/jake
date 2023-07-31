@@ -67,7 +67,7 @@ requests = "^2.31.0"
 rich = "^10.10.0"
 
 [tool.poetry.dev-dependencies]
-tox = "^3.24.3"
+tox = "^3.28.0"
 coverage = "^6.2"
 flake8 = "^4.0.1"
 mypy = ">= 0.920, < 1.00"

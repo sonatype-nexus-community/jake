@@ -44,6 +44,16 @@ from . import BaseCommand
 from . import parser_selector
 
 
+
+def _oss_component_purl(c: OssIndexComponent) -> PackageURL:
+    purl: PackageURL = c.purl
+    if purl.qualifiers and purl.type == "conda":
+        purl_dict = purl.to_dict()
+        purl_dict["qualifiers"] = None
+        purl = PackageURL(**purl_dict)
+    return purl
+
+
 class OssCommand(BaseCommand):
     _console: Console
 
@@ -81,9 +91,8 @@ class OssCommand(BaseCommand):
                 progress.update(task_query_ossi, completed=2, description='Cleared OSS Index local cache')
 
             progress.update(task_query_ossi, completed=3, description='Querying OSS Index for details on your packages')
-
             oss_index_results = oss.get_component_report(
-                packages=list(map(lambda c: c.purl, filter(lambda c: c.purl, parser.get_components())))
+                packages=list(map(_oss_component_purl, filter(lambda c: c.purl, parser.get_components())))
             )
 
             if self.arguments.oss_whitelist_json_file:
@@ -120,7 +129,7 @@ class OssCommand(BaseCommand):
             for component in parser.get_components():
                 if component.purl:
                     oss_index_component: OssIndexComponent = list(filter(
-                        lambda oic_: oic_.get_package_url().to_string() == cast(PackageURL, component.purl).to_string(),
+                        lambda oic_: oic_.get_package_url().to_string() == cast(PackageURL, _oss_component_purl(component)).to_string(),
                         oss_index_results
                     )).pop()
                 else:

@@ -15,6 +15,10 @@
     {
       "id": "CVE-2022-42969",
       "reason": "jake does not call the InfoSvnCommand class in the py library"
+    },
+    {
+      "id": "CVE-2023-5752",
+      "reason": "get build passing, bad pip version found in base container but upgraded in build"
     }
   ]
 }

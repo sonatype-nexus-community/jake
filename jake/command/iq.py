@@ -37,7 +37,7 @@ class IqCommand(BaseCommand):
         """
         Internal Nexus Lifecycle API class
 
-        @todo In the future this and other API accessor classes may be moved to their won PyPi package to enable
+        @todo In the future this and other API accessor classes may be moved to their own PyPi package to enable
                 wider reuse.
         """
 

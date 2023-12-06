@@ -119,7 +119,7 @@ jobs:
           command: |
             git config user.name "$GITHUB_USERNAME"
             git config user.email "$GITHUB_EMAIL"
-            semantic-release publish
+            semantic-release -v publish
 
   static_code_analysis:
     parameters:

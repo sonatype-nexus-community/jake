@@ -102,9 +102,9 @@ jobs:
             - "4f:7d:6b:26:dc:44:de:b0:4d:f1:96:50:2a:b5:bd:b3"
       - ensure_poetry_installed
       - run:
-          name: "Install python-semantic-release"
+          name: "Install python-semantic-release and twine"
           command: |
-            pip install python-semantic-release
+            pip install python-semantic-release twine
       - checkout
       - restore_cache: # ensure this step occurs *before* installing dependencies
           name: "Restore any valid cache"
@@ -119,7 +119,9 @@ jobs:
           command: |
             git config user.name "$GITHUB_USERNAME"
             git config user.email "$GITHUB_EMAIL"
-            semantic-release -vv publish
+            semantic-release -v version
+            twine upload dist/*
+            semantic-release -v publish
 
   static_code_analysis:
     parameters:

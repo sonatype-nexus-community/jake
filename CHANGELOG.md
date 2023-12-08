@@ -2,6 +2,13 @@
 
 
 
+## v3.0.9 (2023-12-08)
+
+### Fix
+
+* fix: bump toml version one ahead of latest git tag for first new semantic-release ([`52d459e`](https://github.com/sonatype-nexus-community/jake/commit/52d459ed2cfb2fe7c78ffe8e35cb0a58210f3343))
+
+
 ## v3.0.8 (2023-12-08)
 
 ### Fix

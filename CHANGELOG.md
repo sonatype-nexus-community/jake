@@ -2,6 +2,17 @@
 
 
 
+## v3.0.11 (2023-12-08)
+
+### Fix
+
+* fix: bump toml version one ahead. this one goes to 11 ([`c3daeb8`](https://github.com/sonatype-nexus-community/jake/commit/c3daeb808931756efc0a295de7eb5238984a4959))
+
+### Unknown
+
+* semantic-release versioning configuration (#149) ([`08f6c2f`](https://github.com/sonatype-nexus-community/jake/commit/08f6c2fdfabac0ae4876d4e38d9becb3242a38d1))
+
+
 ## v3.0.10 (2023-12-08)
 
 ### Fix

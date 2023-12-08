@@ -2,6 +2,13 @@
 
 
 
+## v3.0.10 (2023-12-08)
+
+### Fix
+
+* fix: bump toml version one ahead of latest git tag for first new semantic-release with twine credentials ([`9a76fe1`](https://github.com/sonatype-nexus-community/jake/commit/9a76fe10a2fadd4995cb5187d56aaa4739c9b913))
+
+
 ## v3.0.9 (2023-12-08)
 
 ### Fix

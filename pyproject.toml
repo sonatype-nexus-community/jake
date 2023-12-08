@@ -16,7 +16,7 @@
 
 [tool.poetry]
 name = "jake"
-version = "3.0.10"
+version = "3.0.11"
 description = "An OSS Index integration to check for vulnerabilities in your Python environments"
 authors = ["Sonatype Community <community-group@sonatype.com>"]
 maintainers = ["Sonatype Community <community-group@sonatype.com>"]

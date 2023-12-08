@@ -2,7 +2,12 @@
 
 
 
-## v3.0.6 (2023-12-08)
+## v3.0.3 (2023-12-08)
+
+### Fix
+
+* fix: try to sync versions manually for first new semantic-release ([`e92ecee`](https://github.com/sonatype-nexus-community/jake/commit/e92ecee264a124c0ca4b20dd5cd08cb189bc9be4))
+
 
 ## v3.0.2 (2023-12-08)
 

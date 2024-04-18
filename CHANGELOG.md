@@ -2,6 +2,21 @@
 
 
 
+## v3.0.12 (2024-04-18)
+
+### Fix
+
+* fix: resolve CVE-2024-3651 in idna-3.6 ([`218ac49`](https://github.com/sonatype-nexus-community/jake/commit/218ac49ba19001de9a1cedea25d375c6d032d9f0))
+
+### Unknown
+
+* CI internal - use new IQ [skip ci] ([`f064aa6`](https://github.com/sonatype-nexus-community/jake/commit/f064aa696f3d98117d4f764cdd6c48e8493e6f12))
+
+* remove githubStatusUpdate() calls from Jenkinsfile (remove empty stanza) ([`068de48`](https://github.com/sonatype-nexus-community/jake/commit/068de481242de0f52d06abf97ba052ccd76bc5f6))
+
+* remove githubStatusUpdate() calls from Jenkinsfile ([`3af7afc`](https://github.com/sonatype-nexus-community/jake/commit/3af7afc8c6e43e19c7b93dcd564a52584c57d258))
+
+
 ## v3.0.11 (2023-12-08)
 
 ### Fix
@@ -34,7 +49,7 @@
 * fix: sync versions again manually for first new semantic-release (added git tag) ([`d096fc9`](https://github.com/sonatype-nexus-community/jake/commit/d096fc986c6fab471c50d563c40ef3dfb171957e))
 
 
-## v3.0.7 (2023-12-08)
+## v3.0.7 (2023-12-07)
 
 ### Fix
 
@@ -189,7 +204,7 @@ Drop python 3.6 support, CI fixes ([`4b5b4b7`](https://github.com/sonatype-nexus
 
 ## v3.0.0 (2022-12-02)
 
-### Feature
+### Breaking
 
 * feat: Support for all input formats when running jake ddt or jake iq (#125)
 
@@ -2445,7 +2460,7 @@ Co-authored-by: Allen Hsieh &lt;10136383+allenhsieh@users.noreply.github.com&gt;
 Semantic Release fun stuff ([`005d0c6`](https://github.com/sonatype-nexus-community/jake/commit/005d0c67e44e03be5ee30d50be81d56f7f1ed35a))
 
 
-## v0.0.0 (2019-11-06)
+## v0.0.0 (2019-11-05)
 
 ### Unknown
 

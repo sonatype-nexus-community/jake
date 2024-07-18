@@ -432,7 +432,8 @@ For example, to perform a "patch" release, add a commit to `main` with a comment
 ```
 fix: Resolve vulnerability: CVE-2020-27783 in lxml
 ```
-(test release script changes)
+
+CI Release madness: If using Twine to release to PyPi, you now need to use a username of `__token__` and a password of an API token as [described here](https://www.reddit.com/r/AskProgramming/comments/190sjz8/is_twine_no_longer_supported_by_pypi/).
 
 ## The Fine Print
 

@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v3.0.14 (2024-07-18)
+
+### Fix
+
+* fix: release script changes ([`6efcb5f`](https://github.com/sonatype-nexus-community/jake/commit/6efcb5f0b63a89cab93e3a8ab70644f611de726f))
+
 ## v3.0.13 (2024-07-18)
 
 ### Fix

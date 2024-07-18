@@ -1,6 +1,22 @@
 # CHANGELOG
 
+## v3.0.13 (2024-07-18)
 
+### Fix
+
+* fix: CVE-2024-5569 in setuptools 70.1.1 ([`4ceefb8`](https://github.com/sonatype-nexus-community/jake/commit/4ceefb8ff97138b81cc68ac0eccdad26905281e2))
+
+### Unknown
+
+* Get nightly build happy (#152)
+
+* fix: resolve CVE-2024-35195 in requests-2.31.0, via requests-2.32.3 which requires python 3.8
+
+* fix: requests-2.32.3 requires python 3.8
+
+* fix: CVE-2024-39689 in certifi@2024.6.2
+
+* tox.ini has another &#34;lowest&#34; setting ([`e246435`](https://github.com/sonatype-nexus-community/jake/commit/e246435e219fcbc06ca44e5ca7c6e8b473c4db39))
 
 ## v3.0.12 (2024-04-18)
 
@@ -16,7 +32,6 @@
 
 * remove githubStatusUpdate() calls from Jenkinsfile ([`3af7afc`](https://github.com/sonatype-nexus-community/jake/commit/3af7afc8c6e43e19c7b93dcd564a52584c57d258))
 
-
 ## v3.0.11 (2023-12-08)
 
 ### Fix
@@ -27,13 +42,11 @@
 
 * semantic-release versioning configuration (#149) ([`08f6c2f`](https://github.com/sonatype-nexus-community/jake/commit/08f6c2fdfabac0ae4876d4e38d9becb3242a38d1))
 
-
 ## v3.0.10 (2023-12-08)
 
 ### Fix
 
 * fix: bump toml version one ahead of latest git tag for first new semantic-release with twine credentials ([`9a76fe1`](https://github.com/sonatype-nexus-community/jake/commit/9a76fe10a2fadd4995cb5187d56aaa4739c9b913))
-
 
 ## v3.0.9 (2023-12-08)
 
@@ -41,20 +54,17 @@
 
 * fix: bump toml version one ahead of latest git tag for first new semantic-release ([`52d459e`](https://github.com/sonatype-nexus-community/jake/commit/52d459ed2cfb2fe7c78ffe8e35cb0a58210f3343))
 
-
 ## v3.0.8 (2023-12-08)
 
 ### Fix
 
 * fix: sync versions again manually for first new semantic-release (added git tag) ([`d096fc9`](https://github.com/sonatype-nexus-community/jake/commit/d096fc986c6fab471c50d563c40ef3dfb171957e))
 
-
-## v3.0.7 (2023-12-07)
+## v3.0.3 (2023-12-08)
 
 ### Fix
 
 * fix: try to sync versions manually for first new semantic-release ([`e92ecee`](https://github.com/sonatype-nexus-community/jake/commit/e92ecee264a124c0ca4b20dd5cd08cb189bc9be4))
-
 
 ## v3.0.2 (2023-12-08)
 
@@ -101,7 +111,6 @@
 * temporary revert of resolve CVE-2023-37920 ([`dc52c76`](https://github.com/sonatype-nexus-community/jake/commit/dc52c76f3ad0bbbd46a92129ad397e9a24ba7c73))
 
 * resolve CVE-2023-37920 ([`9050ebc`](https://github.com/sonatype-nexus-community/jake/commit/9050ebcd4c67d1dae95bdd01959067400a1e780a))
-
 
 ## v3.0.1 (2023-05-30)
 
@@ -201,7 +210,6 @@ Drop python 3.6 support, CI fixes ([`4b5b4b7`](https://github.com/sonatype-nexus
 
 * revert fix: CVE-2022-23491 in certifi 2022.5.18.1, need to investigate other failures, waive violation while digging. ([`10ec0e1`](https://github.com/sonatype-nexus-community/jake/commit/10ec0e1f1d13ed678429546a66ae69d4ff6b0196))
 
-
 ## v3.0.0 (2022-12-02)
 
 ### Breaking
@@ -226,7 +234,6 @@ Co-authored-by: Dan Rollo &lt;danrollo@gmail.com&gt; ([`9a597b5`](https://github
 
 * add agentLabel: &#39;ubuntu-zion-legacy&#39; to get build happy for now ([`ba16abe`](https://github.com/sonatype-nexus-community/jake/commit/ba16abe5a4aa87a741978181f0039a831995e75c))
 
-
 ## v2.1.1 (2022-06-09)
 
 ### Ci
@@ -235,12 +242,17 @@ Co-authored-by: Dan Rollo &lt;danrollo@gmail.com&gt; ([`9a597b5`](https://github
 
 Signed-off-by: Paul Horton &lt;phorton@sonatype.com&gt; ([`88d390c`](https://github.com/sonatype-nexus-community/jake/commit/88d390c629cc1c2260745dabac3eb744f0448ea3))
 
+### Fix
+
+* fix: removed typo from default value of `--schema-version` argument #117
+
+Signed-off-by: Paul Horton &lt;phorton@sonatype.com&gt; ([`e9e4764`](https://github.com/sonatype-nexus-community/jake/commit/e9e47649ab87eacdd0a98d8ee9798615d8913fdf))
+
 ### Unknown
 
 * Merge pull request #120 from sonatype-nexus-community/fix/schema-version-argument-typo-117
 
 fix: removed typo from default value of `--schema-version` argument #117 ([`738a00e`](https://github.com/sonatype-nexus-community/jake/commit/738a00e91897e2673037bb8656481e321cc7b695))
-
 
 ## v2.1.0 (2022-06-09)
 
@@ -259,12 +271,6 @@ Signed-off-by: Paul Horton &lt;phorton@sonatype.com&gt; ([`1da3571`](https://git
 ### Feature
 
 * feat: add support for vulnerability whitelist when running `jake ddt` - thanks @daviskirk! ([`80e1136`](https://github.com/sonatype-nexus-community/jake/commit/80e113620642a032a767bd064ec317a7f19b7de1))
-
-### Fix
-
-* fix: removed typo from default value of `--schema-version` argument #117
-
-Signed-off-by: Paul Horton &lt;phorton@sonatype.com&gt; ([`e9e4764`](https://github.com/sonatype-nexus-community/jake/commit/e9e47649ab87eacdd0a98d8ee9798615d8913fdf))
 
 ### Unknown
 
@@ -294,8 +300,19 @@ This reverts commit 6a129a3acfb48c80732635a13f91d228de392fb2. ([`8f2a381`](https
 
 Signed-off-by: Paul Horton &lt;phorton@sonatype.com&gt; ([`1230079`](https://github.com/sonatype-nexus-community/jake/commit/1230079b781a745f655ab2eb6ece7abcf895cb2e))
 
-
 ## v2.0.0 (2022-03-10)
+
+### Unknown
+
+* Merge pull request #109 from sonatype-nexus-community/dev
+
+BREAKING CHANGE: Feature Release ([`398e70d`](https://github.com/sonatype-nexus-community/jake/commit/398e70d27113f82f82ad87f9e85480c6f9af204b))
+
+* Merge branch &#39;main&#39; into dev ([`e2702ae`](https://github.com/sonatype-nexus-community/jake/commit/e2702aeb0857d116359603256d19f572318b975e))
+
+* prevent manual_release job on non-main branches. partial fix for #108 (#115) ([`6a5fe46`](https://github.com/sonatype-nexus-community/jake/commit/6a5fe466696981d276d215b06707b379790af38b))
+
+## v1.4.5 (2022-02-15)
 
 ### Breaking
 
@@ -304,6 +321,12 @@ Signed-off-by: Paul Horton &lt;phorton@sonatype.com&gt; ([`1230079`](https://git
 BREAKING CHANGE: Notion of default schema version has been removed by upstream library and replaced with latest supported schema version
 
 Signed-off-by: Paul Horton &lt;phorton@sonatype.com&gt; ([`e437bb4`](https://github.com/sonatype-nexus-community/jake/commit/e437bb41ddbb84d7844f40b213878c67c071cc23))
+
+### Chore
+
+* chore: bumped dependencies (#107)
+
+Signed-off-by: Paul Horton &lt;phorton@sonatype.com&gt; ([`2ee98fe`](https://github.com/sonatype-nexus-community/jake/commit/2ee98fea6453003b4581dbd02127009ae5b91a82))
 
 ### Feature
 
@@ -358,34 +381,6 @@ Signed-off-by: Paul Horton &lt;phorton@sonatype.com&gt;
 
 Signed-off-by: Paul Horton &lt;phorton@sonatype.com&gt; ([`a0ab7ee`](https://github.com/sonatype-nexus-community/jake/commit/a0ab7eecac96ea9dd1324117651556493247eb98))
 
-### Fix
-
-* fix: resolve historic oss index caching issues
-
-feat: support for oss index authentication
-Signed-off-by: Paul Horton &lt;phorton@sonatype.com&gt; ([`dc03aa9`](https://github.com/sonatype-nexus-community/jake/commit/dc03aa923cf2a8c48d0ad9e7e30cb188fb3a5a96))
-
-### Unknown
-
-* Merge pull request #109 from sonatype-nexus-community/dev
-
-BREAKING CHANGE: Feature Release ([`398e70d`](https://github.com/sonatype-nexus-community/jake/commit/398e70d27113f82f82ad87f9e85480c6f9af204b))
-
-* Merge branch &#39;main&#39; into dev ([`e2702ae`](https://github.com/sonatype-nexus-community/jake/commit/e2702aeb0857d116359603256d19f572318b975e))
-
-* prevent manual_release job on non-main branches. partial fix for #108 (#115) ([`6a5fe46`](https://github.com/sonatype-nexus-community/jake/commit/6a5fe466696981d276d215b06707b379790af38b))
-
-
-## v1.4.5 (2022-02-15)
-
-### Chore
-
-* chore: bumped dependencies (#107)
-
-Signed-off-by: Paul Horton &lt;phorton@sonatype.com&gt; ([`2ee98fe`](https://github.com/sonatype-nexus-community/jake/commit/2ee98fea6453003b4581dbd02127009ae5b91a82))
-
-### Feature
-
 * feat: support for Python 3.10 (#110)
 
 Signed-off-by: Paul Horton &lt;phorton@sonatype.com&gt; ([`671c8c4`](https://github.com/sonatype-nexus-community/jake/commit/671c8c4bb682b4b944568198ecf381818d49f3ac))
@@ -396,12 +391,16 @@ Signed-off-by: Paul Horton &lt;phorton@sonatype.com&gt; ([`671c8c4`](https://git
 
 Signed-off-by: Paul Horton &lt;phorton@sonatype.com&gt; ([`8a43e0a`](https://github.com/sonatype-nexus-community/jake/commit/8a43e0af074f797abaddcc0a542b5e08d8a75b36))
 
+* fix: resolve historic oss index caching issues
+
+feat: support for oss index authentication
+Signed-off-by: Paul Horton &lt;phorton@sonatype.com&gt; ([`dc03aa9`](https://github.com/sonatype-nexus-community/jake/commit/dc03aa923cf2a8c48d0ad9e7e30cb188fb3a5a96))
+
 ### Unknown
 
 * doc: first pass at docs for RTD (#111)
 
 Signed-off-by: Paul Horton &lt;phorton@sonatype.com&gt; ([`223978f`](https://github.com/sonatype-nexus-community/jake/commit/223978f94e43f69ee47a9db80e9542accc2646fe))
-
 
 ## v1.4.4 (2022-02-08)
 
@@ -413,7 +412,6 @@ fix: Vulnerability rating score now formatted to 1 decimal place
 
 Signed-off-by: Paul Horton &lt;phorton@sonatype.com&gt; ([`3e15cb1`](https://github.com/sonatype-nexus-community/jake/commit/3e15cb16c037d8bb09eb5c38dbd239dd345f09cc))
 
-
 ## v1.4.3 (2022-02-03)
 
 ### Fix
@@ -422,7 +420,6 @@ Signed-off-by: Paul Horton &lt;phorton@sonatype.com&gt; ([`3e15cb1`](https://git
 
 Signed-off-by: Paul Horton &lt;phorton@sonatype.com&gt; ([`6ec49a6`](https://github.com/sonatype-nexus-community/jake/commit/6ec49a6a7d2b22b2535346409ee49fc3cd5f2c8b))
 
-
 ## v1.4.2 (2022-01-31)
 
 ### Fix
@@ -430,7 +427,6 @@ Signed-off-by: Paul Horton &lt;phorton@sonatype.com&gt; ([`6ec49a6`](https://git
 * fix: corrected data placement for Vulnerabilities returned from OSS Index when generating an SBOM (#94)
 
 Signed-off-by: Paul Horton &lt;phorton@sonatype.com&gt; ([`eb12286`](https://github.com/sonatype-nexus-community/jake/commit/eb1228602c63784da751749cce14ee9fec9f3d1f))
-
 
 ## v1.4.1 (2022-01-24)
 
@@ -454,7 +450,6 @@ Signed-off-by: Paul Horton &lt;phorton@sonatype.com&gt; ([`df2aad2`](https://git
 * [skip ci] add license header (newline after header) ([`4cde312`](https://github.com/sonatype-nexus-community/jake/commit/4cde3125dc67c206b00b03851a02540b607e109b))
 
 * [skip ci] add license header ([`fddd1a7`](https://github.com/sonatype-nexus-community/jake/commit/fddd1a7f438eedc02ed405333522df6471c7d6f3))
-
 
 ## v1.4.0 (2022-01-13)
 
@@ -484,13 +479,11 @@ Signed-off-by: Paul Horton &lt;phorton@sonatype.com&gt; ([`20c62fc`](https://git
 
 Signed-off-by: Paul Horton &lt;phorton@sonatype.com&gt; ([`8360771`](https://github.com/sonatype-nexus-community/jake/commit/83607715c545e8526c430a60a9f1574fc34f85e0))
 
-
 ## v1.3.0 (2022-01-11)
 
 ### Feature
 
 * feat(pre-commit): add pre-commit hooks (#85) ([`45f108e`](https://github.com/sonatype-nexus-community/jake/commit/45f108e018925f932768f29855b19342fcec2ac1))
-
 
 ## v1.2.3 (2021-12-22)
 
@@ -499,7 +492,6 @@ Signed-off-by: Paul Horton &lt;phorton@sonatype.com&gt; ([`8360771`](https://git
 * fix: resolved regression when running `jake ddt` where return code != 0 when vulnerabilities discovered
 
 Signed-off-by: Paul Horton &lt;phorton@sonatype.com&gt; ([`8a10e70`](https://github.com/sonatype-nexus-community/jake/commit/8a10e700cea51b649ef7f2271a44e42109264e9a))
-
 
 ## v1.2.2 (2021-12-15)
 
@@ -515,7 +507,6 @@ Signed-off-by: Paul Horton &lt;phorton@sonatype.com&gt; ([`bcb0a3d`](https://git
 * Merge pull request #81 from sonatype-nexus-community/feat/relax-and-tidy-dependencies
 
 fix: addressed dependency review #73 ([`dbe5d31`](https://github.com/sonatype-nexus-community/jake/commit/dbe5d313f29cb75f004fefc4f0cdb902ad630273))
-
 
 ## v1.2.1 (2021-12-15)
 
@@ -541,7 +532,6 @@ fix: bumped dependencies to resolve wheel-only installation ([`9458d3b`](https:/
 
 ci: disable GitHub Workflows as per #76 ([`d5af310`](https://github.com/sonatype-nexus-community/jake/commit/d5af310a6d835524307dab923366866a5dc52ce8))
 
-
 ## v1.2.0 (2021-12-13)
 
 ### Chore
@@ -555,14 +545,6 @@ Signed-off-by: Paul Horton &lt;phorton@sonatype.com&gt; ([`3ba93e3`](https://git
 * feat: replaced `yaspin`, `termcolor` and `terminaltable` with `rich` - see #72, #73, #77
 
 Signed-off-by: Paul Horton &lt;phorton@sonatype.com&gt; ([`8534ad9`](https://github.com/sonatype-nexus-community/jake/commit/8534ad92acf6b70407492e55ec68ede3190a393b))
-
-* feat: removed `terminaltables` and replaced with `rich`s table implementation
-
-Signed-off-by: Paul Horton &lt;phorton@sonatype.com&gt; ([`416b03c`](https://github.com/sonatype-nexus-community/jake/commit/416b03c0c844a28512143826453ad956e98abd7c))
-
-* feat: removed `yaspin` and replaced with `rich`
-
-Signed-off-by: Paul Horton &lt;phorton@sonatype.com&gt; ([`76c4a54`](https://github.com/sonatype-nexus-community/jake/commit/76c4a5451e04c28612ab3c034bbd4a84fa413c94))
 
 ### Fix
 
@@ -584,8 +566,17 @@ Signed-off-by: Paul Horton &lt;phorton@sonatype.com&gt; ([`99c83ee`](https://git
 
 Signed-off-by: Paul Horton &lt;phorton@sonatype.com&gt; ([`d02fef3`](https://github.com/sonatype-nexus-community/jake/commit/d02fef3c6ccc26482c9ac7de8a9aeb989495fe05))
 
-
 ## v1.1.5 (2021-12-09)
+
+### Feature
+
+* feat: removed `terminaltables` and replaced with `rich`s table implementation
+
+Signed-off-by: Paul Horton &lt;phorton@sonatype.com&gt; ([`416b03c`](https://github.com/sonatype-nexus-community/jake/commit/416b03c0c844a28512143826453ad956e98abd7c))
+
+* feat: removed `yaspin` and replaced with `rich`
+
+Signed-off-by: Paul Horton &lt;phorton@sonatype.com&gt; ([`76c4a54`](https://github.com/sonatype-nexus-community/jake/commit/76c4a5451e04c28612ab3c034bbd4a84fa413c94))
 
 ### Fix
 
@@ -594,7 +585,6 @@ Signed-off-by: Paul Horton &lt;phorton@sonatype.com&gt; ([`d02fef3`](https://git
 * fix: bump required version of cyclonedx-python-lib to help lax transitive dependencies
 
 Signed-off-by: Paul Horton &lt;phorton@sonatype.com&gt; ([`34e501d`](https://github.com/sonatype-nexus-community/jake/commit/34e501d062da5607f86879e136d1f988de6dd872))
-
 
 ## v1.1.4 (2021-12-07)
 
@@ -622,9 +612,6 @@ fix: ensure dependencies can be installed from binary packages #72 ([`55fd644`](
 
 * Merge branch &#39;main&#39; of github.com:sonatype-nexus-community/jake ([`091b4e9`](https://github.com/sonatype-nexus-community/jake/commit/091b4e90aeb19d9d81de0379b3e59eedee23ea2e))
 
-* add doco about required comment prefix for a release to be generated ([`839be7c`](https://github.com/sonatype-nexus-community/jake/commit/839be7ca10512ad12410d72c3f81b7b0298b9cd7))
-
-
 ## v1.1.3 (2021-11-10)
 
 ### Fix
@@ -633,10 +620,11 @@ fix: ensure dependencies can be installed from binary packages #72 ([`55fd644`](
 
 ### Unknown
 
+* add doco about required comment prefix for a release to be generated ([`839be7c`](https://github.com/sonatype-nexus-community/jake/commit/839be7ca10512ad12410d72c3f81b7b0298b9cd7))
+
 * return exit code up the call stack ([`193b2b4`](https://github.com/sonatype-nexus-community/jake/commit/193b2b4c3fa3a085a70d9368ebf7a4d81dce4cd7))
 
 * run IQ using &#39;release&#39; stage to trigger policy failure actions ([`bc2d362`](https://github.com/sonatype-nexus-community/jake/commit/bc2d36290efbb55fcae830db450548320529f5e7))
-
 
 ## v1.1.2 (2021-11-10)
 
@@ -649,7 +637,6 @@ fix: ensure dependencies can be installed from binary packages #72 ([`55fd644`](
 * use iq.sonatype.dev, new server, new credentials ([`46c2979`](https://github.com/sonatype-nexus-community/jake/commit/46c29795e14d8c9367f1624e7d6b86a2953fa750))
 
 * use iq.sonatype.dev ([`2eba0f9`](https://github.com/sonatype-nexus-community/jake/commit/2eba0f985e19c1631e3c6a17d86e6968e2709e2a))
-
 
 ## v1.1.1 (2021-11-09)
 
@@ -689,7 +676,6 @@ fix: ensure dependencies can be installed from binary packages #72 ([`55fd644`](
 
 * revert unused files - restore Jenkinsfile ([`719b914`](https://github.com/sonatype-nexus-community/jake/commit/719b9144bcc2a2152b459b13cd4342753d94ab13))
 
-
 ## v1.1.0 (2021-10-22)
 
 ### Feature
@@ -715,7 +701,6 @@ Signed-off-by: Paul Horton &lt;phorton@sonatype.com&gt; ([`7d9274f`](https://git
 
 * Updated config.yml ([`b1cfcb4`](https://github.com/sonatype-nexus-community/jake/commit/b1cfcb46796c3c285197d5c2c70d4a0061742b72))
 
-
 ## v1.0.1 (2021-10-20)
 
 ### Fix
@@ -730,7 +715,6 @@ Signed-off-by: Paul Horton &lt;phorton@sonatype.com&gt; ([`7667bac`](https://git
 * Merge pull request #69 from sonatype-nexus-community/fix/issue-65-exit-code
 
 FIX: Enable non-zero exit code + correct logic in determining Nexus IQ policy warnings ([`7b6122b`](https://github.com/sonatype-nexus-community/jake/commit/7b6122beafa6dec72da793fc9185cbc9b1bd6a33))
-
 
 ## v1.0.0 (2021-10-18)
 
@@ -866,7 +850,6 @@ Signed-off-by: Paul Horton &lt;phorton@sonatype.com&gt; ([`7ed4f4e`](https://git
 
 Signed-off-by: Paul Horton &lt;phorton@sonatype.com&gt; ([`23f6412`](https://github.com/sonatype-nexus-community/jake/commit/23f6412a3655ed19b0aed2ead21d6c35535e3fd1))
 
-
 ## v0.2.77 (2021-07-06)
 
 ### Fix
@@ -878,7 +861,6 @@ Signed-off-by: Paul Horton &lt;phorton@sonatype.com&gt; ([`23f6412`](https://git
 * 0.2.77
 
 [skip ci] ([`fc2ecb1`](https://github.com/sonatype-nexus-community/jake/commit/fc2ecb17303943cd9dba28383fc062f5700028c3))
-
 
 ## v0.2.76 (2021-06-29)
 
@@ -904,7 +886,6 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 
 * attempt to fix: ModuleNotFoundError: No module named &#39;typing_extensions&#39;, occurring in &#39;python3.7/site-packages/tinydb/queries.py&#34;, line 28&#39; on Jenkins CI [skip ci] ([`1e25b8e`](https://github.com/sonatype-nexus-community/jake/commit/1e25b8ea5778321da1602c9536fd0995a01803e2))
 
-
 ## v0.2.75 (2021-05-25)
 
 ### Unknown
@@ -919,7 +900,6 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 
 * move more dev requirements ([`171e440`](https://github.com/sonatype-nexus-community/jake/commit/171e440a9468331026a55e43dc42561e0761609a))
 
-
 ## v0.2.74 (2021-05-25)
 
 ### Unknown
@@ -932,7 +912,6 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 
 * add support for reading dependecies from pip requirements file ([`aa36e9f`](https://github.com/sonatype-nexus-community/jake/commit/aa36e9f2ed09193c2121a791c237ff96f3a83c3f))
 
-
 ## v0.2.73 (2021-05-25)
 
 ### Unknown
@@ -944,7 +923,6 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 * Add support for reading dependecies from pip requirements file (#55)
 
 * add support for reading dependecies from pip requirements file ([`542d94a`](https://github.com/sonatype-nexus-community/jake/commit/542d94a0b782e51684042ec6c38b69a9997e7397))
-
 
 ## v0.2.72 (2021-05-13)
 
@@ -962,7 +940,6 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 
 [skip ci] ([`6f833ba`](https://github.com/sonatype-nexus-community/jake/commit/6f833ba9aa0e0488e8dfdf540c11d7e70424bd17))
 
-
 ## v0.2.71 (2021-05-13)
 
 ### Fix
@@ -978,7 +955,6 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 
 [skip ci] ([`92c9917`](https://github.com/sonatype-nexus-community/jake/commit/92c991794cb7a7423540ea66f212635cc3c37168))
 
-
 ## v0.2.70 (2021-04-07)
 
 ### Fix
@@ -990,7 +966,6 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 * 0.2.70
 
 [skip ci] ([`f60f251`](https://github.com/sonatype-nexus-community/jake/commit/f60f25134c64c3e7d3426546913daec1837aeb47))
-
 
 ## v0.2.69 (2021-03-25)
 
@@ -1004,7 +979,6 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 
 [skip ci] ([`c2c9004`](https://github.com/sonatype-nexus-community/jake/commit/c2c9004e3a15fcb2cc6530f47f7b4044f89d140b))
 
-
 ## v0.2.68 (2021-03-23)
 
 ### Unknown
@@ -1014,7 +988,6 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 [skip ci] ([`9505ed2`](https://github.com/sonatype-nexus-community/jake/commit/9505ed2d1a9eee18d5db3b9cbab3a2edcd99ed78))
 
 * extract common executor ([`a671abd`](https://github.com/sonatype-nexus-community/jake/commit/a671abda744707e16680573ce823b1543e794396))
-
 
 ## v0.2.67 (2021-03-18)
 
@@ -1026,7 +999,6 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 
 * upgrade urllib3 to fix CVE-2021-28363 (#52) ([`eb2fead`](https://github.com/sonatype-nexus-community/jake/commit/eb2feadb3aacd631985629fe2a17265a5d62c4ea))
 
-
 ## v0.2.66 (2021-02-11)
 
 ### Unknown
@@ -1036,7 +1008,6 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 [skip ci] ([`49550f2`](https://github.com/sonatype-nexus-community/jake/commit/49550f2aa4fcf145e6f449d6dfe1cc43ca68d2cb))
 
 * stagger cron time ([`0c8cc27`](https://github.com/sonatype-nexus-community/jake/commit/0c8cc27e43d321692ee49882282c14a0421a3564))
-
 
 ## v0.2.65 (2021-01-27)
 
@@ -1050,7 +1021,6 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 
 * use an absolute report url (handle IQ 104+) ([`2cac53e`](https://github.com/sonatype-nexus-community/jake/commit/2cac53e768bf94ac7e4b1498018287c1f0be1fac))
 
-
 ## v0.2.64 (2020-12-17)
 
 ### Unknown
@@ -1061,7 +1031,6 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 
 * use link to raw logo file - avoid 302, 304 redirect ([`3b9a2df`](https://github.com/sonatype-nexus-community/jake/commit/3b9a2df6587eb36396907997f8d2163152dd00f0))
 
-
 ## v0.2.63 (2020-12-17)
 
 ### Unknown
@@ -1071,7 +1040,6 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 [skip ci] ([`29b8ef1`](https://github.com/sonatype-nexus-community/jake/commit/29b8ef1804883fca8aaa73f2de39ef9d292f780d))
 
 * try svg logo for pypi ([`95e4aec`](https://github.com/sonatype-nexus-community/jake/commit/95e4aecd493abab258fcf395ff337e7e94c9df74))
-
 
 ## v0.2.62 (2020-12-17)
 
@@ -1086,7 +1054,6 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 * simplify logo markdown so it will show on pypi.org pages
 * use smaller Jake logo ([`67d460b`](https://github.com/sonatype-nexus-community/jake/commit/67d460b63b1286f721b2ef08b51bc2bfee25f4cc))
 
-
 ## v0.2.61 (2020-12-17)
 
 ### Unknown
@@ -1096,7 +1063,6 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 [skip ci] ([`ce6dc87`](https://github.com/sonatype-nexus-community/jake/commit/ce6dc879ce3872c41398daeed42f180dc8d95a4c))
 
 * exclude SECURITY.md from license check in internal build ([`87e8662`](https://github.com/sonatype-nexus-community/jake/commit/87e866293b00e93d5499c07ed5b76eff9bd2de71))
-
 
 ## v0.2.60 (2020-12-16)
 
@@ -1109,7 +1075,6 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 * updated SECURITY.md (#47) ([`f76e378`](https://github.com/sonatype-nexus-community/jake/commit/f76e37889081bb7a5c9e4ae802747d3b8aa3cccd))
 
 * [skip ci] typos ([`9496dc1`](https://github.com/sonatype-nexus-community/jake/commit/9496dc1038a562f86cf3b1bd273ec786a885fa38))
-
 
 ## v0.2.59 (2020-12-09)
 
@@ -1139,7 +1104,6 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 
 * [skip ci] typo ([`ec96fa4`](https://github.com/sonatype-nexus-community/jake/commit/ec96fa452ab964ee21f32a80412612b562f494f0))
 
-
 ## v0.2.58 (2020-12-07)
 
 ### Unknown
@@ -1152,7 +1116,6 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 
 * &#34;quiet&#34; by default, fix verbose error message hint ([`e946ef9`](https://github.com/sonatype-nexus-community/jake/commit/e946ef95c6b839089a298a6dcc2a552eb2218ee6))
 
-
 ## v0.2.57 (2020-11-12)
 
 ### Unknown
@@ -1162,7 +1125,6 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 [skip ci] ([`0812781`](https://github.com/sonatype-nexus-community/jake/commit/0812781bbb68c18c751debde954592862cffa54d))
 
 * fix doc links ([`e23bb78`](https://github.com/sonatype-nexus-community/jake/commit/e23bb7881b3ce909bcfb00e98c06f6a8c4d79a8c))
-
 
 ## v0.2.56 (2020-11-12)
 
@@ -1176,7 +1138,6 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 
 * Document internal build files. ([`0303c41`](https://github.com/sonatype-nexus-community/jake/commit/0303c4125c854c54586c93ade136dda2b569109f))
 
-
 ## v0.2.55 (2020-11-12)
 
 ### Unknown
@@ -1186,7 +1147,6 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 [skip ci] ([`ddef852`](https://github.com/sonatype-nexus-community/jake/commit/ddef8521401ead808402388afa2612fee6e8f5cf))
 
 * yes, do the dev-requirements uninstall ([`42a41a7`](https://github.com/sonatype-nexus-community/jake/commit/42a41a740453283739a01ffb5274fd8e08654561))
-
 
 ## v0.2.54 (2020-11-12)
 
@@ -1198,9 +1158,6 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 
 * Merge branch &#39;main&#39; of github.com:sonatype-nexus-community/jake into main ([`076baa3`](https://github.com/sonatype-nexus-community/jake/commit/076baa3d7b871a4ac723f6a537b0c1ba5dd7388b))
 
-* try removing dev requirements before self-scan ([`fd6cc30`](https://github.com/sonatype-nexus-community/jake/commit/fd6cc30b34d56071a4c41d105646593cbc51719e))
-
-
 ## v0.2.53 (2020-11-12)
 
 ### Unknown
@@ -1209,10 +1166,9 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 
 [skip ci] ([`e167375`](https://github.com/sonatype-nexus-community/jake/commit/e167375d896d5875d02f671d6460a2fc44828fac))
 
+* try removing dev requirements before self-scan ([`fd6cc30`](https://github.com/sonatype-nexus-community/jake/commit/fd6cc30b34d56071a4c41d105646593cbc51719e))
+
 * Merge branch &#39;main&#39; of github.com:sonatype-nexus-community/jake into main ([`5ef66bb`](https://github.com/sonatype-nexus-community/jake/commit/5ef66bb975eb254ea002994c34d2ff264185b24f))
-
-* internal build: don&#39;t scan semantic version release log for headers. invisible infrastructure ([`9011de2`](https://github.com/sonatype-nexus-community/jake/commit/9011de21c83c513addb2c2ddc7d344cd8db4d7bf))
-
 
 ## v0.2.52 (2020-11-12)
 
@@ -1222,8 +1178,9 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 
 [skip ci] ([`286d9c7`](https://github.com/sonatype-nexus-community/jake/commit/286d9c7667b3147f8854d9147b7f1af38f299ea9))
 
-* internal build: don&#39;t scan semantic version release log for headers. ([`aaab301`](https://github.com/sonatype-nexus-community/jake/commit/aaab301310f62130ee71158ce5676ca01c058567))
+* internal build: don&#39;t scan semantic version release log for headers. invisible infrastructure ([`9011de2`](https://github.com/sonatype-nexus-community/jake/commit/9011de21c83c513addb2c2ddc7d344cd8db4d7bf))
 
+* internal build: don&#39;t scan semantic version release log for headers. ([`aaab301`](https://github.com/sonatype-nexus-community/jake/commit/aaab301310f62130ee71158ce5676ca01c058567))
 
 ## v0.2.51 (2020-11-11)
 
@@ -1237,7 +1194,6 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 
 * create separate &#39;development only&#39; requirements file ([`7c1cd85`](https://github.com/sonatype-nexus-community/jake/commit/7c1cd8522c4df6473222c3f483469538fb84716f))
 
-
 ## v0.2.50 (2020-11-09)
 
 ### Unknown
@@ -1249,7 +1205,6 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 * remove extension parameter suffix from sbom &#39;version&#39; tag.  (#44)
 
 * remove extension parameter suffix from sbom &#39;version&#39; tag. fixes #43 ([`8b6ddef`](https://github.com/sonatype-nexus-community/jake/commit/8b6ddef858c74ccb004c2371c17bc86945c33405))
-
 
 ## v0.2.49 (2020-09-25)
 
@@ -1267,7 +1222,6 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 
 * switch CircleCi release config to main ([`1694241`](https://github.com/sonatype-nexus-community/jake/commit/16942410ab135ac6b8898c856d77ba56719753ea))
 
-
 ## v0.2.48 (2020-09-22)
 
 ### Unknown
@@ -1278,9 +1232,6 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 
 * Merge branch &#39;master&#39; of github.com:sonatype-nexus-community/jake ([`88b4c68`](https://github.com/sonatype-nexus-community/jake/commit/88b4c688176d76000a256afa5c64655a489852c4))
 
-* doh! stage-release ([`54f0d41`](https://github.com/sonatype-nexus-community/jake/commit/54f0d41ae1fe85d9fffc7a81f0397f3e80a3cfce))
-
-
 ## v0.2.47 (2020-09-22)
 
 ### Unknown
@@ -1289,8 +1240,9 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 
 [skip ci] ([`ff317a7`](https://github.com/sonatype-nexus-community/jake/commit/ff317a74b5262b857978c65842c159c2b8ee7a08))
 
-* scan at stage stage to trigger policy failures (instead of warnings). ([`a5e289e`](https://github.com/sonatype-nexus-community/jake/commit/a5e289ecf675df4cc6181a51849ce0024d1927ad))
+* doh! stage-release ([`54f0d41`](https://github.com/sonatype-nexus-community/jake/commit/54f0d41ae1fe85d9fffc7a81f0397f3e80a3cfce))
 
+* scan at stage stage to trigger policy failures (instead of warnings). ([`a5e289e`](https://github.com/sonatype-nexus-community/jake/commit/a5e289ecf675df4cc6181a51849ce0024d1927ad))
 
 ## v0.2.46 (2020-09-22)
 
@@ -1303,7 +1255,6 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 * Handle IQ warning (#39)
 
 * handle &#39;Warning&#39; from IQ policy ([`cdfd806`](https://github.com/sonatype-nexus-community/jake/commit/cdfd806a1151cde97747d6aa71577807ce1c4c15))
-
 
 ## v0.2.45 (2020-09-21)
 
@@ -1321,7 +1272,6 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 
 * try always cat log ([`210b7e3`](https://github.com/sonatype-nexus-community/jake/commit/210b7e3d82bcf9f68a33eade3b8aaeddadd2f86e))
 
-
 ## v0.2.44 (2020-09-21)
 
 ### Unknown
@@ -1331,7 +1281,6 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 [skip ci] ([`a9029cc`](https://github.com/sonatype-nexus-community/jake/commit/a9029cc2a066da9f77ea8d942dfe578ea94e2fad))
 
 * more shell madness ([`617d906`](https://github.com/sonatype-nexus-community/jake/commit/617d9066825b96300f98f1334aab5953ee62f828))
-
 
 ## v0.2.43 (2020-09-21)
 
@@ -1343,7 +1292,6 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 
 * fix fix failure detect ([`87df0dd`](https://github.com/sonatype-nexus-community/jake/commit/87df0dd5bc60e754e8e0d19c359b908e3d9a8f85))
 
-
 ## v0.2.42 (2020-09-21)
 
 ### Unknown
@@ -1353,7 +1301,6 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 [skip ci] ([`753ae2f`](https://github.com/sonatype-nexus-community/jake/commit/753ae2f62c63d83edebe20f40f88a6b2a5b069d2))
 
 * fix failure detect ([`8e60b05`](https://github.com/sonatype-nexus-community/jake/commit/8e60b05d824d819bbc59ca0c24e5ae811bb94dd8))
-
 
 ## v0.2.41 (2020-09-21)
 
@@ -1365,7 +1312,6 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 
 * cat log if failure occurs ([`595863d`](https://github.com/sonatype-nexus-community/jake/commit/595863dcfe3137169421e8bcf80baac0d0709d7c))
 
-
 ## v0.2.40 (2020-09-21)
 
 ### Unknown
@@ -1376,9 +1322,6 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 
 * Merge branch &#39;master&#39; of github.com:sonatype-nexus-community/jake ([`99fb149`](https://github.com/sonatype-nexus-community/jake/commit/99fb149c591af3b2c6c3580b943df2fcddb2621c))
 
-* typo madness ([`da77ee4`](https://github.com/sonatype-nexus-community/jake/commit/da77ee44e3d90b0b4c6be8f7bb70f215aa8139da))
-
-
 ## v0.2.39 (2020-09-21)
 
 ### Unknown
@@ -1387,8 +1330,9 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 
 [skip ci] ([`e2adefd`](https://github.com/sonatype-nexus-community/jake/commit/e2adefd94fda43db0a86cbfe5ea427868dbab7bf))
 
-* single quote path ([`312f05c`](https://github.com/sonatype-nexus-community/jake/commit/312f05caf0ad427242bfb70bfba4f07f92a79c45))
+* typo madness ([`da77ee4`](https://github.com/sonatype-nexus-community/jake/commit/da77ee44e3d90b0b4c6be8f7bb70f215aa8139da))
 
+* single quote path ([`312f05c`](https://github.com/sonatype-nexus-community/jake/commit/312f05caf0ad427242bfb70bfba4f07f92a79c45))
 
 ## v0.2.38 (2020-09-21)
 
@@ -1400,7 +1344,6 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 
 * double quote path ([`826f7a8`](https://github.com/sonatype-nexus-community/jake/commit/826f7a80f10bab2552f613f7db78cb437bf0b509))
 
-
 ## v0.2.37 (2020-09-21)
 
 ### Unknown
@@ -1410,7 +1353,6 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 [skip ci] ([`849f2fd`](https://github.com/sonatype-nexus-community/jake/commit/849f2fd4a3a4a5136b80f8211d79fb0e21797bfb))
 
 * print logfile location if verbose ([`64fd5ff`](https://github.com/sonatype-nexus-community/jake/commit/64fd5ff4f5f076beba912f0c8842ac358253b7d7))
-
 
 ## v0.2.36 (2020-09-21)
 
@@ -1422,7 +1364,6 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 
 * another try at cat ([`b715113`](https://github.com/sonatype-nexus-community/jake/commit/b71511333a3e19c58d08a4da25548e989a9c7970))
 
-
 ## v0.2.35 (2020-09-21)
 
 ### Unknown
@@ -1432,7 +1373,6 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 [skip ci] ([`59768d0`](https://github.com/sonatype-nexus-community/jake/commit/59768d0d20ebb24acf41fc8a2c5b5b1eb98c3bf8))
 
 * skip copy for now ([`91deef2`](https://github.com/sonatype-nexus-community/jake/commit/91deef248b67f7a24c9cce40d1ef461232d9f8eb))
-
 
 ## v0.2.34 (2020-09-21)
 
@@ -1444,7 +1384,6 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 
 * archive will not work if run before the scan ([`144e51f`](https://github.com/sonatype-nexus-community/jake/commit/144e51f7619d86540db9ceceb0297aaa9babbc00))
 
-
 ## v0.2.33 (2020-09-21)
 
 ### Unknown
@@ -1454,7 +1393,6 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 [skip ci] ([`01daa1a`](https://github.com/sonatype-nexus-community/jake/commit/01daa1af3005fac4bd262b8445ee3a36d9052722))
 
 * try to capture log in Jenkins ([`b7fb9ca`](https://github.com/sonatype-nexus-community/jake/commit/b7fb9ca6245045bd38bcc1d5bea50b08a59df23f))
-
 
 ## v0.2.32 (2020-09-21)
 
@@ -1466,7 +1404,6 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 
 * archive Jake log from Jenkins CI build, outside method call ([`624ef60`](https://github.com/sonatype-nexus-community/jake/commit/624ef60ea8cb087dc247ca851b742e6f1006c1aa))
 
-
 ## v0.2.31 (2020-09-21)
 
 ### Unknown
@@ -1477,11 +1414,6 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 
 * Merge branch &#39;master&#39; of github.com:sonatype-nexus-community/jake ([`06cf758`](https://github.com/sonatype-nexus-community/jake/commit/06cf7589e8cc414da49d9d725386f3c81440570d))
 
-* archive Jake log from Jenkins CI build ([`43703fb`](https://github.com/sonatype-nexus-community/jake/commit/43703fb59854ada6c48d7e7aee90612a345efef2))
-
-* err msg typo ([`3fa5744`](https://github.com/sonatype-nexus-community/jake/commit/3fa5744b9534b2fb3e820bdc217f34107153ed79))
-
-
 ## v0.2.30 (2020-09-21)
 
 ### Unknown
@@ -1490,10 +1422,11 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 
 [skip ci] ([`16b1258`](https://github.com/sonatype-nexus-community/jake/commit/16b12581068c85712c3be7b0ed30a0519aeeff6e))
 
+* archive Jake log from Jenkins CI build ([`43703fb`](https://github.com/sonatype-nexus-community/jake/commit/43703fb59854ada6c48d7e7aee90612a345efef2))
+
+* err msg typo ([`3fa5744`](https://github.com/sonatype-nexus-community/jake/commit/3fa5744b9534b2fb3e820bdc217f34107153ed79))
+
 * Merge branch &#39;master&#39; of github.com:sonatype-nexus-community/jake ([`7017f6a`](https://github.com/sonatype-nexus-community/jake/commit/7017f6a09f0e99f56358451c38ac964a686f648f))
-
-* increase verbosity of Jenkins build ([`024eb3a`](https://github.com/sonatype-nexus-community/jake/commit/024eb3a614e49f5e448a2901941b713be791120a))
-
 
 ## v0.2.29 (2020-09-21)
 
@@ -1503,8 +1436,9 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 
 [skip ci] ([`0b1127f`](https://github.com/sonatype-nexus-community/jake/commit/0b1127f2ada12f2fe0676cdfb53cf2dab7d66a80))
 
-* add `responses` testing dependency to Jenkinsfile ([`3272ea9`](https://github.com/sonatype-nexus-community/jake/commit/3272ea92be6b44dae31d101a8cbbb0bc22eabb8b))
+* increase verbosity of Jenkins build ([`024eb3a`](https://github.com/sonatype-nexus-community/jake/commit/024eb3a614e49f5e448a2901941b713be791120a))
 
+* add `responses` testing dependency to Jenkinsfile ([`3272ea9`](https://github.com/sonatype-nexus-community/jake/commit/3272ea92be6b44dae31d101a8cbbb0bc22eabb8b))
 
 ## v0.2.28 (2020-09-18)
 
@@ -1518,7 +1452,6 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 
 💥 ([`2b52a19`](https://github.com/sonatype-nexus-community/jake/commit/2b52a194b91ee3d452bd7156c443c69a2a4730fe))
 
-
 ## v0.2.27 (2020-09-11)
 
 ### Unknown
@@ -1528,7 +1461,6 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 [skip ci] ([`834e8a0`](https://github.com/sonatype-nexus-community/jake/commit/834e8a07d2d7a9ca47bdb46ba7ffa497b6c050d2))
 
 * Add failure notification to internal CI ([`ea1e3bd`](https://github.com/sonatype-nexus-community/jake/commit/ea1e3bdc43924bd1f9ebe17f87e1d5e400f37527))
-
 
 ## v0.2.26 (2020-09-10)
 
@@ -1541,7 +1473,6 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 * Allow insecure requests (#35)
 
 * Allow insecure for IQ ([`0775797`](https://github.com/sonatype-nexus-community/jake/commit/07757975b0f00222da97fb6a408684d11d0b0b11))
-
 
 ## v0.2.25 (2020-09-03)
 
@@ -1567,7 +1498,6 @@ This reverts commit 1e25b8ea ([`83d948f`](https://github.com/sonatype-nexus-comm
 
 Co-authored-by: glenn &lt;Glenn Mohre&gt; ([`ef053a8`](https://github.com/sonatype-nexus-community/jake/commit/ef053a8cc6b9deaa9e7fd16275b01bf30582f82a))
 
-
 ## v0.2.24 (2020-06-05)
 
 ### Unknown
@@ -1580,7 +1510,6 @@ Co-authored-by: glenn &lt;Glenn Mohre&gt; ([`ef053a8`](https://github.com/sonaty
 
 Co-authored-by: Jeffry Hesse &lt;5544326+DarthHater@users.noreply.github.com&gt;
 Co-authored-by: michelkazi &lt;michel.m.kazi@gmail.com&gt; ([`2de93b4`](https://github.com/sonatype-nexus-community/jake/commit/2de93b4e5c3c80db623104b34f3450fd4ff703ad))
-
 
 ## v0.2.23 (2020-05-29)
 
@@ -1596,7 +1525,6 @@ Co-authored-by: michelkazi &lt;michel.m.kazi@gmail.com&gt; ([`2de93b4`](https://
 
 * Flip the script ([`38f8a08`](https://github.com/sonatype-nexus-community/jake/commit/38f8a08f23d60d0c0aefe948dae5520dab0ad8a1))
 
-
 ## v0.2.22 (2020-05-29)
 
 ### Unknown
@@ -1606,7 +1534,6 @@ Co-authored-by: michelkazi &lt;michel.m.kazi@gmail.com&gt; ([`2de93b4`](https://
 [skip ci] ([`7600809`](https://github.com/sonatype-nexus-community/jake/commit/7600809f15c57a5dc486f8c7a36058d80afdd0a1))
 
 * Ok ([`ec0cce2`](https://github.com/sonatype-nexus-community/jake/commit/ec0cce255d3358416aacea83bd18907617f20ced))
-
 
 ## v0.2.21 (2020-05-29)
 
@@ -1618,7 +1545,6 @@ Co-authored-by: michelkazi &lt;michel.m.kazi@gmail.com&gt; ([`2de93b4`](https://
 
 * One more try ([`6a4dbe1`](https://github.com/sonatype-nexus-community/jake/commit/6a4dbe12104315f05c7a818ee361e9fee70cc7a1))
 
-
 ## v0.2.20 (2020-05-29)
 
 ### Unknown
@@ -1628,7 +1554,6 @@ Co-authored-by: michelkazi &lt;michel.m.kazi@gmail.com&gt; ([`2de93b4`](https://
 [skip ci] ([`395a007`](https://github.com/sonatype-nexus-community/jake/commit/395a00789ef1da50fab619c06cef12dcc90f079f))
 
 * ENV not run ([`97d1acf`](https://github.com/sonatype-nexus-community/jake/commit/97d1acf13990a0523e47ffffba7e42887ba16eea))
-
 
 ## v0.2.19 (2020-05-29)
 
@@ -1640,7 +1565,6 @@ Co-authored-by: michelkazi &lt;michel.m.kazi@gmail.com&gt; ([`2de93b4`](https://
 
 * Path with local bin ([`8a505cb`](https://github.com/sonatype-nexus-community/jake/commit/8a505cbcb334b2b77234d68461b5f9b2a8b6ac81))
 
-
 ## v0.2.18 (2020-05-29)
 
 ### Unknown
@@ -1651,9 +1575,6 @@ Co-authored-by: michelkazi &lt;michel.m.kazi@gmail.com&gt; ([`2de93b4`](https://
 
 * Merge branch &#39;master&#39; of github.com:sonatype-nexus-community/jake ([`af4f461`](https://github.com/sonatype-nexus-community/jake/commit/af4f46178f6a9968db5288d7698c346011c9625e))
 
-* Lil diff useradd ([`7b9481a`](https://github.com/sonatype-nexus-community/jake/commit/7b9481ae01e0d2f1ee051c84079e38be9668ae37))
-
-
 ## v0.2.17 (2020-05-29)
 
 ### Unknown
@@ -1662,8 +1583,9 @@ Co-authored-by: michelkazi &lt;michel.m.kazi@gmail.com&gt; ([`2de93b4`](https://
 
 [skip ci] ([`bf08469`](https://github.com/sonatype-nexus-community/jake/commit/bf08469470993b2709d2bb86565406bf984513f2))
 
-* More Jenkins ([`7192f73`](https://github.com/sonatype-nexus-community/jake/commit/7192f739f20504ab77cbbf5c187422d5cb0f39d4))
+* Lil diff useradd ([`7b9481a`](https://github.com/sonatype-nexus-community/jake/commit/7b9481ae01e0d2f1ee051c84079e38be9668ae37))
 
+* More Jenkins ([`7192f73`](https://github.com/sonatype-nexus-community/jake/commit/7192f739f20504ab77cbbf5c187422d5cb0f39d4))
 
 ## v0.2.16 (2020-05-29)
 
@@ -1677,7 +1599,6 @@ Co-authored-by: michelkazi &lt;michel.m.kazi@gmail.com&gt; ([`2de93b4`](https://
 
 * Simplify this down a tad ([`ba551aa`](https://github.com/sonatype-nexus-community/jake/commit/ba551aadeb1b178256e462a4b4b5773a25079f09))
 
-
 ## v0.2.15 (2020-05-28)
 
 ### Unknown
@@ -1687,7 +1608,6 @@ Co-authored-by: michelkazi &lt;michel.m.kazi@gmail.com&gt; ([`2de93b4`](https://
 [skip ci] ([`7b7f2ac`](https://github.com/sonatype-nexus-community/jake/commit/7b7f2ac253be0f2eecb022115d67b66444e563cd))
 
 * Skip alpine due to missing gcc ([`58a1460`](https://github.com/sonatype-nexus-community/jake/commit/58a146021b8bd8a177c6a63b7f3594f36109957a))
-
 
 ## v0.2.14 (2020-05-28)
 
@@ -1699,9 +1619,6 @@ Co-authored-by: michelkazi &lt;michel.m.kazi@gmail.com&gt; ([`2de93b4`](https://
 
 * Merge branch &#39;master&#39; of github.com:sonatype-nexus-community/jake ([`bf0b831`](https://github.com/sonatype-nexus-community/jake/commit/bf0b83138821ef8f652236c768f7057df4524ebf))
 
-* Docker and then run tests ([`f512a94`](https://github.com/sonatype-nexus-community/jake/commit/f512a94a74272b5e8d83249de1352775b1fb9abf))
-
-
 ## v0.2.13 (2020-05-28)
 
 ### Unknown
@@ -1710,10 +1627,9 @@ Co-authored-by: michelkazi &lt;michel.m.kazi@gmail.com&gt; ([`2de93b4`](https://
 
 [skip ci] ([`3fb506b`](https://github.com/sonatype-nexus-community/jake/commit/3fb506b53f6f9dd0f2ffcd80f73ed2199f9aefb1))
 
+* Docker and then run tests ([`f512a94`](https://github.com/sonatype-nexus-community/jake/commit/f512a94a74272b5e8d83249de1352775b1fb9abf))
+
 * Merge branch &#39;master&#39; of github.com:sonatype-nexus-community/jake ([`ba819f5`](https://github.com/sonatype-nexus-community/jake/commit/ba819f551cec894dd3189dd5af45e909bd70d1c0))
-
-* Run them scripts ([`90634ec`](https://github.com/sonatype-nexus-community/jake/commit/90634ec021b9248337969eed5332638f6a77f684))
-
 
 ## v0.2.12 (2020-05-28)
 
@@ -1723,10 +1639,9 @@ Co-authored-by: michelkazi &lt;michel.m.kazi@gmail.com&gt; ([`2de93b4`](https://
 
 [skip ci] ([`302184e`](https://github.com/sonatype-nexus-community/jake/commit/302184e1362e0e1500115ffe3c04ef7b576b5579))
 
+* Run them scripts ([`90634ec`](https://github.com/sonatype-nexus-community/jake/commit/90634ec021b9248337969eed5332638f6a77f684))
+
 * Merge branch &#39;master&#39; of github.com:sonatype-nexus-community/jake ([`fcf0d48`](https://github.com/sonatype-nexus-community/jake/commit/fcf0d488ad9d2cb527606ecb7cd25dc319d71e65))
-
-* Plz ([`d3ef5d7`](https://github.com/sonatype-nexus-community/jake/commit/d3ef5d7484f7518b89ecc0fe90476aa006165a77))
-
 
 ## v0.2.11 (2020-05-28)
 
@@ -1736,10 +1651,9 @@ Co-authored-by: michelkazi &lt;michel.m.kazi@gmail.com&gt; ([`2de93b4`](https://
 
 [skip ci] ([`8b0d70e`](https://github.com/sonatype-nexus-community/jake/commit/8b0d70e183362b7639d8e864555bde19e621dd02))
 
+* Plz ([`d3ef5d7`](https://github.com/sonatype-nexus-community/jake/commit/d3ef5d7484f7518b89ecc0fe90476aa006165a77))
+
 * Merge branch &#39;master&#39; of github.com:sonatype-nexus-community/jake ([`fb5836a`](https://github.com/sonatype-nexus-community/jake/commit/fb5836a5b5e190c4e95901b7ec08a29af4eb6c0a))
-
-* HEADAHZ ([`6c1160d`](https://github.com/sonatype-nexus-community/jake/commit/6c1160de7273d2957ed2ed5be5a3f9c287c48385))
-
 
 ## v0.2.10 (2020-05-28)
 
@@ -1749,10 +1663,9 @@ Co-authored-by: michelkazi &lt;michel.m.kazi@gmail.com&gt; ([`2de93b4`](https://
 
 [skip ci] ([`3545e3c`](https://github.com/sonatype-nexus-community/jake/commit/3545e3c07e47573ab60b9012ce5726aab0db3af6))
 
+* HEADAHZ ([`6c1160d`](https://github.com/sonatype-nexus-community/jake/commit/6c1160de7273d2957ed2ed5be5a3f9c287c48385))
+
 * Merge branch &#39;master&#39; of github.com:sonatype-nexus-community/jake ([`54db0f2`](https://github.com/sonatype-nexus-community/jake/commit/54db0f2bb7d2aa143a5cc3f5f4d6d36473b757d2))
-
-* Come on headers ([`0326db4`](https://github.com/sonatype-nexus-community/jake/commit/0326db4c8aaace965e2a94938f02560c11966dc0))
-
 
 ## v0.2.9 (2020-05-28)
 
@@ -1762,10 +1675,9 @@ Co-authored-by: michelkazi &lt;michel.m.kazi@gmail.com&gt; ([`2de93b4`](https://
 
 [skip ci] ([`1a8fcfd`](https://github.com/sonatype-nexus-community/jake/commit/1a8fcfdbfb68babfd229414320caf64f1f761059))
 
+* Come on headers ([`0326db4`](https://github.com/sonatype-nexus-community/jake/commit/0326db4c8aaace965e2a94938f02560c11966dc0))
+
 * Merge master ([`32fa5e6`](https://github.com/sonatype-nexus-community/jake/commit/32fa5e61500d48c87d80bca846164618db69c27b))
-
-* More headers ([`29d91a4`](https://github.com/sonatype-nexus-community/jake/commit/29d91a4b45d0a8c582ccec3269ee546c71d632ef))
-
 
 ## v0.2.8 (2020-05-28)
 
@@ -1775,8 +1687,9 @@ Co-authored-by: michelkazi &lt;michel.m.kazi@gmail.com&gt; ([`2de93b4`](https://
 
 [skip ci] ([`ce60314`](https://github.com/sonatype-nexus-community/jake/commit/ce60314b37c9c9e4e5389733b33021e45a0489a0))
 
-* Ok try this header out ([`8ddd6ad`](https://github.com/sonatype-nexus-community/jake/commit/8ddd6adb2465710a438a536510c1a7d131e27670))
+* More headers ([`29d91a4`](https://github.com/sonatype-nexus-community/jake/commit/29d91a4b45d0a8c582ccec3269ee546c71d632ef))
 
+* Ok try this header out ([`8ddd6ad`](https://github.com/sonatype-nexus-community/jake/commit/8ddd6adb2465710a438a536510c1a7d131e27670))
 
 ## v0.2.7 (2020-05-28)
 
@@ -1790,7 +1703,6 @@ Co-authored-by: michelkazi &lt;michel.m.kazi@gmail.com&gt; ([`2de93b4`](https://
 
 * Adjust this header ([`47019da`](https://github.com/sonatype-nexus-community/jake/commit/47019da3f32de5d6eb627a8fa51937ebd8be51d8))
 
-
 ## v0.2.6 (2020-05-28)
 
 ### Unknown
@@ -1801,9 +1713,6 @@ Co-authored-by: michelkazi &lt;michel.m.kazi@gmail.com&gt; ([`2de93b4`](https://
 
 * Merge branch &#39;master&#39; of github.com:sonatype-nexus-community/jake ([`8897017`](https://github.com/sonatype-nexus-community/jake/commit/889701775b0d5d3a751a6bf02e6d538bc1c4992d))
 
-* Change header, setup excludes ([`3df0940`](https://github.com/sonatype-nexus-community/jake/commit/3df09408305fbb9356d4af431cbe0c989ce8a3fb))
-
-
 ## v0.2.5 (2020-05-28)
 
 ### Unknown
@@ -1812,10 +1721,9 @@ Co-authored-by: michelkazi &lt;michel.m.kazi@gmail.com&gt; ([`2de93b4`](https://
 
 [skip ci] ([`9bc23dd`](https://github.com/sonatype-nexus-community/jake/commit/9bc23ddbc57617c07f4c31d6d5c9167c3aafb502))
 
+* Change header, setup excludes ([`3df0940`](https://github.com/sonatype-nexus-community/jake/commit/3df09408305fbb9356d4af431cbe0c989ce8a3fb))
+
 * Merge branch &#39;master&#39; of github.com:sonatype-nexus-community/jake ([`0c199df`](https://github.com/sonatype-nexus-community/jake/commit/0c199df495d9a57fb6e11d9e39653f1704c637e4))
-
-* Initial header ([`44214f5`](https://github.com/sonatype-nexus-community/jake/commit/44214f57e1d684078912e841989fa92c9cd1d137))
-
 
 ## v0.2.4 (2020-05-28)
 
@@ -1825,8 +1733,9 @@ Co-authored-by: michelkazi &lt;michel.m.kazi@gmail.com&gt; ([`2de93b4`](https://
 
 [skip ci] ([`82205f2`](https://github.com/sonatype-nexus-community/jake/commit/82205f20c971e270d45c06db33ae05c83da1690e))
 
-* Jenkins and Dockerfile ([`f18bfad`](https://github.com/sonatype-nexus-community/jake/commit/f18bfada520af60e22a15bdedfa66d2792a246da))
+* Initial header ([`44214f5`](https://github.com/sonatype-nexus-community/jake/commit/44214f57e1d684078912e841989fa92c9cd1d137))
 
+* Jenkins and Dockerfile ([`f18bfad`](https://github.com/sonatype-nexus-community/jake/commit/f18bfada520af60e22a15bdedfa66d2792a246da))
 
 ## v0.2.3 (2020-05-21)
 
@@ -1838,7 +1747,6 @@ Co-authored-by: michelkazi &lt;michel.m.kazi@gmail.com&gt; ([`2de93b4`](https://
 
 * New jake logo ([`8e08148`](https://github.com/sonatype-nexus-community/jake/commit/8e08148119e8a31e46e70350f3e9c28dd29100b6))
 
-
 ## v0.2.2 (2020-05-20)
 
 ### Unknown
@@ -1848,7 +1756,6 @@ Co-authored-by: michelkazi &lt;michel.m.kazi@gmail.com&gt; ([`2de93b4`](https://
 [skip ci] ([`322d367`](https://github.com/sonatype-nexus-community/jake/commit/322d367e6f49db5d0e8d9324a559c0d56f22a0e8))
 
 * Update README to mention support ([`1044d28`](https://github.com/sonatype-nexus-community/jake/commit/1044d289926843fe267a6d2dfee0f1f026c335bb))
-
 
 ## v0.2.1 (2020-05-12)
 
@@ -1861,7 +1768,6 @@ Co-authored-by: michelkazi &lt;michel.m.kazi@gmail.com&gt; ([`2de93b4`](https://
 * simplified IQ service and handled authentication errors with the command line ([`d1331e5`](https://github.com/sonatype-nexus-community/jake/commit/d1331e55eaffa8f3d385cde8c3af3e05c8469eff))
 
 * [skip ci] reset semver to patch ([`6dd4454`](https://github.com/sonatype-nexus-community/jake/commit/6dd4454dfd04e0b7a18039b46d04e1f7b46a259f))
-
 
 ## v0.2.0 (2020-05-12)
 
@@ -1889,7 +1795,6 @@ Releases a major version
 
 Co-authored-by: Ben Foltz &lt;ben.h.foltz@gmail.com&gt; ([`a68ef01`](https://github.com/sonatype-nexus-community/jake/commit/a68ef01e0ea5ec242060c8bd76bb6f2205b2076f))
 
-
 ## v0.1.7 (2020-05-01)
 
 ### Unknown
@@ -1900,7 +1805,6 @@ Co-authored-by: Ben Foltz &lt;ben.h.foltz@gmail.com&gt; ([`a68ef01`](https://git
 
 * modified sbom subcommand to output to std_out by default, and to a file with the -o &lt;file&gt; arg.  Also implemented an std_out toggle and made the -q flag suppress all unnecessary output for each subcommand ([`f833717`](https://github.com/sonatype-nexus-community/jake/commit/f833717d8df90448d39bc4018aa5256dd9947b75))
 
-
 ## v0.1.6 (2020-04-30)
 
 ### Unknown
@@ -1910,7 +1814,6 @@ Co-authored-by: Ben Foltz &lt;ben.h.foltz@gmail.com&gt; ([`a68ef01`](https://git
 [skip ci] ([`f90dcda`](https://github.com/sonatype-nexus-community/jake/commit/f90dcda5dcb12327e9bfe95ea3539574ffe123b6))
 
 * hotfix to make the sbom output command work with the new targets argument ([`a737043`](https://github.com/sonatype-nexus-community/jake/commit/a737043c1673e8d11dbdb4f3adbbbb3ab08a7db1))
-
 
 ## v0.1.5 (2020-04-30)
 
@@ -1962,7 +1865,6 @@ Co-authored-by: Ben Foltz &lt;ben.h.foltz@gmail.com&gt; ([`a68ef01`](https://git
 
 * more readme changes ([`5b0a595`](https://github.com/sonatype-nexus-community/jake/commit/5b0a595628268241c43f8bb153adbdd4744f30f8))
 
-
 ## v0.1.4 (2020-04-24)
 
 ### Unknown
@@ -1973,9 +1875,6 @@ Co-authored-by: Ben Foltz &lt;ben.h.foltz@gmail.com&gt; ([`a68ef01`](https://git
 
 * Merge branch &#39;master&#39; of github.com:sonatype-nexus-community/jake ([`fdb3a80`](https://github.com/sonatype-nexus-community/jake/commit/fdb3a80e55fcd0692f472a4a66a1f4b7a3ef4749))
 
-* Ok xsd files ([`f1c1c09`](https://github.com/sonatype-nexus-community/jake/commit/f1c1c0962cec73eca730b50dcb3aa00c0cfb350d))
-
-
 ## v0.1.3 (2020-04-24)
 
 ### Unknown
@@ -1984,10 +1883,9 @@ Co-authored-by: Ben Foltz &lt;ben.h.foltz@gmail.com&gt; ([`a68ef01`](https://git
 
 [skip ci] ([`a659251`](https://github.com/sonatype-nexus-community/jake/commit/a659251e79a5f8c108ee2362a1c4d06a95b6e576))
 
+* Ok xsd files ([`f1c1c09`](https://github.com/sonatype-nexus-community/jake/commit/f1c1c0962cec73eca730b50dcb3aa00c0cfb350d))
+
 * Merge branch &#39;master&#39; of github.com:sonatype-nexus-community/jake ([`a848a74`](https://github.com/sonatype-nexus-community/jake/commit/a848a74d983a19e793a989d6a0d5506f77e8ebc9))
-
-* Include xsd files ([`4016127`](https://github.com/sonatype-nexus-community/jake/commit/40161273ea051cd4805a2452fe97148786add481))
-
 
 ## v0.1.2 (2020-04-23)
 
@@ -1997,8 +1895,9 @@ Co-authored-by: Ben Foltz &lt;ben.h.foltz@gmail.com&gt; ([`a68ef01`](https://git
 
 [skip ci] ([`cddc7b7`](https://github.com/sonatype-nexus-community/jake/commit/cddc7b7cb2524982aa9c10e6c9ffb4607f7c5d19))
 
-* Artie is a nice person but do not delete __init__.py plz ([`f617d2d`](https://github.com/sonatype-nexus-community/jake/commit/f617d2d6eb7089d7e07dd70a8f79df3ea83ee593))
+* Include xsd files ([`4016127`](https://github.com/sonatype-nexus-community/jake/commit/40161273ea051cd4805a2452fe97148786add481))
 
+* Artie is a nice person but do not delete __init__.py plz ([`f617d2d`](https://github.com/sonatype-nexus-community/jake/commit/f617d2d6eb7089d7e07dd70a8f79df3ea83ee593))
 
 ## v0.1.1 (2020-04-23)
 
@@ -2011,7 +1910,6 @@ Co-authored-by: Ben Foltz &lt;ben.h.foltz@gmail.com&gt; ([`a68ef01`](https://git
 * Add this back in ([`3bcaf10`](https://github.com/sonatype-nexus-community/jake/commit/3bcaf1058a6bebcff33bfc698ea2af10305f43dc))
 
 * [skip ci] reset to patch ([`735a6f2`](https://github.com/sonatype-nexus-community/jake/commit/735a6f2e75d0d7886bd5b5dadac07e02a3e9ff51))
-
 
 ## v0.1.0 (2020-04-23)
 
@@ -2141,7 +2039,6 @@ Co-authored-by: Ben Foltz &lt;ben.h.foltz@gmail.com&gt; ([`a68ef01`](https://git
 
 Co-authored-by: ButterB0wl &lt;ajurgenson@sonatype.com&gt; ([`28cc553`](https://github.com/sonatype-nexus-community/jake/commit/28cc553b384a690e676f2fabd324698214449a18))
 
-
 ## v0.0.21 (2020-01-11)
 
 ### Unknown
@@ -2152,7 +2049,6 @@ Co-authored-by: ButterB0wl &lt;ajurgenson@sonatype.com&gt; ([`28cc553`](https://
 
 * refactor to use explicit validate_xml_vulnerabilities() method (#18) ([`abf2d18`](https://github.com/sonatype-nexus-community/jake/commit/abf2d186e8c727315600d5935046be4c393e386d))
 
-
 ## v0.0.20 (2020-01-08)
 
 ### Unknown
@@ -2162,7 +2058,6 @@ Co-authored-by: ButterB0wl &lt;ajurgenson@sonatype.com&gt; ([`28cc553`](https://
 [skip ci] ([`5c1580b`](https://github.com/sonatype-nexus-community/jake/commit/5c1580bfac482987f7154c2c2da37fe1c90fe621))
 
 * add &#39;Nexus IQ Server&#39; example to doco ([`70c133b`](https://github.com/sonatype-nexus-community/jake/commit/70c133b92cf19657435f53c46a0a1b5db36e0a62))
-
 
 ## v0.0.19 (2020-01-08)
 
@@ -2176,7 +2071,6 @@ Co-authored-by: ButterB0wl &lt;ajurgenson@sonatype.com&gt; ([`28cc553`](https://
 
 💥 ([`689b765`](https://github.com/sonatype-nexus-community/jake/commit/689b76561500d7e84a1ec0925fbb5b25a13ee4a3))
 
-
 ## v0.0.18 (2020-01-06)
 
 ### Unknown
@@ -2186,7 +2080,6 @@ Co-authored-by: ButterB0wl &lt;ajurgenson@sonatype.com&gt; ([`28cc553`](https://
 [skip ci] ([`1752d59`](https://github.com/sonatype-nexus-community/jake/commit/1752d596768086ead2499a49d3d4499a150e58ef))
 
 * minor message typo ([`9834788`](https://github.com/sonatype-nexus-community/jake/commit/983478811627c97c09bff7e6c21ce036f4090163))
-
 
 ## v0.0.17 (2020-01-03)
 
@@ -2202,7 +2095,6 @@ Co-authored-by: ButterB0wl &lt;ajurgenson@sonatype.com&gt; ([`28cc553`](https://
 
 Co-authored-by: Allen Hsieh &lt;10136383+allenhsieh@users.noreply.github.com&gt; ([`e6f7a63`](https://github.com/sonatype-nexus-community/jake/commit/e6f7a639d7b01872dbc2667871530f491e7557b8))
 
-
 ## v0.0.16 (2019-11-13)
 
 ### Unknown
@@ -2215,7 +2107,6 @@ Co-authored-by: Allen Hsieh &lt;10136383+allenhsieh@users.noreply.github.com&gt;
 
 * add some test results to CI ([`e0f5949`](https://github.com/sonatype-nexus-community/jake/commit/e0f5949636c7eb932887b084a8938bd3f6fa3076))
 
-
 ## v0.0.15 (2019-11-11)
 
 ### Unknown
@@ -2225,7 +2116,6 @@ Co-authored-by: Allen Hsieh &lt;10136383+allenhsieh@users.noreply.github.com&gt;
 [skip ci] ([`71ed6dc`](https://github.com/sonatype-nexus-community/jake/commit/71ed6dcf6c5559246eb0317bc46f7ad3f5a1b61a))
 
 * remove unused cache commands (&#34;Pipfile.lock&#34; didn&#39;t even exists, so all cache commands errored out). ([`476666d`](https://github.com/sonatype-nexus-community/jake/commit/476666d94481baed003f5ac1f321dc07cd8892b3))
-
 
 ## v0.0.14 (2019-11-08)
 
@@ -2237,7 +2127,6 @@ Co-authored-by: Allen Hsieh &lt;10136383+allenhsieh@users.noreply.github.com&gt;
 
 * Make CI scripts fail on any error (#13) ([`de9485f`](https://github.com/sonatype-nexus-community/jake/commit/de9485f01055a0daac8955c11caa8d7b09363e04))
 
-
 ## v0.0.13 (2019-11-06)
 
 ### Unknown
@@ -2247,7 +2136,6 @@ Co-authored-by: Allen Hsieh &lt;10136383+allenhsieh@users.noreply.github.com&gt;
 [skip ci] ([`2fa6454`](https://github.com/sonatype-nexus-community/jake/commit/2fa64547c9afe1ec24699de5b07f98a896d1b4ce))
 
 * cleaning up ([`8a6130d`](https://github.com/sonatype-nexus-community/jake/commit/8a6130de87be31a4a25ea8de008d35a2fb9c40c5))
-
 
 ## v0.0.12 (2019-11-06)
 
@@ -2267,7 +2155,6 @@ Co-authored-by: Allen Hsieh &lt;10136383+allenhsieh@users.noreply.github.com&gt;
 
 * attempting to fix logger ([`2e60c3d`](https://github.com/sonatype-nexus-community/jake/commit/2e60c3d0d6fd28c05d3c1a900af68814f1ee5e63))
 
-
 ## v0.0.10 (2019-11-06)
 
 ### Unknown
@@ -2278,9 +2165,6 @@ Co-authored-by: Allen Hsieh &lt;10136383+allenhsieh@users.noreply.github.com&gt;
 
 * Merge branch &#39;master&#39; of github.com:sonatype-nexus-community/jake ([`f2b23d0`](https://github.com/sonatype-nexus-community/jake/commit/f2b23d02b76ebb40d1e81eafa5fd56bd288378cb))
 
-* Welp ([`7bce551`](https://github.com/sonatype-nexus-community/jake/commit/7bce5516684fa65933967cbfd5f771c1b12925a3))
-
-
 ## v0.0.9 (2019-11-06)
 
 ### Unknown
@@ -2289,10 +2173,9 @@ Co-authored-by: Allen Hsieh &lt;10136383+allenhsieh@users.noreply.github.com&gt;
 
 [skip ci] ([`5a0afed`](https://github.com/sonatype-nexus-community/jake/commit/5a0afed45cba822320cad2afa6578448993cb52d))
 
+* Welp ([`7bce551`](https://github.com/sonatype-nexus-community/jake/commit/7bce5516684fa65933967cbfd5f771c1b12925a3))
+
 * Merge branch &#39;master&#39; of github.com:sonatype-nexus-community/jake ([`5a98a6b`](https://github.com/sonatype-nexus-community/jake/commit/5a98a6baaa9b3dd6ec11dc52a379dd4a66868593))
-
-* Find packages again ([`391e7bc`](https://github.com/sonatype-nexus-community/jake/commit/391e7bc40723609839b707c932b7bc4c51f191a0))
-
 
 ## v0.0.8 (2019-11-06)
 
@@ -2302,10 +2185,9 @@ Co-authored-by: Allen Hsieh &lt;10136383+allenhsieh@users.noreply.github.com&gt;
 
 [skip ci] ([`cf46555`](https://github.com/sonatype-nexus-community/jake/commit/cf4655517c205880e958237c382c69f8a3fde67d))
 
+* Find packages again ([`391e7bc`](https://github.com/sonatype-nexus-community/jake/commit/391e7bc40723609839b707c932b7bc4c51f191a0))
+
 * Merge branch &#39;master&#39; of github.com:sonatype-nexus-community/jake ([`17b931c`](https://github.com/sonatype-nexus-community/jake/commit/17b931c2060ead91497efd477e4f496db37900ca))
-
-* Find packages ([`e9c4ed2`](https://github.com/sonatype-nexus-community/jake/commit/e9c4ed2efe0f3f9d3628192f0ec33496e452c68b))
-
 
 ## v0.0.7 (2019-11-06)
 
@@ -2315,10 +2197,9 @@ Co-authored-by: Allen Hsieh &lt;10136383+allenhsieh@users.noreply.github.com&gt;
 
 [skip ci] ([`fabd311`](https://github.com/sonatype-nexus-community/jake/commit/fabd3115f599e5c040d1a31633fabe2663decf61))
 
+* Find packages ([`e9c4ed2`](https://github.com/sonatype-nexus-community/jake/commit/e9c4ed2efe0f3f9d3628192f0ec33496e452c68b))
+
 * Merge branch &#39;master&#39; of github.com:sonatype-nexus-community/jake ([`b69125a`](https://github.com/sonatype-nexus-community/jake/commit/b69125ae3ccf3143cbe752349af9bf6788d242f3))
-
-* More explicit import ([`362f7df`](https://github.com/sonatype-nexus-community/jake/commit/362f7dfce045f7531e2fd9ff3174815b6d20f422))
-
 
 ## v0.0.6 (2019-11-06)
 
@@ -2327,6 +2208,8 @@ Co-authored-by: Allen Hsieh &lt;10136383+allenhsieh@users.noreply.github.com&gt;
 * 0.0.6
 
 [skip ci] ([`d8fe9fd`](https://github.com/sonatype-nexus-community/jake/commit/d8fe9fd61acfde45bd44fcc388439c2c832ed5aa))
+
+* More explicit import ([`362f7df`](https://github.com/sonatype-nexus-community/jake/commit/362f7dfce045f7531e2fd9ff3174815b6d20f422))
 
 * what ([`59a4827`](https://github.com/sonatype-nexus-community/jake/commit/59a482746c3290ee1ac22f25cfa4781bcf894506))
 
@@ -2346,7 +2229,6 @@ Co-authored-by: Allen Hsieh &lt;10136383+allenhsieh@users.noreply.github.com&gt;
 
 * attempting verbose logging ([`09f6102`](https://github.com/sonatype-nexus-community/jake/commit/09f61026b05c07903f196662c70b7a63590d49ea))
 
-
 ## v0.0.5 (2019-11-05)
 
 ### Unknown
@@ -2356,7 +2238,6 @@ Co-authored-by: Allen Hsieh &lt;10136383+allenhsieh@users.noreply.github.com&gt;
 [skip ci] ([`a7b8bbe`](https://github.com/sonatype-nexus-community/jake/commit/a7b8bbea17c130080b8490575684e45634d0d971))
 
 * Okie ([`ef0c424`](https://github.com/sonatype-nexus-community/jake/commit/ef0c42452ab67a4d080d103211df71fd1bf0f466))
-
 
 ## v0.0.4 (2019-11-05)
 
@@ -2368,7 +2249,6 @@ Co-authored-by: Allen Hsieh &lt;10136383+allenhsieh@users.noreply.github.com&gt;
 
 * Upgrade setuptools ([`3fe5d14`](https://github.com/sonatype-nexus-community/jake/commit/3fe5d14af9f0569cb5a082bedaaeda819f38133b))
 
-
 ## v0.0.3 (2019-11-05)
 
 ### Unknown
@@ -2379,9 +2259,6 @@ Co-authored-by: Allen Hsieh &lt;10136383+allenhsieh@users.noreply.github.com&gt;
 
 * Merge branch &#39;master&#39; of github.com:sonatype-nexus-community/jake ([`67d0e61`](https://github.com/sonatype-nexus-community/jake/commit/67d0e61f857420a12786df790799836ca5f3a585))
 
-* Description ([`9a0e3ac`](https://github.com/sonatype-nexus-community/jake/commit/9a0e3ac53b053fed4f95a77896d63e891d6481a0))
-
-
 ## v0.0.2 (2019-11-05)
 
 ### Unknown
@@ -2390,8 +2267,9 @@ Co-authored-by: Allen Hsieh &lt;10136383+allenhsieh@users.noreply.github.com&gt;
 
 [skip ci] ([`dfc81da`](https://github.com/sonatype-nexus-community/jake/commit/dfc81da38b53fdbf008b88891af29358288cca67))
 
-* Updates ([`ebf80e4`](https://github.com/sonatype-nexus-community/jake/commit/ebf80e47e5742a30bd9cf87be9923a65dcf15732))
+* Description ([`9a0e3ac`](https://github.com/sonatype-nexus-community/jake/commit/9a0e3ac53b053fed4f95a77896d63e891d6481a0))
 
+* Updates ([`ebf80e4`](https://github.com/sonatype-nexus-community/jake/commit/ebf80e47e5742a30bd9cf87be9923a65dcf15732))
 
 ## v0.0.1 (2019-11-05)
 
@@ -2435,21 +2313,21 @@ Co-authored-by: Allen Hsieh &lt;10136383+allenhsieh@users.noreply.github.com&gt;
 
 * Merge branch &#39;master&#39; of github.com:sonatype-nexus-community/jake ([`33d0aa9`](https://github.com/sonatype-nexus-community/jake/commit/33d0aa96db6ef2fd28317c3ea935a531cd223341))
 
-* Extra yolo ([`04b6f47`](https://github.com/sonatype-nexus-community/jake/commit/04b6f4798be79fb9d32be349d7f301b898a8ab32))
-
-* YOLO ([`d3daa1a`](https://github.com/sonatype-nexus-community/jake/commit/d3daa1ab46737018e2d9dc6cf4e246ff4da970b4))
-
 * 0.0.3
 
 &#34;[skip-ci]&#34; ([`aca79e3`](https://github.com/sonatype-nexus-community/jake/commit/aca79e3d9df78e9ad59d15d76a90dba836391669))
 
-* Merge branch &#39;master&#39; of github.com:sonatype-nexus-community/jake ([`248b962`](https://github.com/sonatype-nexus-community/jake/commit/248b9624e4da100f1b28485b3744981eb83ca5ba))
+* Extra yolo ([`04b6f47`](https://github.com/sonatype-nexus-community/jake/commit/04b6f4798be79fb9d32be349d7f301b898a8ab32))
 
-* Skip ci for commit message ([`1e75251`](https://github.com/sonatype-nexus-community/jake/commit/1e75251f6f15ea256cd7824d9cc8c7c62a8b73a1))
+* YOLO ([`d3daa1a`](https://github.com/sonatype-nexus-community/jake/commit/d3daa1ab46737018e2d9dc6cf4e246ff4da970b4))
+
+* Merge branch &#39;master&#39; of github.com:sonatype-nexus-community/jake ([`248b962`](https://github.com/sonatype-nexus-community/jake/commit/248b9624e4da100f1b28485b3744981eb83ca5ba))
 
 * Merge branch &#39;master&#39; of github.com:sonatype-nexus-community/jake ([`c2a81c7`](https://github.com/sonatype-nexus-community/jake/commit/c2a81c7ad4175a1aeb5668df4ecd92380500bb3d))
 
 * ssh funness ([`12a79ac`](https://github.com/sonatype-nexus-community/jake/commit/12a79aca23ee034233bb6f1028bec09e6380b489))
+
+* Skip ci for commit message ([`1e75251`](https://github.com/sonatype-nexus-community/jake/commit/1e75251f6f15ea256cd7824d9cc8c7c62a8b73a1))
 
 * Extra YOLO ([`1d1495b`](https://github.com/sonatype-nexus-community/jake/commit/1d1495bb69575a208e17a44e109d2af0ea964e8f))
 
@@ -2458,7 +2336,6 @@ Co-authored-by: Allen Hsieh &lt;10136383+allenhsieh@users.noreply.github.com&gt;
 * Semantic release (#12)
 
 Semantic Release fun stuff ([`005d0c6`](https://github.com/sonatype-nexus-community/jake/commit/005d0c67e44e03be5ee30d50be81d56f7f1ed35a))
-
 
 ## v0.0.0 (2019-11-05)
 

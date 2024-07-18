@@ -432,6 +432,7 @@ For example, to perform a "patch" release, add a commit to `main` with a comment
 ```
 fix: Resolve vulnerability: CVE-2020-27783 in lxml
 ```
+(test release script changes)
 
 ## The Fine Print
 

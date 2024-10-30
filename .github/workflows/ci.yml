@@ -26,7 +26,7 @@ on:
 
 env:
   REPORTS_DIR: CI_reports
-  PYTHON_VERSION_DEFAULT: "3.10"
+  PYTHON_VERSION_DEFAULT: "3.11"
   POETRY_VERSION: "1.4.0"
 
 jobs:
@@ -65,7 +65,7 @@ jobs:
       matrix:
         include:
           - # test with the locked dependencies
-            python-version: '3.10'
+            python-version: '3.11'
             toxenv-factor: 'locked'
           - # test with the lowest dependencies
             python-version: '3.7'
@@ -104,7 +104,8 @@ jobs:
       matrix:
         os: [ 'ubuntu-20.04', 'windows-latest', 'macos-latest' ]
         python-version:
-          - "3.10" # highest supported
+          - "3.11" # highest supported
+          - "3.10"
           - "3.9"
           - "3.8"
           - "3.7"  # lowest supported
@@ -159,8 +160,3 @@ jobs:
           name: ${{ env.REPORTS_ARTIFACT }}
           path: ${{ env.REPORTS_DIR }}
           if-no-files-found: error
-
-#      - name: Run Jake on Jake
-#        run: >
-#          poetry install --no-dev &&
-#          poetry run jake ddt

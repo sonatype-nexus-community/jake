@@ -182,4 +182,4 @@ jobs:
       - name: Run Jake on Jake
         run: |
           poetry install --no-dev
-          poetry run jake ddt
+          poetry run jake ddt --whitelist jake-whitelist.json

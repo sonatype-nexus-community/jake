@@ -30,7 +30,7 @@ concurrency:
 
 env:
   REPORTS_DIR: CI_reports
-  PYTHON_VERSION_DEFAULT: "3.9"
+  PYTHON_VERSION_DEFAULT: "3.12"
   POETRY_VERSION: "1.8.1"
   TESTS_REPORTS_ARTIFACT: tests-reports
 
@@ -72,11 +72,11 @@ jobs:
         include:
           - # test with the latest dependencies
             os: ubuntu-latest
-            python-version: '3.9'
+            python-version: '3.12'
             toxenv-factors: '-locked'
           - # test with the lowest dependencies
             os: ubuntu-latest
-            python-version: '3.6'
+            python-version: '3.8'
             toxenv-factors: '-lowest'
     steps:
       - name: Checkout
@@ -113,10 +113,11 @@ jobs:
       matrix:
         os: [ 'ubuntu-latest', 'windows-latest', 'macos-13' ]
         python-version:
-          - "3.9" # highest supported
-          - "3.8"
-          - "3.7"
-          - "3.6" # lowest supported
+          - "3.12" # highest supported
+          - "3.11"
+          - "3.10"
+          - "3.9"
+          - "3.8" # lowest supported
         toxenv-factors:
           - '-locked'
           - '-lowest'

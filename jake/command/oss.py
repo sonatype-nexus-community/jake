@@ -148,6 +148,12 @@ class OssCommand(BaseCommand):
                                     vector=oic_vulnerability.cvss_vector
                                 )
                             )
+                        cwes = None
+                        if oic_vulnerability.cwe:
+                            try:
+                                cwes = [int(oic_vulnerability.cwe[4:])]
+                            except ValueError:
+                                pass    # ignore cases where conversion to int fails
 
                         vulnerability: Vulnerability = Vulnerability(
                             bom_ref=oic_vulnerability.id,
@@ -155,7 +161,7 @@ class OssCommand(BaseCommand):
                             source=VulnerabilitySource(
                                 name='OSS Index', url=XsUri(oic_vulnerability.reference)
                             ),
-                            cwes=[int(oic_vulnerability.cwe[4:])] if oic_vulnerability.cwe else None,
+                            cwes=cwes,
                             description=oic_vulnerability.title,
                             detail=oic_vulnerability.description,
                             ratings=ratings,

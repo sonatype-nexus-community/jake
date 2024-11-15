@@ -16,7 +16,7 @@
 
 [tool.poetry]
 name = "jake"
-version = "3.0.0"
+version = "3.0.14"
 description = "An OSS Index integration to check for vulnerabilities in your Python environments"
 authors = ["Sonatype Community <community-group@sonatype.com>"]
 maintainers = ["Sonatype Community <community-group@sonatype.com>"]
@@ -40,10 +40,11 @@ classifiers = [
     'Topic :: Software Development',
     'Topic :: System :: Software Distribution',
     'License :: OSI Approved :: Apache Software License',
-    'Programming Language :: Python :: 3.7',
     'Programming Language :: Python :: 3.8',
     'Programming Language :: Python :: 3.9',
     'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
     'Typing :: Typed'
 ]
 keywords = [
@@ -57,17 +58,17 @@ jake = 'jake.app:main'
 "Bug Tracker" = "https://github.com/sonatype-nexus-community/jake/issues"
 
 [tool.poetry.dependencies]
-python = "^3.7.0"
+python = "^3.8"
 cyclonedx-bom = "^3.0.0"
 importlib-metadata = { version = ">= 3.7", python = "< 3.8" }
 ossindex-lib = "^1.0.0"
 polling2 = "^0.5.0"
 pyfiglet = ">= 0.7.6, < 1.0.0"
-requests = "^2.20.0"
-rich = "^10.10.0"
+requests = "^2.32.3"
+rich = ">= 10.10.0"
 
 [tool.poetry.dev-dependencies]
-tox = "^3.24.3"
+tox = "^3.28.0"
 coverage = "^6.2"
 flake8 = "^4.0.1"
 mypy = ">= 0.920, < 1.00"
@@ -77,8 +78,8 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.semantic_release]
-version_variable = [
-    "pyproject.toml:version"
+version_toml = [
+    "pyproject.toml:tool.poetry.version",
 ]
 branch = "main"
 upload_to_pypi = true

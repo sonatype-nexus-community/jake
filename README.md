@@ -23,7 +23,7 @@
 # Jake
 
 [![CircleCI](https://circleci.com/gh/sonatype-nexus-community/jake/tree/main.svg?style=svg)](https://circleci.com/gh/sonatype-nexus-community/jake/tree/main)
-![Python Version Support](https://img.shields.io/badge/python-3.6+-blue)
+![Python Version Support](https://img.shields.io/badge/python-3.7+-blue)
 [![PyPI Version](https://img.shields.io/pypi/v/jake?label=PyPI&logo=pypi)](https://pypi.org/project/jake)
 [![GitHub license](https://img.shields.io/github/license/sonatype-nexus-community/jake)](https://github.com/sonatype-nexus-community/jake/blob/main/LICENSE)
 [![GitHub issues](https://img.shields.io/github/issues/sonatype-nexus-community/jake)](https://github.com/sonatype-nexus-community/jake/issues)
@@ -432,6 +432,8 @@ For example, to perform a "patch" release, add a commit to `main` with a comment
 ```
 fix: Resolve vulnerability: CVE-2020-27783 in lxml
 ```
+
+CI Release madness: If using Twine to release to PyPi, you now need to use a username of `__token__` and a password of an API token as [described here](https://www.reddit.com/r/AskProgramming/comments/190sjz8/is_twine_no_longer_supported_by_pypi/).
 
 ## The Fine Print
 

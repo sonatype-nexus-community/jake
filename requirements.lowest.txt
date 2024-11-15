@@ -13,11 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# This file records then lowest supported versions for dependenices.
+# This file records then lowest supported versions for dependencies.
 cyclonedx-bom == 3.0.0rc3
-importlib-metadata == 3.4.0 # ; python_version < '3.8'
-ossindex-lib == 1.0.0
+importlib-metadata == 3.7.0 # ; python_version < '3.8'
+ossindex-lib == 1.1.1
 polling2 == 0.5.0
 pyfiglet == 0.7.6
-requests == 2.20.0
+requests == 2.31.0
 rich == 10.10.0

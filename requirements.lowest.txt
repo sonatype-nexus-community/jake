@@ -19,5 +19,5 @@ importlib-metadata == 3.7.0 # ; python_version < '3.8'
 ossindex-lib == 1.1.1
 polling2 == 0.5.0
 pyfiglet == 0.7.6
-requests == 2.31.0
+requests == 2.32.4
 rich == 10.10.0

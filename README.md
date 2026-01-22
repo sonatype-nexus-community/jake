@@ -143,8 +143,8 @@ Optionally, it can create a CycloneDX software bill-of-materials at the same tim
 ```
 > jake ddt --help
 
-usage: jake ddt [-h] [-f FILE_PATH] [-t TYPE] [--clear-cache] [-o PATH/TO/FILE] 
-                   [--output-format {xml,json}]
+usage: jake ddt [-h] [-f FILE_PATH] [-t TYPE] [--clear-cache] [--oss-host URL]
+                   [-o PATH/TO/FILE] [--output-format {xml,json}]
                    [--schema-version {1.2,1.1,1.0,1.3}]
                    [--whitelist OSS_WHITELIST_JSON_FILE]
 
@@ -166,6 +166,8 @@ optional arguments:
                         read from Pipfile.lock; POETRY = read from a
                         poetry.lock. (Default = ENV)
   --clear-cache         Clears any local cached OSS Index data prior to execution
+  --oss-host URL        Specify a custom OSS Index host URL
+                        (default = https://ossindex.sonatype.org)
   -o PATH/TO/FILE, --output-file PATH/TO/FILE
                         Specify a file to output the SBOM to. If not specified the report will be output to the console. STDOUT is not supported.
   --output-format {xml,json}

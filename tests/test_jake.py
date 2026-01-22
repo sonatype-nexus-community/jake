@@ -36,3 +36,8 @@ class TestJakeCmd(TestCase):
     def test_jake_version(self):
         output = subprocess.check_output('jake -v', shell=True)
         self.assertEqual(f'jake {jake_version}', output.decode('utf-8').rstrip(os.linesep))
+
+    def test_jake_ddt_help_includes_oss_host(self):
+        output = subprocess.check_output('jake ddt -h', shell=True)
+        self.assertTrue('--oss-host' in output.decode('utf-8'))
+        self.assertTrue('custom OSS Index host' in output.decode('utf-8'))

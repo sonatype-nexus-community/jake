@@ -30,9 +30,29 @@ follows:
 
 .. code-block::
 
-   usernanme: my-oss-index-username
+   username: my-oss-index-username
    password: my-oss-index-password
 
+Custom OSS Index Host
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You can configure a custom OSS Index host URL in two ways:
+
+1. **Via command-line argument** (takes precedence):
+
+.. code-block::
+
+   jake ddt --oss-host https://custom.ossindex.example.com
+
+2. **Via configuration file** (``$HOME/.oss-index.config``):
+
+.. code-block::
+
+   username: my-oss-index-username
+   password: my-oss-index-password
+   host: https://custom.ossindex.example.com
+
+The command-line argument takes precedence over the configuration file setting.
 
 
 .. _OSS Index: https://ossindex.sonatype.org/

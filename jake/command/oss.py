@@ -74,7 +74,7 @@ class OssCommand(BaseCommand):
             )
 
             oss_index_results: List[OssIndexComponent]
-            oss = OssIndex()
+            oss = OssIndex(host=self.arguments.oss_host if hasattr(self.arguments, 'oss_host') and self.arguments.oss_host else None)
             if self.arguments.oss_clear_cache:
                 progress.update(task_query_ossi, completed=1, description='Clearing OSS Index local cache')
                 oss.purge_local_cache()
@@ -230,6 +230,9 @@ class OssCommand(BaseCommand):
         parser_selector.add_parser_selector_arguments(arg_parser)
         arg_parser.add_argument('--clear-cache', help='Clears any local cached OSS Index data prior to execution',
                                 action='store_true', dest='oss_clear_cache', default=False)
+        arg_parser.add_argument('--oss-host', help='Specify a custom OSS Index host URL '
+                                '(default = https://ossindex.sonatype.org)',
+                                metavar='URL', dest='oss_host', default=None)
 
         arg_parser.add_argument('-o', '--output-file',
                                 help='Specify a file to output the SBOM to. If not specified the '

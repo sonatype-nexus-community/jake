@@ -1,0 +1,174 @@
+#
+# Copyright 2019-Present Sonatype Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: Python CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    # weekly test run: Fridays at 23:42
+    - cron: '42 23 * * 5'
+
+env:
+  REPORTS_DIR: CI_reports
+
+jobs:
+
+  lint:
+    name: Linting & Coding Standards
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Install poetry
+        run: pip install poetry
+      - name: Cache poetry virtualenv
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pypoetry/virtualenvs
+          key: ${{ runner.os }}-poetry-lint-${{ hashFiles('poetry.lock') }}
+      - name: Install dependencies
+        run: poetry install --no-ansi
+      - name: Run flake8
+        run: poetry run tox -e flake8
+
+  static-analysis:
+    name: Static Analysis (mypy)
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - python-version: "3.10"
+            tox-env: mypy-locked
+          - python-version: "3.8"
+            tox-env: mypy-lowest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install poetry
+        run: pip install poetry
+      - name: Cache poetry virtualenv
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pypoetry/virtualenvs
+          key: ${{ runner.os }}-poetry-${{ matrix.python-version }}-${{ hashFiles('poetry.lock') }}
+      - name: Install dependencies
+        run: poetry install --no-ansi
+      - name: Run mypy
+        run: poetry run tox -e ${{ matrix.tox-env }}
+
+  build-and-test:
+    name: Build & Test (Python ${{ matrix.python-version }}, ${{ matrix.deps }})
+    runs-on: ubuntu-latest
+    env:
+      REPORTS_ARTIFACT: tests-reports
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version:
+          - "3.12"
+          - "3.11"
+          - "3.10"
+          - "3.9"
+          - "3.8"
+        deps:
+          - locked
+          - lowest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Create reports directory
+        run: mkdir ${{ env.REPORTS_DIR }}
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install poetry
+        run: pip install poetry
+      - name: Cache poetry virtualenv
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pypoetry/virtualenvs
+          key: ${{ runner.os }}-poetry-${{ matrix.python-version }}-${{ matrix.deps }}-${{ hashFiles('poetry.lock') }}
+      - name: Install dependencies
+        run: poetry install --no-ansi
+      - name: Build
+        run: poetry build
+      - name: Run tests
+        run: |
+          PY_VER=$(echo "${{ matrix.python-version }}" | tr -d '.')
+          poetry run tox -e py${PY_VER}-${{ matrix.deps }}
+      - name: Generate coverage reports
+        run: |
+          poetry run coverage report
+          poetry run coverage xml -o ${{ env.REPORTS_DIR }}/coverage.xml
+          poetry run coverage html -d ${{ env.REPORTS_DIR }}
+      - name: Upload test reports
+        if: ${{ ! cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.REPORTS_ARTIFACT }}-${{ matrix.python-version }}-${{ matrix.deps }}
+          path: ${{ env.REPORTS_DIR }}
+          if-no-files-found: error
+
+  sonatype-lifecycle:
+    name: Sonatype Lifecycle (Build Stage)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Sonatype Lifecycle Evaluate
+        uses: sonatype/actions/evaluate@v1.0.1
+        with:
+          iq-server-url: ${{ vars.SONATYPE_PLATFORM_URL }}
+          username: ${{ secrets.SONATYPE_LIFECYCLE_USERNAME }}
+          password: ${{ secrets.SONATYPE_LIFECYCLE_PASSWORD }}
+          application-id: jake
+          stage: build
+          scan-targets: '.'
+
+  sonarcloud:
+    name: SonarCloud Analysis
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Download coverage report
+        uses: actions/download-artifact@v4
+        with:
+          name: tests-reports-3.10-locked
+          path: ${{ env.REPORTS_DIR }}
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

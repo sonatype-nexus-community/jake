@@ -164,3 +164,6 @@ dmypy.json
 
 # .sonatype-config for VS Code plugin
 .sonatype-config
+
+# AI Coding Agents
+.claude

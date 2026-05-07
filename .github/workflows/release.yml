@@ -67,6 +67,8 @@ jobs:
         id: semrel
         uses: python-semantic-release/python-semantic-release@0dc72ac9058a62054a45f6344c83a423d7f906a8 # v9.21.1
         with:
+          git_committer_email: ${{ secrets.BRENT_SPINER_EMAIL }}
+          git_committer_name: "Brent Spiner"
           github_token: ${{ secrets.GITHUB_TOKEN }}
           ssh_public_signing_key: ${{ secrets.SSH_SIGNING_PUBLIC_KEY }}
           ssh_private_signing_key: ${{ secrets.SSH_SIGNING_PRIVATE_KEY }}

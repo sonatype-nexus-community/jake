@@ -1,0 +1,76 @@
+#
+# Copyright 2019-Present Sonatype Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: Release
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+env:
+  PYTHON_VERSION_DEFAULT: "3.10"
+  POETRY_VERSION: "1.8.3"
+  REPORTS_DIR: CI_reports
+
+jobs:
+
+  release:
+    # Skip the release commits that python-semantic-release itself creates
+    if: "!contains(github.event.head_commit.message, 'chore(release):')"
+    runs-on: ubuntu-latest
+    concurrency: release
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
+
+      - name: Install dependencies
+        run: |
+          pip install "poetry==1.8.3"
+          poetry config virtualenvs.create false
+          poetry install --no-ansi
+
+      - name: Sonatype Lifecycle Evaluate (Release Stage)
+        uses: sonatype/actions/evaluate@v1
+        with:
+          iq-server-url: ${{ vars.SONATYPE_PLATFORM_URL }}
+          username: ${{ secrets.SONATYPE_LIFECYCLE_USERNAME }}
+          password: ${{ secrets.SONATYPE_LIFECYCLE_PASSWORD }}
+          application-id: jake
+          stage: release
+          scan-targets: '.'
+
+      - name: Python Semantic Release
+        id: semrel
+        uses: python-semantic-release/python-semantic-release@0dc72ac9058a62054a45f6344c83a423d7f906a8 # v9.21.1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish to PyPI
+        if: steps.semrel.outputs.released == 'true'
+        uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b # v1.14.0
+        with:
+          password: ${{ secrets.PYPI_TOKEN }}

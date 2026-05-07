@@ -26,6 +26,8 @@ on:
     - cron: '42 23 * * 5'
 
 env:
+  PYTHON_VERSION_DEFAULT: "3.10"
+  POETRY_VERSION: "1.1.11"
   REPORTS_DIR: CI_reports
 
 jobs:
@@ -35,20 +37,28 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
-          python-version: "3.10"
+          python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
+          architecture: 'x64'
+
       - name: Install poetry
-        run: pip install poetry
+        uses: Gr1N/setup-poetry@48b0f77c8c1b1b19cb962f0f00dff7b4be8f81ec # v9
+        with:
+          poetry-version: ${{ env.POETRY_VERSION }}
+
       - name: Cache poetry virtualenv
-        uses: actions/cache@v4
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: ~/.cache/pypoetry/virtualenvs
           key: ${{ runner.os }}-poetry-lint-${{ hashFiles('poetry.lock') }}
+
       - name: Install dependencies
         run: poetry install --no-ansi
+
       - name: Run flake8
         run: poetry run tox -e flake8
 
@@ -65,20 +75,28 @@ jobs:
             tox-env: mypy-lowest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: ${{ matrix.python-version }}
+          architecture: 'x64'
+
       - name: Install poetry
-        run: pip install poetry
+        uses: Gr1N/setup-poetry@48b0f77c8c1b1b19cb962f0f00dff7b4be8f81ec # v9
+        with:
+          poetry-version: ${{ env.POETRY_VERSION }}
+
       - name: Cache poetry virtualenv
-        uses: actions/cache@v4
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: ~/.cache/pypoetry/virtualenvs
           key: ${{ runner.os }}-poetry-${{ matrix.python-version }}-${{ hashFiles('poetry.lock') }}
+
       - name: Install dependencies
         run: poetry install --no-ansi
+
       - name: Run mypy
         run: poetry run tox -e ${{ matrix.tox-env }}
 
@@ -102,36 +120,48 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
       - name: Create reports directory
         run: mkdir ${{ env.REPORTS_DIR }}
-      - name: Setup Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: ${{ matrix.python-version }}
+          architecture: 'x64'
+
       - name: Install poetry
-        run: pip install poetry
+        uses: Gr1N/setup-poetry@48b0f77c8c1b1b19cb962f0f00dff7b4be8f81ec # v9
+        with:
+          poetry-version: ${{ env.POETRY_VERSION }}
+
       - name: Cache poetry virtualenv
-        uses: actions/cache@v4
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: ~/.cache/pypoetry/virtualenvs
           key: ${{ runner.os }}-poetry-${{ matrix.python-version }}-${{ matrix.deps }}-${{ hashFiles('poetry.lock') }}
+
       - name: Install dependencies
         run: poetry install --no-ansi
+
       - name: Build
         run: poetry build
+
       - name: Run tests
         run: |
           PY_VER=$(echo "${{ matrix.python-version }}" | tr -d '.')
           poetry run tox -e py${PY_VER}-${{ matrix.deps }}
+
       - name: Generate coverage reports
         run: |
           poetry run coverage report
           poetry run coverage xml -o ${{ env.REPORTS_DIR }}/coverage.xml
           poetry run coverage html -d ${{ env.REPORTS_DIR }}
+
       - name: Upload test reports
         if: ${{ ! cancelled() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: ${{ env.REPORTS_ARTIFACT }}-${{ matrix.python-version }}-${{ matrix.deps }}
           path: ${{ env.REPORTS_DIR }}
@@ -142,9 +172,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
       - name: Sonatype Lifecycle Evaluate
-        uses: sonatype/actions/evaluate@v1.0.1
+        uses: sonatype/actions/evaluate@v1
         with:
           iq-server-url: ${{ vars.SONATYPE_PLATFORM_URL }}
           username: ${{ secrets.SONATYPE_LIFECYCLE_USERNAME }}
@@ -152,23 +183,3 @@ jobs:
           application-id: jake
           stage: build
           scan-targets: '.'
-
-  sonarcloud:
-    name: SonarCloud Analysis
-    runs-on: ubuntu-latest
-    needs: build-and-test
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Download coverage report
-        uses: actions/download-artifact@v4
-        with:
-          name: tests-reports-3.10-locked
-          path: ${{ env.REPORTS_DIR }}
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

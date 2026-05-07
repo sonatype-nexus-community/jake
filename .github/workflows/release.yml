@@ -21,6 +21,11 @@ on:
     branches: [ "main" ]
   workflow_dispatch:
 
+env:
+  PYTHON_VERSION_DEFAULT: "3.10"
+  POETRY_VERSION: "1.8.3"
+  REPORTS_DIR: CI_reports
+
 jobs:
 
   release:
@@ -33,14 +38,14 @@ jobs:
       id-token: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
-          python-version: "3.10"
+          python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
 
       - name: Install dependencies
         run: |
@@ -49,7 +54,7 @@ jobs:
           poetry install --no-ansi
 
       - name: Sonatype Lifecycle Evaluate (Release Stage)
-        uses: sonatype/actions/evaluate@v1.0.1
+        uses: sonatype/actions/evaluate@v1
         with:
           iq-server-url: ${{ vars.SONATYPE_PLATFORM_URL }}
           username: ${{ secrets.SONATYPE_LIFECYCLE_USERNAME }}
@@ -60,12 +65,12 @@ jobs:
 
       - name: Python Semantic Release
         id: semrel
-        uses: python-semantic-release/python-semantic-release@v9
+        uses: python-semantic-release/python-semantic-release@0dc72ac9058a62054a45f6344c83a423d7f906a8 # v9.21.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish to PyPI
         if: steps.semrel.outputs.released == 'true'
-        uses: pypa/gh-action-pypi-publish@release/v1
+        uses: pypa/gh-action-pypi-publish@release/@cef221092ed1bacb1cc03d23a2d87d1d172e277b # v1.14.0
         with:
           password: ${{ secrets.PYPI_TOKEN }}

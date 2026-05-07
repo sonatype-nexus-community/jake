@@ -69,7 +69,7 @@ jobs:
         with:
           git_committer_email: ${{ secrets.BRENT_SPINER_EMAIL }}
           git_committer_name: "Brent Spiner"
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.BRENT_SPINER_PAT }}
           ssh_public_signing_key: ${{ secrets.SSH_SIGNING_PUBLIC_KEY }}
           ssh_private_signing_key: ${{ secrets.SSH_SIGNING_PRIVATE_KEY }}
 

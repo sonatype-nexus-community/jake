@@ -167,3 +167,6 @@ dmypy.json
 
 # AI Coding Agents
 .claude
+
+# Local planning documents
+MODERNISATION.md

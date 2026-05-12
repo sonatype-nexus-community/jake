@@ -21,17 +21,18 @@ from argparse import ArgumentParser
 from datetime import datetime
 from typing import Dict
 
-from pyfiglet import figlet_format  # type: ignore
+from art import text2art  # type: ignore[import-untyped]
 from rich.console import Console
 
 from .command import BaseCommand, jake_version
 from .command.iq import IqCommand
-from .command.oss import OssCommand
+from .command.oss import DdtCommand, OssCommand
 from .command.sbom import SbomCommand
 
 _SUB_COMMANDS: Dict[str, BaseCommand] = {
     'iq': IqCommand(),
-    'ddt': OssCommand(),
+    'guide': OssCommand(),
+    'ddt': DdtCommand(),
     'sbom': SbomCommand()
 }
 
@@ -40,7 +41,7 @@ class JakeCmd:
 
     def __init__(self, args: argparse.Namespace) -> None:
         self._arguments = args
-        self._console = Console()
+        self._console = Console(highlight=False)
 
         if self._arguments.debug_enabled:
             self._DEBUG_ENABLED = True
@@ -88,8 +89,8 @@ class JakeCmd:
 
     def _print_jake_header(self) -> None:
         """ Prints the banner, most of the user facing commands start with this """
-        self._console.print(figlet_format('Jake', font='isometric4'), style='dark_green')
-        self._console.print(figlet_format('..the snake..', font='invita'), style='dark_green')
+        self._console.print(text2art('Jake', font='isometric4'), style='dark_green')
+        self._console.print(text2art('..the snake..', font='5lineoblique'), style='dark_green')
         print("Jake Version: {}".format(jake_version))
         print('Put your Python dependencies in a chokehold')
         print('')

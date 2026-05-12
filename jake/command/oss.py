@@ -19,29 +19,37 @@
 import json
 import os
 from argparse import ArgumentParser
+
+import certifi
 from decimal import Decimal
 from pathlib import Path
-from typing import cast, Iterable, List, Set
+from typing import Dict, Iterable, List, Set
 
 from cyclonedx.model import XsUri
 from cyclonedx.model.bom import Bom
 from cyclonedx.model.component import Component
 from cyclonedx.model.impact_analysis import ImpactAnalysisAffectedStatus
-from cyclonedx.model.vulnerability import BomTarget, BomTargetVersionRange, Vulnerability, VulnerabilityAdvisory, \
-    VulnerabilityRating, VulnerabilityReference, VulnerabilityScoreSource, VulnerabilitySeverity, VulnerabilitySource
-from cyclonedx.output import get_instance, OutputFormat, SchemaVersion, LATEST_SUPPORTED_SCHEMA_VERSION
-from ossindex.model import OssIndexComponent
-from ossindex.ossindex import OssIndex
-# See https://github.com/package-url/packageurl-python/issues/65
-from packageurl import PackageURL  # type: ignore
+from cyclonedx.model.vulnerability import (
+    BomTarget, BomTargetVersionRange, Vulnerability, VulnerabilityAdvisory,
+    VulnerabilityRating, VulnerabilityReference, VulnerabilityScoreSource,
+    VulnerabilitySeverity, VulnerabilitySource
+)
+from cyclonedx.output import make_outputter
+from cyclonedx.schema import OutputFormat, SchemaVersion
+from sonatype_guide_api_client import ApiClient, Configuration, OSSIndexCompatibilityApi, OssiVulnerabilityPost, \
+    PurlRequestPost, ComponentReportPost
+from sonatype_guide_api_client.exceptions import UnauthorizedException
 from rich.console import Console
 from rich.panel import Panel
-from rich.progress import Progress
+from rich.progress import Progress, TaskID
 from rich.table import Table
 from rich.tree import Tree
 
 from . import BaseCommand
 from . import parser_selector
+from jake._internal.parsers import BaseJakeParser
+
+_SONATYPE_GUIDE_SOURCE = 'Sonatype Guide'
 
 
 class OssCommand(BaseCommand):
@@ -49,8 +57,41 @@ class OssCommand(BaseCommand):
 
     def handle_args(self) -> int:
         self._console = Console()
+        try:
+            components, vulnerabilities, guide_results = self._perform_scan()
+        except UnauthorizedException:
+            self._console.print(
+                '[red]Authentication failed: Sonatype Guide requires a username and token.\n'
+                'Set OSS_INDEX_USERNAME and OSS_INDEX_TOKEN environment variables, '
+                'or pass -u / --token on the command line.'
+            )
+            return 1
+
+        print('')
+        self._print_oss_index_report(components=components, vulnerabilities=vulnerabilities)
+
+        if self.arguments.oss_output_file:
+            cyclonedx_output = make_outputter(
+                OssCommand._build_bom(components=components, vulnerabilities=vulnerabilities),
+                OutputFormat[str(self.arguments.oss_output_format).upper()],
+                SchemaVersion.from_version(str(self.arguments.oss_schema_version))
+            )
+
+            output_filename = os.path.realpath(self.arguments.oss_output_file)
+            cyclonedx_output.output_to_file(filename=output_filename, allow_overwrite=True)
+            print('')
+            print('CycloneDX has been written to {}'.format(output_filename))
 
         exit_code: int = 0
+        if not self.arguments.warn_only:
+            for report in guide_results:
+                if report.vulnerabilities:
+                    exit_code = 1
+                    break
+
+        return exit_code
+
+    def _perform_scan(self) -> tuple[List[Component], List[Vulnerability], List[ComponentReportPost]]:
         input_source_msg = "your python environment" if self.arguments.sbom_input_type == "ENV" else "provided specs"
 
         with Progress() as progress:
@@ -58,7 +99,7 @@ class OssCommand(BaseCommand):
                 description=f"[yellow]Collecting packages in {input_source_msg}", start=True, total=10
             )
             task_query_ossi = progress.add_task(
-                description="[yellow]Querying OSS Index for details on your packages", start=True, total=10
+                description="[yellow]Querying Sonatype Guide for details on your packages", start=True, total=10
             )
             task_sanity_checking = progress.add_task(
                 description="[cyan]Sanity checking...", start=True, total=10
@@ -70,166 +111,180 @@ class OssCommand(BaseCommand):
             total_packages_collected = len(parser.get_components())
             progress.update(
                 task_parser, completed=10,
-                description=f'🐍 [green]Collected {total_packages_collected} packages from {input_source_msg}'
+                description=f'[green]Collected {total_packages_collected} packages from {input_source_msg}'
             )
 
-            oss_index_results: List[OssIndexComponent]
-            oss = OssIndex()
-            if self.arguments.oss_clear_cache:
-                progress.update(task_query_ossi, completed=1, description='Clearing OSS Index local cache')
-                oss.purge_local_cache()
-                progress.update(task_query_ossi, completed=2, description='Cleared OSS Index local cache')
+            progress.update(task_query_ossi, completed=3,
+                            description='Querying Sonatype Guide for details on your packages')
 
-            progress.update(task_query_ossi, completed=3, description='Querying OSS Index for details on your packages')
-
-            oss_index_results = oss.get_component_report(
-                packages=list(map(lambda c: c.purl, filter(lambda c: c.purl, parser.get_components())))
+            config = Configuration(
+                username=self.arguments.oss_username,
+                password=self.arguments.oss_token,
+                ssl_ca_cert=certifi.where()
             )
+            with ApiClient(config) as client:
+                api = OSSIndexCompatibilityApi(client)
+                guide_results: List[ComponentReportPost] = api.get_component_reports(
+                    purl_request_post=PurlRequestPost(
+                        coordinates=[str(c.purl) for c in parser.get_components() if c.purl]
+                    )
+                )
 
-            if self.arguments.oss_whitelist_json_file:
-                with open(self.arguments.oss_whitelist_json_file) as f:
-                    json_data = json.load(f)
-                whitelisted_entries = json_data.get("ignore", [])
-                whitelisted_ids = {entry["id"] for entry in whitelisted_entries}
-                if whitelisted_ids:
-                    for oic in oss_index_results:
-                        oic.vulnerabilities = {v for v in oic.vulnerabilities if v.id not in whitelisted_ids}
+            self._apply_whitelist(guide_results)
 
             progress.update(
                 task_query_ossi, completed=10,
-                description='🐍 [green]Successfully queried OSS Index for package and vulnerability info'
+                description='[green]Successfully queried Sonatype Guide for package and vulnerability info'
             )
 
             progress.update(task_sanity_checking, completed=1)
-            if len(parser.get_components()) > len(oss_index_results):
+            if len(parser.get_components()) > len(guide_results):
                 progress.update(
                     task_sanity_checking, completed=10,
-                    description="🐍 [red]Some components not identified by OSS Index - perhaps these are InnerSource?"
+                    description="[red]Some components not identified by Sonatype Guide - perhaps these are InnerSource?"
                 )
             else:
                 progress.update(
                     task_sanity_checking, completed=10,
-                    description="🐍 [green]Sane number of results from OSS Index"
+                    description="[green]Sane number of results from Sonatype Guide"
                 )
 
             task_munching_data = progress.add_task(
-                description="🐍 [green]Munching & crunching data...", start=True, total=len(parser.get_components())
+                description="[green]Munching & crunching data...", start=True, total=len(parser.get_components())
+            )
+            components, vulnerabilities = self._process_components(
+                parser, guide_results, progress, task_munching_data
             )
 
-            components: List[Component] = []
-            for component in parser.get_components():
-                if component.purl:
-                    oss_index_component: OssIndexComponent = list(filter(
-                        lambda oic_: oic_.get_package_url().to_string() == cast(PackageURL, component.purl).to_string(),
-                        oss_index_results
-                    )).pop()
-                else:
-                    continue
+        return components, vulnerabilities, guide_results
 
-                if oss_index_component.vulnerabilities:
-                    for oic_vulnerability in oss_index_component.vulnerabilities:
+    def _apply_whitelist(self, guide_results: List[ComponentReportPost]) -> None:
+        if not self.arguments.oss_whitelist_json_file:
+            return
+        with open(self.arguments.oss_whitelist_json_file) as f:
+            json_data = json.load(f)
+        whitelisted_ids = {entry["id"] for entry in json_data.get("ignore", [])}
+        if whitelisted_ids:
+            for guide_report in guide_results:
+                if guide_report.vulnerabilities:
+                    guide_report.vulnerabilities = [
+                        v for v in guide_report.vulnerabilities if v.id not in whitelisted_ids
+                    ]
 
-                        ratings: List[VulnerabilityRating] = []
-                        if oic_vulnerability.cvss_score:
-                            ratings.append(
-                                VulnerabilityRating(
-                                    source=VulnerabilitySource(
-                                        name='OSS Index', url=XsUri(oic_vulnerability.reference)
-                                    ),
-                                    score=Decimal(
-                                        oic_vulnerability.cvss_score
-                                    ) if oic_vulnerability.cvss_score else None,
-                                    severity=VulnerabilitySeverity.get_from_cvss_scores(
-                                        (oic_vulnerability.cvss_score,)
-                                    ) if oic_vulnerability.cvss_score else None,
-                                    method=VulnerabilityScoreSource.get_from_vector(
-                                        vector=oic_vulnerability.cvss_vector
-                                    ) if oic_vulnerability.cvss_vector else None,
-                                    vector=oic_vulnerability.cvss_vector
-                                )
-                            )
-                        cwes = None
-                        if oic_vulnerability.cwe:
-                            try:
-                                cwes = [int(oic_vulnerability.cwe[4:])]
-                            except ValueError:
-                                pass    # ignore cases where conversion to int fails
-
-                        vulnerability: Vulnerability = Vulnerability(
-                            bom_ref=oic_vulnerability.id,
-                            id=oic_vulnerability.id,
-                            source=VulnerabilitySource(
-                                name='OSS Index', url=XsUri(oic_vulnerability.reference)
-                            ),
-                            cwes=cwes,
-                            description=oic_vulnerability.title,
-                            detail=oic_vulnerability.description,
-                            ratings=ratings,
-                            references=[
-                                VulnerabilityReference(
-                                    id=oic_vulnerability.display_name, source=VulnerabilitySource(
-                                        name='OSS Index', url=XsUri(oic_vulnerability.reference)
-                                    )
-                                )
-                            ]
-                        )
-                        if oic_vulnerability.external_references:
-                            advisories: Set[VulnerabilityAdvisory] = set()
-                            for ext_ref_url in oic_vulnerability.external_references:
-                                advisories.add(VulnerabilityAdvisory(url=XsUri(uri=ext_ref_url)))
-                            vulnerability.advisories = advisories
-
-                        vulnerability.affects.add(
-                            BomTarget(
-                                ref=str(component.bom_ref),
-                                versions=[
-                                    BomTargetVersionRange(
-                                        version=component.version, status=ImpactAnalysisAffectedStatus.AFFECTED
-                                    )
-                                ]
-                            )
-                        )
-
-                        component.add_vulnerability(vulnerability=vulnerability)
-
+    def _process_components(
+        self,
+        parser: BaseJakeParser,
+        guide_results: List[ComponentReportPost],
+        progress: Progress,
+        task: TaskID,
+    ) -> tuple[List[Component], List[Vulnerability]]:
+        components: List[Component] = []
+        vulnerabilities: List[Vulnerability] = []
+        for component in parser.get_components():
+            if not component.purl:
+                continue
+            purl_str = str(component.purl)
+            matching = [r for r in guide_results if r.coordinates == purl_str]
+            if not matching:
+                progress.update(task, advance=1)
                 components.append(component)
-                progress.update(task_munching_data, advance=1)
+                continue
+            report: ComponentReportPost = matching[0]
+            if report.vulnerabilities:
+                for vuln in report.vulnerabilities:
+                    vulnerabilities.append(OssCommand._build_vulnerability(component, vuln))
+            components.append(component)
+            progress.update(task, advance=1)
+        return components, vulnerabilities
 
-        print('')
-        self._print_oss_index_report(components=components)
+    @staticmethod
+    def _build_ratings(vuln: OssiVulnerabilityPost) -> List[VulnerabilityRating]:
+        if not vuln.cvss_score:
+            return []
+        return [
+            VulnerabilityRating(
+                source=VulnerabilitySource(
+                    name=_SONATYPE_GUIDE_SOURCE, url=XsUri(vuln.reference or '')
+                ),
+                score=Decimal(str(vuln.cvss_score)),
+                severity=VulnerabilitySeverity.get_from_cvss_scores((vuln.cvss_score,)),
+                method=VulnerabilityScoreSource.get_from_vector(
+                    vector=vuln.cvss_vector
+                ) if vuln.cvss_vector else None,
+                vector=vuln.cvss_vector
+            )
+        ]
 
-        if self.arguments.oss_output_file:
-            cyclonedx_output = get_instance(
-                bom=OssCommand._build_bom(components=components),
-                output_format=OutputFormat[str(self.arguments.oss_output_format).upper()],
-                schema_version=SchemaVersion['V{}'.format(
-                    str(self.arguments.oss_schema_version).replace('.', '_')
-                )])
+    @staticmethod
+    def _build_vulnerability(component: Component, vuln: OssiVulnerabilityPost) -> Vulnerability:
+        ratings = OssCommand._build_ratings(vuln)
 
-            output_filename = os.path.realpath(self.arguments.oss_output_file)
-            cyclonedx_output.output_to_file(filename=output_filename, allow_overwrite=True)
-            print('')
-            print('CycloneDX has been written to {}'.format(output_filename))
+        cwes = None
+        if vuln.cwe:
+            try:
+                cwes = [int(vuln.cwe[4:])]
+            except ValueError:
+                pass    # ignore cases where conversion to int fails
 
-        # Update exit_code if warn only is not enabled and issues have been detected
-        if not self.arguments.warn_only:
-            for oic in oss_index_results:
-                if oic.vulnerabilities:
-                    exit_code = 1
-                    break
+        vulnerability: Vulnerability = Vulnerability(
+            bom_ref=vuln.id,
+            id=vuln.id,
+            source=VulnerabilitySource(
+                name=_SONATYPE_GUIDE_SOURCE, url=XsUri(vuln.reference or '')
+            ),
+            cwes=cwes,
+            description=vuln.title,
+            detail=vuln.description,
+            ratings=ratings,
+            references=[
+                VulnerabilityReference(
+                    id=vuln.display_name or '', source=VulnerabilitySource(
+                        name=_SONATYPE_GUIDE_SOURCE, url=XsUri(vuln.reference or '')
+                    )
+                )
+            ]
+        )
+        if vuln.external_references:
+            advisories: Set[VulnerabilityAdvisory] = set()
+            for ext_ref_url in vuln.external_references:
+                advisories.add(VulnerabilityAdvisory(url=XsUri(uri=ext_ref_url)))
+            vulnerability.advisories = advisories
 
-        return exit_code
+        vulnerability.affects.add(
+            BomTarget(
+                ref=str(component.bom_ref),
+                versions=[
+                    BomTargetVersionRange(
+                        version=component.version, status=ImpactAnalysisAffectedStatus.AFFECTED
+                    )
+                ]
+            )
+        )
+        return vulnerability
 
     def get_argument_parser_name(self) -> str:
-        return 'ddt'
+        return 'guide'
 
     def get_argument_parser_help(self) -> str:
-        return 'perform a scan backed by OSS Index'
+        return 'perform a scan backed by Sonatype Guide'
 
     def setup_argument_parser(self, arg_parser: ArgumentParser) -> None:
         parser_selector.add_parser_selector_arguments(arg_parser)
-        arg_parser.add_argument('--clear-cache', help='Clears any local cached OSS Index data prior to execution',
-                                action='store_true', dest='oss_clear_cache', default=False)
+
+        default_username = os.environ.get('SONATYPE_GUIDE_USERNAME') or os.environ.get('OSS_INDEX_USERNAME')
+        default_token = os.environ.get('SONATYPE_GUIDE_TOKEN') or os.environ.get('OSS_INDEX_TOKEN')
+        arg_parser.add_argument('-u', '--username',
+                                help='Sonatype Guide username/email '
+                                     '(env var: SONATYPE_GUIDE_USERNAME; '
+                                     'OSS_INDEX_USERNAME accepted as a fallback)',
+                                metavar='USERNAME', dest='oss_username',
+                                default=default_username)
+        arg_parser.add_argument('--token',
+                                help='Sonatype Guide API token '
+                                     '(env var: SONATYPE_GUIDE_TOKEN; '
+                                     'OSS_INDEX_TOKEN accepted as a fallback)',
+                                metavar='TOKEN', dest='oss_token',
+                                default=default_token)
 
         arg_parser.add_argument('-o', '--output-file',
                                 help='Specify a file to output the SBOM to. If not specified the '
@@ -240,47 +295,45 @@ class OssCommand(BaseCommand):
                                 default='xml', dest='oss_output_format')
         arg_parser.add_argument('--schema-version',
                                 help=f'CycloneDX schema version to use (default = '
-                                     f'{LATEST_SUPPORTED_SCHEMA_VERSION.to_version()})',
-                                choices={'1.4', '1.3', '1.2', '1.1', '1.0'},
-                                default=f'{LATEST_SUPPORTED_SCHEMA_VERSION.to_version()}',
+                                     f'{SchemaVersion.V1_6.to_version()})',
+                                choices={'1.6', '1.5', '1.4', '1.3', '1.2', '1.1', '1.0'},
+                                default=f'{SchemaVersion.V1_6.to_version()}',
                                 dest='oss_schema_version')
         arg_parser.add_argument('--whitelist', help='Set path to whitelist json file', type=Path,
                                 dest='oss_whitelist_json_file')
 
     @staticmethod
-    def _build_bom(components: Iterable[Component]) -> Bom:
-        bom = Bom()
-        bom.components = set(components)
-        return bom
+    def _build_bom(components: Iterable[Component], vulnerabilities: Iterable[Vulnerability]) -> Bom:
+        return Bom(components=set(components), vulnerabilities=set(vulnerabilities))
 
-    def _print_oss_index_report(self, components: List[Component]) -> None:
+    def _print_oss_index_report(self, components: List[Component], vulnerabilities: List[Vulnerability]) -> None:
+        vuln_map: Dict[str, List[Vulnerability]] = {str(c.bom_ref): [] for c in components}
+        for v in vulnerabilities:
+            for target in v.affects:
+                if target.ref in vuln_map:
+                    vuln_map[target.ref].append(v)
+
         total_vulnerabilities = 0
         total_packages = len(components)
 
         component: Component
         i: int = 1
         for component in components:
-            if component.has_vulnerabilities():
+            comp_vulns = vuln_map.get(str(component.bom_ref), [])
+            if bool(comp_vulns):
                 self._console.print(
                     f"[{i}/{total_packages}] - {component.name}@{component.version} [VULNERABLE]",
                     style=OssCommand._get_color_for_cvss_score(
-                        cvss_score=OssCommand._get_max_cvss_score(component=component)
+                        cvss_score=OssCommand._get_max_cvss_score(
+                            component=component, vulnerabilities=comp_vulns)
                     )
                 )
 
-                total_vulnerabilities += len(component.get_vulnerabilities())
-                if component.get_vulnerabilities():
-                    tree = Tree(f'Vulnerability Details for [bright_white]{component.name}@{component.version}[white]')
-                    for v in component.get_vulnerabilities():
-                        OssCommand._print_vulnerability(tree=tree, v=v)
-                    self._console.print(tree)
-                else:
-                    self._console.print(
-                        f"[{i}/{total_packages}] - {component.name}@{component.version}",
-                        style=OssCommand._get_color_for_cvss_score(
-                            cvss_score=OssCommand._get_max_cvss_score(component=component)
-                        )
-                    )
+                total_vulnerabilities += len(comp_vulns)
+                tree = Tree(f'Vulnerability Details for [bright_white]{component.name}@{component.version}[white]')
+                for v in comp_vulns:
+                    OssCommand._print_vulnerability(tree=tree, v=v)
+                self._console.print(tree)
 
             i += 1
 
@@ -302,37 +355,46 @@ class OssCommand(BaseCommand):
         return max_score
 
     @staticmethod
-    def _get_max_cvss_score(component: Component) -> float:
+    def _get_max_cvss_score(component: Component, vulnerabilities: List[Vulnerability]) -> float:
         max_cvss_score: float = 0.0
-        for v in component.get_vulnerabilities():
+        for v in vulnerabilities:
             max_cvss_score = OssCommand._get_max_cvss_score_for_vulnerability(vulnerability=v)
         return max_cvss_score
 
     @staticmethod
     def _print_vulnerability(tree: Tree, v: Vulnerability) -> None:
         b = tree.add(
-            f':warning: [bright_red] ID: {v.id}'
+            f'[bright_red](!) ID: {v.id}'
         )
 
         severity_color = OssCommand._get_color_for_cvss_score(
             OssCommand._get_max_cvss_score_for_vulnerability(vulnerability=v)
         )
 
+        ratings_text = os.linesep.join([
+            f'   -  [{severity_color}]{rating.score:.1f} {rating.severity.name if rating.severity else ""} - '
+            f'Vector: {rating.vector if rating.vector else "Unknown"}, '
+            f'CWEs: {",".join(list(map(lambda cwe: str(cwe), v.cwes))) if v.cwes else "None Recorded"}'
+            f'[bright_white]'
+            for rating in v.ratings
+        ])
+
+        references_text = os.linesep.join([
+            f'  - {reference.source.name if reference.source and reference.source.name else ""} '
+            f'[Ref: {reference.id}]{os.linesep}'
+            f'    URL: {reference.source.url if reference.source and reference.source.url else "None"}'
+            for reference in v.references
+        ])
+
         content = f"""
 [bright_white]{v.description}
 {v.detail}
 
 Ratings:
-{os.linesep.join([f'   -  [{severity_color}]{rating.score:.1f} {rating.severity.name if rating.severity else ""} - '
-                  f'Vector: {rating.vector if rating.vector else "Unknown"}, '
-                  f'CWEs: {",".join(list(map(lambda cwe: str(cwe), v.cwes))) if v.cwes else "None Recorded"}'
-                  f'[bright_white]' for rating in v.ratings])}
+{ratings_text}
 
 References:
-{os.linesep.join([f'  - {reference.source.name if reference.source and reference.source.name else ""} '
-                  f'[Ref: {reference.id}]{os.linesep}'
-                  f'    URL: {reference.source.url if reference.source and reference.source.url else "None"}'
-                  for reference in v.references])}
+{references_text}
         """
 
         b.add(Panel(content, title=f'[bright_white]{v.id}', title_align="left"))
@@ -362,3 +424,13 @@ References:
             return 'Low'
         else:
             return 'None'
+
+
+class DdtCommand(OssCommand):
+    """Deprecated alias for OssCommand that registers as the 'ddt' subcommand."""
+
+    def get_argument_parser_name(self) -> str:
+        return 'ddt'
+
+    def get_argument_parser_help(self) -> str:
+        return '(DEPRECATED: use guide instead) perform a scan backed by Sonatype Guide'

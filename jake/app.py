@@ -21,7 +21,7 @@ from argparse import ArgumentParser
 from datetime import datetime
 from typing import Dict
 
-from pyfiglet import figlet_format  # type: ignore
+from art import text2art
 from rich.console import Console
 
 from .command import BaseCommand, jake_version
@@ -88,8 +88,8 @@ class JakeCmd:
 
     def _print_jake_header(self) -> None:
         """ Prints the banner, most of the user facing commands start with this """
-        self._console.print(figlet_format('Jake', font='isometric4'), style='dark_green')
-        self._console.print(figlet_format('..the snake..', font='invita'), style='dark_green')
+        self._console.print(text2art('Jake', font='isometric4'), style='dark_green')
+        self._console.print(text2art('..the snake..', font='banner3-D'), style='dark_green')
         print("Jake Version: {}".format(jake_version))
         print('Put your Python dependencies in a chokehold')
         print('')

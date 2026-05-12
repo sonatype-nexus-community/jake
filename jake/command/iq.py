@@ -191,7 +191,7 @@ class IqCommand(BaseCommand):
             )
             progress.update(
                 task_validate_iq, completed=10,
-                description=f"🐍 [green]IQ Server at {self.arguments.iq_server_url} is up and accessible"
+                description=f"[green]IQ Server at {self.arguments.iq_server_url} is up and accessible"
             )
 
             # task_parser
@@ -201,7 +201,7 @@ class IqCommand(BaseCommand):
             total_packages_collected = len(parser.get_components())
             progress.update(
                 task_parser, completed=10,
-                description=f'🐍 [green]Collected {total_packages_collected} packages from {input_source_msg}'
+                description=f'[green]Collected {total_packages_collected} packages from {input_source_msg}'
             )
 
             # task_query_iq
@@ -215,19 +215,18 @@ class IqCommand(BaseCommand):
             if iq_response['policyAction'] == 'Failure':
                 progress.update(
                     task_query_iq, completed=10,
-                    description='💥 [red]Snakes on the plane! There are policy failures from Sonatype Nexus IQ.'
+                    description='[red]FAIL: There are policy failures from Sonatype Nexus IQ.'
                 )
                 exit_code = 1
             elif iq_response['policyAction'] == 'Warning':
                 progress.update(
                     task_query_iq, completed=10,
-                    description='🧨 [orange]Something slithers around your ankle! '
-                                'There are policy warnings from Sonatype Nexus IQ.'
+                    description='[yellow]WARN: There are policy warnings from Sonatype Nexus IQ.'
                 )
             else:
                 progress.update(
                     task_query_iq, completed=10,
-                    description='🐍 [green]Sonatype Nexus IQ Policy Evaluation complete with ZERO snakes.'
+                    description='[green]Sonatype Nexus IQ Policy Evaluation complete with no policy failures.'
                 )
 
         print('')

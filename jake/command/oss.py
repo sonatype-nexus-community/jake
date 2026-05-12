@@ -70,7 +70,7 @@ class OssCommand(BaseCommand):
             total_packages_collected = len(parser.get_components())
             progress.update(
                 task_parser, completed=10,
-                description=f'🐍 [green]Collected {total_packages_collected} packages from {input_source_msg}'
+                description=f'[green]Collected {total_packages_collected} packages from {input_source_msg}'
             )
 
             oss_index_results: List[OssIndexComponent]
@@ -97,23 +97,23 @@ class OssCommand(BaseCommand):
 
             progress.update(
                 task_query_ossi, completed=10,
-                description='🐍 [green]Successfully queried OSS Index for package and vulnerability info'
+                description='[green]Successfully queried OSS Index for package and vulnerability info'
             )
 
             progress.update(task_sanity_checking, completed=1)
             if len(parser.get_components()) > len(oss_index_results):
                 progress.update(
                     task_sanity_checking, completed=10,
-                    description="🐍 [red]Some components not identified by OSS Index - perhaps these are InnerSource?"
+                    description="[red]Some components not identified by OSS Index - perhaps these are InnerSource?"
                 )
             else:
                 progress.update(
                     task_sanity_checking, completed=10,
-                    description="🐍 [green]Sane number of results from OSS Index"
+                    description="[green]Sane number of results from OSS Index"
                 )
 
             task_munching_data = progress.add_task(
-                description="🐍 [green]Munching & crunching data...", start=True, total=len(parser.get_components())
+                description="[green]Munching & crunching data...", start=True, total=len(parser.get_components())
             )
 
             components: List[Component] = []
@@ -311,7 +311,7 @@ class OssCommand(BaseCommand):
     @staticmethod
     def _print_vulnerability(tree: Tree, v: Vulnerability) -> None:
         b = tree.add(
-            f':warning: [bright_red] ID: {v.id}'
+            f'[bright_red](!) ID: {v.id}'
         )
 
         severity_color = OssCommand._get_color_for_cvss_score(

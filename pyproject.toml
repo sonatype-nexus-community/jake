@@ -48,7 +48,7 @@ sonatype-guide-api-client = "^0.1.0"
 sonatype-iq-api-client = "^0.201.0"
 certifi = ">=2024.7.4"
 art = ">=6.5, <7.0"
-rich = ">= 10.10.0"
+rich = ">=13.2.0"
 
 [tool.poetry.group.dev.dependencies]
 tox = "^4.0"

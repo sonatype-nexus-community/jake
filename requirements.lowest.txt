@@ -19,5 +19,5 @@ art == 6.5
 certifi == 2024.7.4
 sonatype-guide-api-client == 0.1.0
 sonatype-iq-api-client == 0.201.0
-rich == 10.10.0
+rich == 13.2.0
 tomli == 2.0.0

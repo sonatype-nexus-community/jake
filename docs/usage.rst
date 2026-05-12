@@ -222,10 +222,10 @@ The file format is:
 The ``id`` field is the vulnerability ID returned by Sonatype Guide. Any whitelisted ID will be excluded from the
 results and will not cause a failure.
 
-Check for vulnerabilities using Sonatype Nexus Lifecycle
+Check for vulnerabilities using Sonatype Lifecycle
 --------------------------------------------------------
 
-Access Sonatype's proprietary vulnerability data using ``jake``:
+Access Sonatype's proprietary vulnerability data constrained by *your* Organizational Policy using ``jake``:
 
 .. code-block::
 
@@ -251,21 +251,21 @@ Access Sonatype's proprietary vulnerability data using ``jake``:
                             read from Pipfile.lock; POETRY = read from a
                             poetry.lock. (Default = ENV)
       -s https://localhost:8070, --server-url https://localhost:8070
-                            Full http(s):// URL to your Nexus Lifecycle server
+                            Full http(s):// URL to your Sonatype Lifecycle server
       -i APP_ID, --application-id APP_ID
-                            Public Application ID in Nexus Lifecycle
+                            Public Application ID in Sonatype Lifecycle
       -u USER_ID, --username USER_ID
-                            Username for authentication to Nexus Lifecycle
+                            Username for authentication to Sonatype Lifecycle
       -p PASSWORD, --password PASSWORD
-                            Password for authentication to Nexus Lifecycle
+                            Password for authentication to Sonatype Lifecycle
       -st STAGE, --stage STAGE
                             The stage for the report
 
-So passing parameters that suit your Nexus Lifecycle environment you can get a report:
+So passing parameters that suit your Sonatype Lifecycle environment you can get a report:
 
 .. code-block::
 
-    > jake iq -s https://my-nexus-lifecycle -i APP_ID -u USERNAME -p PASSWORD
+    > jake iq -s https://my-sonatype-lifecycle -i APP_ID -u USERNAME -p PASSWORD
 
 Migrating from OSS Index to Sonatype Guide
 ------------------------------------------

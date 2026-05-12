@@ -40,13 +40,13 @@ class IqCommand(BaseCommand):
 
         with Progress() as progress:
             task_validate_iq = progress.add_task(
-                description="[yellow]Checking out your Nexus IQ Server", start=True, total=10
+                description="[yellow]Checking out your Sonatype Lifecycle Server", start=True, total=10
             )
             task_parser = progress.add_task(
                 description=f"[yellow]Collecting packages in {input_source_msg}", start=True, total=10
             )
             task_query_iq = progress.add_task(
-                description="[yellow]Submitting to Nexus Lifecycle for Policy Evaluation", start=True, total=10
+                description="[yellow]Submitting to Sonatype Lifecycle for Policy Evaluation", start=True, total=10
             )
 
             config = Configuration(
@@ -62,7 +62,8 @@ class IqCommand(BaseCommand):
 
                 progress.update(
                     task_validate_iq, completed=10,
-                    description=f"[green]IQ Server at {self.arguments.iq_server_url} is up and accessible"
+                    description=f"[green]Sonatype Lifecycle Server at {self.arguments.iq_server_url} is up and "
+                                f"accessible"
                 )
 
                 # task_parser
@@ -79,14 +80,14 @@ class IqCommand(BaseCommand):
                 app_list = apps_api.get_applications(public_id=[self.arguments.iq_application_id])
                 if not app_list.applications or len(app_list.applications) != 1:
                     raise ValueError(
-                        'There were {} matching Applications found in IQ for {}'.format(
+                        'There were {} matching Applications found in Sonatype Lifecycle for {}'.format(
                             len(app_list.applications) if app_list.applications else 0,
                             self.arguments.iq_application_id
                         )
                     )
                 internal_id = app_list.applications[0].id
                 if not internal_id:
-                    raise ValueError('Application in IQ has no internal ID')
+                    raise ValueError('Application in Sonatype Lifecycle has no internal ID')
 
                 # Build BOM and serialise to XML
                 bom = Bom(components=set(parser.get_components()))
@@ -115,7 +116,7 @@ class IqCommand(BaseCommand):
                         pass
                     time.sleep(10)
                 if result is None:
-                    raise RuntimeError('Timed out waiting for IQ scan results after 300 seconds')
+                    raise RuntimeError('Timed out waiting for Sonatype Lifecycle scan results after 300 seconds')
 
             if result.policy_action == 'Failure':
                 progress.update(
@@ -131,11 +132,11 @@ class IqCommand(BaseCommand):
             else:
                 progress.update(
                     task_query_iq, completed=10,
-                    description='[green]Sonatype Nexus IQ Policy Evaluation complete with no policy violations.'
+                    description='[green]Sonatype Lifecycle Policy Evaluation complete with no policy violations.'
                 )
 
         print('')
-        print('Your Sonatype Nexus IQ Lifecycle Report is available here:')
+        print('Your Sonatype Lifecycle Report is available here:')
         print('  HTML: {}/{}'.format(self.arguments.iq_server_url, result.report_html_url))
         print('  PDF:  {}/{}'.format(self.arguments.iq_server_url, result.report_pdf_url))
         print('')
@@ -146,20 +147,24 @@ class IqCommand(BaseCommand):
         return 'iq'
 
     def get_argument_parser_help(self) -> str:
-        return 'perform a scan backed by Sonatype Nexus Lifecycle'
+        return 'perform a scan backed by Sonatype Lifecycle'
 
     def setup_argument_parser(self, arg_parser: ArgumentParser) -> None:
         parser_selector.add_parser_selector_arguments(arg_parser)
-        arg_parser.add_argument('-s', '--server-url', help='Full http(s):// URL to your Nexus Lifecycle server',
+        arg_parser.add_argument('-s', '--server-url',
+                                help='Full http(s):// URL to your Sonatype Lifecycle server',
                                 metavar='https://localhost:8070', required=True, dest='iq_server_url')
 
-        arg_parser.add_argument('-i', '--application-id', help='Public Application ID in Nexus Lifecycle',
+        arg_parser.add_argument('-i', '--application-id',
+                                help='Public Application ID in Sonatype Lifecycle',
                                 metavar='APP_ID', required=True, dest='iq_application_id')
 
-        arg_parser.add_argument('-u', '--username', help='Username for authentication to Nexus Lifecycle',
+        arg_parser.add_argument('-u', '--username',
+                                help='Username for authentication to Sonatype Lifecycle',
                                 metavar='USER_ID', required=True, dest='iq_username')
 
-        arg_parser.add_argument('-p', '--password', help='Password for authentication to Nexus Lifecycle',
+        arg_parser.add_argument('-p', '--password',
+                                help='Password for authentication to Sonatype Lifecycle',
                                 metavar='PASSWORD', required=True, dest='iq_password')
 
         arg_parser.add_argument('-st', '--stage', help='The stage for the report',

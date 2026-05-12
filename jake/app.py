@@ -90,7 +90,7 @@ class JakeCmd:
     def _print_jake_header(self) -> None:
         """ Prints the banner, most of the user facing commands start with this """
         self._console.print(text2art('Jake', font='isometric4'), style='dark_green')
-        self._console.print(text2art('..the snake..', font='banner3-D'), style='dark_green')
+        self._console.print(text2art('..the snake..', font='5lineoblique'), style='dark_green')
         print("Jake Version: {}".format(jake_version))
         print('Put your Python dependencies in a chokehold')
         print('')

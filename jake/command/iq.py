@@ -94,7 +94,8 @@ class IqCommand(BaseCommand):
                 # Submit scan
                 progress.start_task(task_query_iq)
                 ticket = scan_api.scan_components(
-                    internal_id, 'cyclonedx', self.arguments.iq_scan_stage, bom_xml
+                    internal_id, 'cyclonedx', self.arguments.iq_scan_stage, bom_xml,
+                    _content_type='application/xml'
                 )
 
                 # Extract scan ID from the last path segment of status_url

@@ -115,13 +115,13 @@ class IqCommand(BaseCommand):
             if result.policy_action == 'Failure':
                 progress.update(
                     task_query_iq, completed=10,
-                    description='[red]Policy failures detected from Sonatype Nexus IQ.'
+                    description='[red]Policy failures detected from Sonatype Lifecycle.'
                 )
                 exit_code = 1
             elif result.policy_action == 'Warning':
                 progress.update(
                     task_query_iq, completed=10,
-                    description='[yellow]Policy warnings detected from Sonatype Nexus IQ.'
+                    description='[yellow]Policy warnings detected from Sonatype Lifecycle.'
                 )
             else:
                 progress.update(

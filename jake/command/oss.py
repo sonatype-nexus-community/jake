@@ -62,7 +62,7 @@ class OssCommand(BaseCommand):
         except UnauthorizedException:
             self._console.print(
                 '[red]Authentication failed: Sonatype Guide requires a username and token.\n'
-                'Set OSS_INDEX_USERNAME and OSS_INDEX_TOKEN environment variables, '
+                'Set SONATYPE_GUIDE_USERNAME and SONATYPE_GUIDE_TOKEN environment variables, '
                 'or pass -u / --token on the command line.'
             )
             return 1

@@ -27,9 +27,13 @@ from cyclonedx.model import XsUri
 from cyclonedx.model.bom import Bom
 from cyclonedx.model.component import Component
 from cyclonedx.model.impact_analysis import ImpactAnalysisAffectedStatus
-from cyclonedx.model.vulnerability import BomTarget, BomTargetVersionRange, Vulnerability, VulnerabilityAdvisory, \
-    VulnerabilityRating, VulnerabilityReference, VulnerabilityScoreSource, VulnerabilitySeverity, VulnerabilitySource
-from cyclonedx.output import get_instance, OutputFormat, SchemaVersion, LATEST_SUPPORTED_SCHEMA_VERSION
+from cyclonedx.model.vulnerability import (
+    BomTarget, BomTargetVersionRange, Vulnerability, VulnerabilityAdvisory,
+    VulnerabilityRating, VulnerabilityReference, VulnerabilityScoreSource,
+    VulnerabilitySeverity, VulnerabilitySource
+)
+from cyclonedx.output import make_outputter
+from cyclonedx.schema import OutputFormat, SchemaVersion
 from ossindex.model import OssIndexComponent
 from ossindex.ossindex import OssIndex
 # See https://github.com/package-url/packageurl-python/issues/65
@@ -117,6 +121,7 @@ class OssCommand(BaseCommand):
             )
 
             components: List[Component] = []
+            vulnerabilities: List[Vulnerability] = []
             for component in parser.get_components():
                 if component.purl:
                     oss_index_component: OssIndexComponent = list(filter(
@@ -190,21 +195,20 @@ class OssCommand(BaseCommand):
                             )
                         )
 
-                        component.add_vulnerability(vulnerability=vulnerability)
+                        vulnerabilities.append(vulnerability)
 
                 components.append(component)
                 progress.update(task_munching_data, advance=1)
 
         print('')
-        self._print_oss_index_report(components=components)
+        self._print_oss_index_report(components=components, vulnerabilities=vulnerabilities)
 
         if self.arguments.oss_output_file:
-            cyclonedx_output = get_instance(
-                bom=OssCommand._build_bom(components=components),
-                output_format=OutputFormat[str(self.arguments.oss_output_format).upper()],
-                schema_version=SchemaVersion['V{}'.format(
-                    str(self.arguments.oss_schema_version).replace('.', '_')
-                )])
+            cyclonedx_output = make_outputter(
+                OssCommand._build_bom(components=components, vulnerabilities=vulnerabilities),
+                OutputFormat[str(self.arguments.oss_output_format).upper()],
+                SchemaVersion.from_version(str(self.arguments.oss_schema_version))
+            )
 
             output_filename = os.path.realpath(self.arguments.oss_output_file)
             cyclonedx_output.output_to_file(filename=output_filename, allow_overwrite=True)
@@ -240,45 +244,53 @@ class OssCommand(BaseCommand):
                                 default='xml', dest='oss_output_format')
         arg_parser.add_argument('--schema-version',
                                 help=f'CycloneDX schema version to use (default = '
-                                     f'{LATEST_SUPPORTED_SCHEMA_VERSION.to_version()})',
-                                choices={'1.4', '1.3', '1.2', '1.1', '1.0'},
-                                default=f'{LATEST_SUPPORTED_SCHEMA_VERSION.to_version()}',
+                                     f'{SchemaVersion.V1_6.to_version()})',
+                                choices={'1.6', '1.5', '1.4', '1.3', '1.2', '1.1', '1.0'},
+                                default=f'{SchemaVersion.V1_6.to_version()}',
                                 dest='oss_schema_version')
         arg_parser.add_argument('--whitelist', help='Set path to whitelist json file', type=Path,
                                 dest='oss_whitelist_json_file')
 
     @staticmethod
-    def _build_bom(components: Iterable[Component]) -> Bom:
-        bom = Bom()
-        bom.components = set(components)
-        return bom
+    def _build_bom(components: Iterable[Component], vulnerabilities: Iterable[Vulnerability]) -> Bom:
+        return Bom(components=set(components), vulnerabilities=set(vulnerabilities))
 
-    def _print_oss_index_report(self, components: List[Component]) -> None:
+    def _print_oss_index_report(self, components: List[Component], vulnerabilities: List[Vulnerability]) -> None:
+        from typing import Dict
+        vuln_map: Dict[str, List[Vulnerability]] = {str(c.bom_ref): [] for c in components}
+        for v in vulnerabilities:
+            for target in v.affects:
+                if target.ref in vuln_map:
+                    vuln_map[target.ref].append(v)
+
         total_vulnerabilities = 0
         total_packages = len(components)
 
         component: Component
         i: int = 1
         for component in components:
-            if component.has_vulnerabilities():
+            comp_vulns = vuln_map.get(str(component.bom_ref), [])
+            if bool(comp_vulns):
                 self._console.print(
                     f"[{i}/{total_packages}] - {component.name}@{component.version} [VULNERABLE]",
                     style=OssCommand._get_color_for_cvss_score(
-                        cvss_score=OssCommand._get_max_cvss_score(component=component)
+                        cvss_score=OssCommand._get_max_cvss_score(component=component,
+                                                                   vulnerabilities=comp_vulns)
                     )
                 )
 
-                total_vulnerabilities += len(component.get_vulnerabilities())
-                if component.get_vulnerabilities():
+                total_vulnerabilities += len(comp_vulns)
+                if comp_vulns:
                     tree = Tree(f'Vulnerability Details for [bright_white]{component.name}@{component.version}[white]')
-                    for v in component.get_vulnerabilities():
+                    for v in comp_vulns:
                         OssCommand._print_vulnerability(tree=tree, v=v)
                     self._console.print(tree)
                 else:
                     self._console.print(
                         f"[{i}/{total_packages}] - {component.name}@{component.version}",
                         style=OssCommand._get_color_for_cvss_score(
-                            cvss_score=OssCommand._get_max_cvss_score(component=component)
+                            cvss_score=OssCommand._get_max_cvss_score(component=component,
+                                                                       vulnerabilities=comp_vulns)
                         )
                     )
 
@@ -302,9 +314,9 @@ class OssCommand(BaseCommand):
         return max_score
 
     @staticmethod
-    def _get_max_cvss_score(component: Component) -> float:
+    def _get_max_cvss_score(component: Component, vulnerabilities: List[Vulnerability]) -> float:
         max_cvss_score: float = 0.0
-        for v in component.get_vulnerabilities():
+        for v in vulnerabilities:
             max_cvss_score = OssCommand._get_max_cvss_score_for_vulnerability(vulnerability=v)
         return max_cvss_score
 

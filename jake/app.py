@@ -26,12 +26,13 @@ from rich.console import Console
 
 from .command import BaseCommand, jake_version
 from .command.iq import IqCommand
-from .command.oss import OssCommand
+from .command.oss import DdtCommand, OssCommand
 from .command.sbom import SbomCommand
 
 _SUB_COMMANDS: Dict[str, BaseCommand] = {
     'iq': IqCommand(),
-    'ddt': OssCommand(),
+    'guide': OssCommand(),
+    'ddt': DdtCommand(),
     'sbom': SbomCommand()
 }
 

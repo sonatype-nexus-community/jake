@@ -198,24 +198,26 @@ class OssCommand(BaseCommand):
         return components, vulnerabilities
 
     @staticmethod
-    def _build_vulnerability(component: Component, vuln: OssiVulnerabilityPost) -> Vulnerability:
-        ratings: List[VulnerabilityRating] = []
-        if vuln.cvss_score:
-            ratings.append(
-                VulnerabilityRating(
-                    source=VulnerabilitySource(
-                        name=_SONATYPE_GUIDE_SOURCE, url=XsUri(vuln.reference or '')
-                    ),
-                    score=Decimal(str(vuln.cvss_score)) if vuln.cvss_score else None,
-                    severity=VulnerabilitySeverity.get_from_cvss_scores(
-                        (vuln.cvss_score,)
-                    ) if vuln.cvss_score else None,
-                    method=VulnerabilityScoreSource.get_from_vector(
-                        vector=vuln.cvss_vector
-                    ) if vuln.cvss_vector else None,
+    def _build_ratings(vuln: OssiVulnerabilityPost) -> List[VulnerabilityRating]:
+        if not vuln.cvss_score:
+            return []
+        return [
+            VulnerabilityRating(
+                source=VulnerabilitySource(
+                    name=_SONATYPE_GUIDE_SOURCE, url=XsUri(vuln.reference or '')
+                ),
+                score=Decimal(str(vuln.cvss_score)),
+                severity=VulnerabilitySeverity.get_from_cvss_scores((vuln.cvss_score,)),
+                method=VulnerabilityScoreSource.get_from_vector(
                     vector=vuln.cvss_vector
-                )
+                ) if vuln.cvss_vector else None,
+                vector=vuln.cvss_vector
             )
+        ]
+
+    @staticmethod
+    def _build_vulnerability(component: Component, vuln: OssiVulnerabilityPost) -> Vulnerability:
+        ratings = OssCommand._build_ratings(vuln)
 
         cwes = None
         if vuln.cwe:

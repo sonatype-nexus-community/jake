@@ -31,7 +31,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-from importlib.metadata import version
+from importlib.metadata import version as _get_version
 
 # -- Project information -----------------------------------------------------
 
@@ -40,7 +40,7 @@ copyright = '2019-Present Sonatype Inc.'
 author = 'Paul Horton, Jeffry Hesse, Dan Rollo'
 
 # The full version, including alpha/beta/rc tags
-release = version("jake")
+release = _get_version("jake")
 
 # -- General configuration ---------------------------------------------------
 

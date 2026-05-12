@@ -38,6 +38,7 @@ from cyclonedx.output import make_outputter
 from cyclonedx.schema import OutputFormat, SchemaVersion
 from sonatype_guide_api_client import ApiClient, Configuration, OSSIndexCompatibilityApi, PurlRequestPost, \
     ComponentReportPost
+from sonatype_guide_api_client.exceptions import UnauthorizedException
 from rich.console import Console
 from rich.panel import Panel
 from rich.progress import Progress
@@ -55,8 +56,41 @@ class OssCommand(BaseCommand):
 
     def handle_args(self) -> int:
         self._console = Console()
+        try:
+            components, vulnerabilities, guide_results = self._perform_scan()
+        except UnauthorizedException:
+            self._console.print(
+                '[red]Authentication failed: Sonatype Guide requires a username and token.\n'
+                'Set OSS_INDEX_USERNAME and OSS_INDEX_TOKEN environment variables, '
+                'or pass -u / --token on the command line.'
+            )
+            return 1
+
+        print('')
+        self._print_oss_index_report(components=components, vulnerabilities=vulnerabilities)
+
+        if self.arguments.oss_output_file:
+            cyclonedx_output = make_outputter(
+                OssCommand._build_bom(components=components, vulnerabilities=vulnerabilities),
+                OutputFormat[str(self.arguments.oss_output_format).upper()],
+                SchemaVersion.from_version(str(self.arguments.oss_schema_version))
+            )
+
+            output_filename = os.path.realpath(self.arguments.oss_output_file)
+            cyclonedx_output.output_to_file(filename=output_filename, allow_overwrite=True)
+            print('')
+            print('CycloneDX has been written to {}'.format(output_filename))
 
         exit_code: int = 0
+        if not self.arguments.warn_only:
+            for report in guide_results:
+                if report.vulnerabilities:
+                    exit_code = 1
+                    break
+
+        return exit_code
+
+    def _perform_scan(self) -> tuple[List[Component], List[Vulnerability], List[ComponentReportPost]]:
         input_source_msg = "your python environment" if self.arguments.sbom_input_type == "ENV" else "provided specs"
 
         with Progress() as progress:
@@ -213,29 +247,7 @@ class OssCommand(BaseCommand):
                 components.append(component)
                 progress.update(task_munching_data, advance=1)
 
-        print('')
-        self._print_oss_index_report(components=components, vulnerabilities=vulnerabilities)
-
-        if self.arguments.oss_output_file:
-            cyclonedx_output = make_outputter(
-                OssCommand._build_bom(components=components, vulnerabilities=vulnerabilities),
-                OutputFormat[str(self.arguments.oss_output_format).upper()],
-                SchemaVersion.from_version(str(self.arguments.oss_schema_version))
-            )
-
-            output_filename = os.path.realpath(self.arguments.oss_output_file)
-            cyclonedx_output.output_to_file(filename=output_filename, allow_overwrite=True)
-            print('')
-            print('CycloneDX has been written to {}'.format(output_filename))
-
-        # Update exit_code if warn only is not enabled and issues have been detected
-        if not self.arguments.warn_only:
-            for report in guide_results:
-                if report.vulnerabilities:
-                    exit_code = 1
-                    break
-
-        return exit_code
+        return components, vulnerabilities, guide_results
 
     def get_argument_parser_name(self) -> str:
         return 'guide'

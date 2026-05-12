@@ -124,7 +124,7 @@ class OssCommand(BaseCommand):
             with ApiClient(config) as client:
                 api = OSSIndexCompatibilityApi(client)
                 guide_results: List[ComponentReportPost] = api.get_component_reports(
-                    PurlRequestPost(
+                    purl_request_post=PurlRequestPost(
                         coordinates=[str(c.purl) for c in parser.get_components() if c.purl]
                     )
                 )
@@ -258,14 +258,20 @@ class OssCommand(BaseCommand):
     def setup_argument_parser(self, arg_parser: ArgumentParser) -> None:
         parser_selector.add_parser_selector_arguments(arg_parser)
 
+        default_username = os.environ.get('SONATYPE_GUIDE_USERNAME') or os.environ.get('OSS_INDEX_USERNAME')
+        default_token = os.environ.get('SONATYPE_GUIDE_TOKEN') or os.environ.get('OSS_INDEX_TOKEN')
         arg_parser.add_argument('-u', '--username',
-                                help='OSS Index username/email (env var: OSS_INDEX_USERNAME)',
+                                help='Sonatype Guide username/email '
+                                     '(env var: SONATYPE_GUIDE_USERNAME; '
+                                     'OSS_INDEX_USERNAME accepted as a fallback)',
                                 metavar='USERNAME', dest='oss_username',
-                                default=os.environ.get('OSS_INDEX_USERNAME'))
+                                default=default_username)
         arg_parser.add_argument('--token',
-                                help='OSS Index API token (env var: OSS_INDEX_TOKEN)',
+                                help='Sonatype Guide API token '
+                                     '(env var: SONATYPE_GUIDE_TOKEN; '
+                                     'OSS_INDEX_TOKEN accepted as a fallback)',
                                 metavar='TOKEN', dest='oss_token',
-                                default=os.environ.get('OSS_INDEX_TOKEN'))
+                                default=default_token)
 
         arg_parser.add_argument('-o', '--output-file',
                                 help='Specify a file to output the SBOM to. If not specified the '

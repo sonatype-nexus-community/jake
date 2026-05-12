@@ -45,7 +45,7 @@ from rich.tree import Tree
 from . import BaseCommand
 from . import parser_selector
 
-_OSS_INDEX_SOURCE = 'OSS Index'
+_SONATYPE_GUIDE_SOURCE = 'Sonatype Guide'
 
 
 class OssCommand(BaseCommand):
@@ -148,7 +148,7 @@ class OssCommand(BaseCommand):
                             ratings.append(
                                 VulnerabilityRating(
                                     source=VulnerabilitySource(
-                                        name=_OSS_INDEX_SOURCE, url=XsUri(vuln.reference or '')
+                                        name=_SONATYPE_GUIDE_SOURCE, url=XsUri(vuln.reference or '')
                                     ),
                                     score=Decimal(
                                         str(vuln.cvss_score)
@@ -174,7 +174,7 @@ class OssCommand(BaseCommand):
                             bom_ref=vuln.id,
                             id=vuln.id,
                             source=VulnerabilitySource(
-                                name=_OSS_INDEX_SOURCE, url=XsUri(vuln.reference or '')
+                                name=_SONATYPE_GUIDE_SOURCE, url=XsUri(vuln.reference or '')
                             ),
                             cwes=cwes,
                             description=vuln.title,
@@ -183,7 +183,7 @@ class OssCommand(BaseCommand):
                             references=[
                                 VulnerabilityReference(
                                     id=vuln.display_name or '', source=VulnerabilitySource(
-                                        name=_OSS_INDEX_SOURCE, url=XsUri(vuln.reference or '')
+                                        name=_SONATYPE_GUIDE_SOURCE, url=XsUri(vuln.reference or '')
                                     )
                                 )
                             ]

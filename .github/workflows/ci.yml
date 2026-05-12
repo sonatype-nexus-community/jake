@@ -151,6 +151,7 @@ jobs:
         run: poetry build
 
       - name: Run tests
+        shell: bash
         run: |
           PY_VER=$(echo "${{ matrix.python-version }}" | tr -d '.')
           poetry run tox -e py${PY_VER}-${{ matrix.deps }}
@@ -170,7 +171,7 @@ jobs:
           if-no-files-found: error
 
   sonatype-lifecycle:
-    name: Sonatype Lifecycle (Build Stage)
+    name: Sonatype Lifecycle Policy Evaluation
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -183,5 +184,5 @@ jobs:
           username: ${{ secrets.SONATYPE_LIFECYCLE_USERNAME }}
           password: ${{ secrets.SONATYPE_LIFECYCLE_PASSWORD }}
           application-id: jake
-          stage: build
+          stage: ${{ github.ref == 'refs/heads/main' && 'build' || 'develop' }}
           scan-targets: '.'

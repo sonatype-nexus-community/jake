@@ -21,7 +21,7 @@ from argparse import ArgumentParser
 from datetime import datetime
 from typing import Dict
 
-from art import text2art
+from art import text2art  # type: ignore[import-untyped]
 from rich.console import Console
 
 from .command import BaseCommand, jake_version

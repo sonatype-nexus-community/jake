@@ -1,7 +1,7 @@
 import json
 from typing import List
 from cyclonedx.model.component import Component, ComponentType
-from packageurl import PackageURL
+from packageurl import PackageURL  # type: ignore[import-untyped]
 from .base import BaseJakeParser
 
 

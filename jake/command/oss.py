@@ -96,10 +96,10 @@ class OssCommand(BaseCommand):
                 whitelisted_entries = json_data.get("ignore", [])
                 whitelisted_ids = {entry["id"] for entry in whitelisted_entries}
                 if whitelisted_ids:
-                    for report in guide_results:
-                        if report.vulnerabilities:
-                            report.vulnerabilities = [
-                                v for v in report.vulnerabilities if v.id not in whitelisted_ids
+                    for guide_report in guide_results:
+                        if guide_report.vulnerabilities:
+                            guide_report.vulnerabilities = [
+                                v for v in guide_report.vulnerabilities if v.id not in whitelisted_ids
                             ]
 
             progress.update(
@@ -146,7 +146,7 @@ class OssCommand(BaseCommand):
                             ratings.append(
                                 VulnerabilityRating(
                                     source=VulnerabilitySource(
-                                        name='OSS Index', url=XsUri(vuln.reference)
+                                        name='OSS Index', url=XsUri(vuln.reference or '')
                                     ),
                                     score=Decimal(
                                         str(vuln.cvss_score)
@@ -172,7 +172,7 @@ class OssCommand(BaseCommand):
                             bom_ref=vuln.id,
                             id=vuln.id,
                             source=VulnerabilitySource(
-                                name='OSS Index', url=XsUri(vuln.reference)
+                                name='OSS Index', url=XsUri(vuln.reference or '')
                             ),
                             cwes=cwes,
                             description=vuln.title,
@@ -180,8 +180,8 @@ class OssCommand(BaseCommand):
                             ratings=ratings,
                             references=[
                                 VulnerabilityReference(
-                                    id=vuln.display_name, source=VulnerabilitySource(
-                                        name='OSS Index', url=XsUri(vuln.reference)
+                                    id=vuln.display_name or '', source=VulnerabilitySource(
+                                        name='OSS Index', url=XsUri(vuln.reference or '')
                                     )
                                 )
                             ]
@@ -288,8 +288,8 @@ class OssCommand(BaseCommand):
                 self._console.print(
                     f"[{i}/{total_packages}] - {component.name}@{component.version} [VULNERABLE]",
                     style=OssCommand._get_color_for_cvss_score(
-                        cvss_score=OssCommand._get_max_cvss_score(component=component,
-                                                                   vulnerabilities=comp_vulns)
+                        cvss_score=OssCommand._get_max_cvss_score(
+                            component=component, vulnerabilities=comp_vulns)
                     )
                 )
 
@@ -303,8 +303,8 @@ class OssCommand(BaseCommand):
                     self._console.print(
                         f"[{i}/{total_packages}] - {component.name}@{component.version}",
                         style=OssCommand._get_color_for_cvss_score(
-                            cvss_score=OssCommand._get_max_cvss_score(component=component,
-                                                                       vulnerabilities=comp_vulns)
+                            cvss_score=OssCommand._get_max_cvss_score(
+                                component=component, vulnerabilities=comp_vulns)
                         )
                     )
 

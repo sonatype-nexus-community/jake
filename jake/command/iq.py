@@ -23,7 +23,7 @@ from cyclonedx.model.bom import Bom
 from cyclonedx.output import make_outputter
 from cyclonedx.schema import OutputFormat, SchemaVersion
 from rich.progress import Progress
-from sonatype_iq_api_client import ApiClient, ApplicationsApi, Configuration, ScanApi
+from sonatype_iq_api_client import ApiClient, ApplicationsApi, Configuration, ThirdPartyAnalysisApi
 
 from . import BaseCommand
 from . import parser_selector
@@ -54,7 +54,7 @@ class IqCommand(BaseCommand):
 
             with ApiClient(config) as api_client:
                 apps_api = ApplicationsApi(api_client)
-                scan_api = ScanApi(api_client)
+                scan_api = ThirdPartyAnalysisApi(api_client)
 
                 progress.update(
                     task_validate_iq, completed=10,

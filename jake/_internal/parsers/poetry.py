@@ -4,7 +4,7 @@ from packageurl import PackageURL  # type: ignore[import-untyped]
 from .base import BaseJakeParser
 
 try:
-    import tomllib
+    import tomllib  # type: ignore[import-not-found]
 except ImportError:
     try:
         import tomli as tomllib  # type: ignore[no-redef]

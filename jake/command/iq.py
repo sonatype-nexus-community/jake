@@ -81,6 +81,8 @@ class IqCommand(BaseCommand):
                         )
                     )
                 internal_id = app_list.applications[0].id
+                if not internal_id:
+                    raise ValueError('Application in IQ has no internal ID')
 
                 # Build BOM and serialise to XML
                 bom = Bom(components=set(parser.get_components()))
@@ -89,10 +91,12 @@ class IqCommand(BaseCommand):
                 # Submit scan
                 progress.start_task(task_query_iq)
                 ticket = scan_api.scan_components(
-                    internal_id, 'jake', self.arguments.iq_scan_stage, bom_xml
+                    internal_id, 'cyclonedx', self.arguments.iq_scan_stage, bom_xml
                 )
 
                 # Extract scan ID from the last path segment of status_url
+                if not ticket.status_url:
+                    raise RuntimeError('Scan returned no status URL')
                 scan_id = ticket.status_url.rstrip('/').split('/')[-1]
 
                 # Poll for results

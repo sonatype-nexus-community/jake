@@ -38,31 +38,31 @@ ThisTool = Component(
     version=jake_version or 'UNKNOWN',
     external_references=[
         ExternalReference(
-            reference_type=ExternalReferenceType.BUILD_SYSTEM,
+            type=ExternalReferenceType.BUILD_SYSTEM,
             url=XsUri('https://app.circleci.com/pipelines/github/sonatype-nexus-community/jake')
         ),
         ExternalReference(
-            reference_type=ExternalReferenceType.DISTRIBUTION,
+            type=ExternalReferenceType.DISTRIBUTION,
             url=XsUri('https://pypi.org/project/jake/')
         ),
         ExternalReference(
-            reference_type=ExternalReferenceType.ISSUE_TRACKER,
+            type=ExternalReferenceType.ISSUE_TRACKER,
             url=XsUri('https://github.com/sonatype-nexus-community/jake/issues')
         ),
         ExternalReference(
-            reference_type=ExternalReferenceType.LICENSE,
+            type=ExternalReferenceType.LICENSE,
             url=XsUri('https://github.com/sonatype-nexus-community/jake/blob/main/LICENSE')
         ),
         ExternalReference(
-            reference_type=ExternalReferenceType.RELEASE_NOTES,
+            type=ExternalReferenceType.RELEASE_NOTES,
             url=XsUri('https://github.com/sonatype-nexus-community/jake/blob/main/CHANGELOG.md')
         ),
         ExternalReference(
-            reference_type=ExternalReferenceType.VCS,
+            type=ExternalReferenceType.VCS,
             url=XsUri('https://github.com/sonatype-nexus-community/jake')
         ),
         ExternalReference(
-            reference_type=ExternalReferenceType.WEBSITE,
+            type=ExternalReferenceType.WEBSITE,
             url=XsUri('https://www.sonatype.com/products/free-developer-tools')
         ),
     ]

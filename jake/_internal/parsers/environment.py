@@ -9,10 +9,10 @@ class EnvironmentParser(BaseJakeParser):
 
     def get_components(self) -> List[Component]:
         components = []
-        seen: set = set()
+        seen: set[str] = set()
         for dist in importlib.metadata.distributions():
-            name = dist.metadata.get('Name')
-            version = dist.metadata.get('Version')
+            name = dist.metadata.get('Name')  # type: ignore[attr-defined]
+            version = dist.metadata.get('Version')  # type: ignore[attr-defined]
             if not name or not version:
                 continue
             key = name.lower()

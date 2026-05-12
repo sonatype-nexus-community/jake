@@ -20,69 +20,73 @@ from argparse import ArgumentParser
 
 from cyclonedx.model import ExternalReference
 from cyclonedx.model import ExternalReferenceType
-from cyclonedx.model import Tool
 from cyclonedx.model import XsUri
 from cyclonedx.model.bom import Bom
-from cyclonedx.output import BaseOutput
-from cyclonedx.output import LATEST_SUPPORTED_SCHEMA_VERSION
-from cyclonedx.output import OutputFormat
-from cyclonedx.output import SchemaVersion
-from cyclonedx.output import get_instance
+from cyclonedx.model.component import Component, ComponentType
+from cyclonedx.output import BaseOutput, make_outputter
+from cyclonedx.schema import OutputFormat, SchemaVersion
 
 from . import BaseCommand
 from . import jake_version
 from . import parser_selector
 
-ThisTool = Tool(vendor='Sonatype Nexus Community', name='jake', version=jake_version or 'UNKNOWN')
-ThisTool.external_references.update([
-    ExternalReference(
-        reference_type=ExternalReferenceType.BUILD_SYSTEM,
-        url=XsUri('https://app.circleci.com/pipelines/github/sonatype-nexus-community/jake')
-    ),
-    ExternalReference(
-        reference_type=ExternalReferenceType.DISTRIBUTION,
-        url=XsUri('https://pypi.org/project/jake/')
-    ),
-    ExternalReference(
-        reference_type=ExternalReferenceType.ISSUE_TRACKER,
-        url=XsUri('https://github.com/sonatype-nexus-community/jake/issues')
-    ),
-    ExternalReference(
-        reference_type=ExternalReferenceType.LICENSE,
-        url=XsUri('https://github.com/sonatype-nexus-community/jake/blob/main/LICENSE')
-    ),
-    ExternalReference(
-        reference_type=ExternalReferenceType.RELEASE_NOTES,
-        url=XsUri('https://github.com/sonatype-nexus-community/jake/blob/main/CHANGELOG.md')
-    ),
-    ExternalReference(
-        reference_type=ExternalReferenceType.VCS,
-        url=XsUri('https://github.com/sonatype-nexus-community/jake')
-    ),
-    ExternalReference(
-        reference_type=ExternalReferenceType.WEBSITE,
-        url=XsUri('https://www.sonatype.com/products/free-developer-tools')
-    )
-])
+_LATEST_SCHEMA_VERSION = max(SchemaVersion)
+
+ThisTool = Component(
+    type=ComponentType.APPLICATION,
+    name='jake',
+    version=jake_version or 'UNKNOWN',
+    external_references=[
+        ExternalReference(
+            reference_type=ExternalReferenceType.BUILD_SYSTEM,
+            url=XsUri('https://app.circleci.com/pipelines/github/sonatype-nexus-community/jake')
+        ),
+        ExternalReference(
+            reference_type=ExternalReferenceType.DISTRIBUTION,
+            url=XsUri('https://pypi.org/project/jake/')
+        ),
+        ExternalReference(
+            reference_type=ExternalReferenceType.ISSUE_TRACKER,
+            url=XsUri('https://github.com/sonatype-nexus-community/jake/issues')
+        ),
+        ExternalReference(
+            reference_type=ExternalReferenceType.LICENSE,
+            url=XsUri('https://github.com/sonatype-nexus-community/jake/blob/main/LICENSE')
+        ),
+        ExternalReference(
+            reference_type=ExternalReferenceType.RELEASE_NOTES,
+            url=XsUri('https://github.com/sonatype-nexus-community/jake/blob/main/CHANGELOG.md')
+        ),
+        ExternalReference(
+            reference_type=ExternalReferenceType.VCS,
+            url=XsUri('https://github.com/sonatype-nexus-community/jake')
+        ),
+        ExternalReference(
+            reference_type=ExternalReferenceType.WEBSITE,
+            url=XsUri('https://www.sonatype.com/products/free-developer-tools')
+        ),
+    ]
+)
 
 
 class SbomCommand(BaseCommand):
 
     def handle_args(self) -> int:
-        bom = Bom.from_parser(
-            parser=parser_selector.get_parser(self.arguments.sbom_input_type, self.arguments.sbom_input_source)
-        )
-        bom.metadata.tools.add(ThisTool)
+        bom = Bom(components=set(
+            parser_selector.get_parser(self.arguments.sbom_input_type, self.arguments.sbom_input_source)
+            .get_components()
+        ))
+        bom.metadata.tools.components.add(ThisTool)
 
         output_format = OutputFormat.XML
         if self.arguments.sbom_output_format == 'json':
             output_format = OutputFormat.JSON
 
-        schema_version = LATEST_SUPPORTED_SCHEMA_VERSION
+        schema_version = _LATEST_SCHEMA_VERSION
         if self.arguments.sbom_schema_version:
-            schema_version = SchemaVersion['V{}'.format(str(self.arguments.sbom_schema_version).replace('.', '_'))]
+            schema_version = SchemaVersion.from_version(str(self.arguments.sbom_schema_version))
 
-        output: BaseOutput = get_instance(bom=bom, output_format=output_format, schema_version=schema_version)
+        output: BaseOutput = make_outputter(bom, output_format, schema_version)
 
         if self.arguments.sbom_output_file:
             # Output to a file
@@ -108,7 +112,7 @@ class SbomCommand(BaseCommand):
                                 default='xml', dest='sbom_output_format')
         arg_parser.add_argument('--schema-version',
                                 help=f'CycloneDX schema version to use (default = '
-                                     f'{LATEST_SUPPORTED_SCHEMA_VERSION.to_version()})',
-                                choices={'1.4', '1.3', '1.2', '1.1', '1.0'},
-                                default=f'{LATEST_SUPPORTED_SCHEMA_VERSION.to_version()}',
+                                     f'{_LATEST_SCHEMA_VERSION.to_version()})',
+                                choices={'1.6', '1.5', '1.4', '1.3', '1.2', '1.1', '1.0'},
+                                default=f'{_LATEST_SCHEMA_VERSION.to_version()}',
                                 dest='sbom_schema_version')

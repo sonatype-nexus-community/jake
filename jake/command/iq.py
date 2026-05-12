@@ -23,7 +23,8 @@ from urllib.parse import urlparse
 
 import requests
 from cyclonedx.model.bom import Bom
-from cyclonedx.output import get_instance
+from cyclonedx.output import make_outputter
+from cyclonedx.schema import OutputFormat, SchemaVersion
 from polling2 import poll_decorator  # type: ignore
 from requests.auth import HTTPBasicAuth
 from rich.progress import Progress
@@ -130,7 +131,7 @@ class IqCommand(BaseCommand):
                     iq_internal_application_id, iq_scan_stage
                 ),
                 method='POST',
-                body_data=get_instance(bom=bom).output_as_string(),
+                body_data=make_outputter(bom, OutputFormat.XML, SchemaVersion.V1_4).output_as_string(),
                 additional_headers={'Content-Type': 'application/xml'}
             )
 
@@ -207,7 +208,7 @@ class IqCommand(BaseCommand):
             # task_query_iq
             progress.start_task(task_query_iq)
             iq_response = self._iq_server.scan_application_with_bom(
-                bom=Bom.from_parser(parser=parser),
+                bom=Bom(components=set(parser.get_components())),
                 iq_public_application_id=self.arguments.iq_application_id,
                 iq_scan_stage=self.arguments.iq_scan_stage
             )

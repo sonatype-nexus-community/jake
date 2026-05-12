@@ -16,158 +16,20 @@
 
 # encoding: utf-8
 
-import logging
+import time
 from argparse import ArgumentParser
-from typing import Any, Dict, Optional, Union
-from urllib.parse import urlparse
 
-import requests
 from cyclonedx.model.bom import Bom
 from cyclonedx.output import make_outputter
 from cyclonedx.schema import OutputFormat, SchemaVersion
-from polling2 import poll_decorator  # type: ignore
-from requests.auth import HTTPBasicAuth
 from rich.progress import Progress
+from sonatype_iq_api_client import ApiClient, ApplicationsApi, Configuration, ScanApi
 
-from . import BaseCommand, jake_version
+from . import BaseCommand
 from . import parser_selector
 
 
 class IqCommand(BaseCommand):
-    class IqServerApi:
-        """
-        Internal Nexus Lifecycle API class
-
-        @todo In the future this and other API accessor classes may be moved to their own PyPi package to enable
-                wider reuse.
-        """
-
-        _logger: logging.Logger = logging.getLogger('jake.iq')
-
-        _DEFAULT_HEADERS = {
-            'User-Agent': 'jake/{}'.format(jake_version)
-        }
-
-        def __init__(self, server_url: str, username: str, password: str) -> None:
-            self._server_url: str = urlparse(server_url).geturl()
-            self._username: str = username
-            self._password: str = password
-
-            if self._validate_server():
-                self._auth: Optional[HTTPBasicAuth] = HTTPBasicAuth(username, password)
-            else:
-                self._auth = None
-                self._logger.error(
-                    'IQ server at {} does not appear accessible or in a ready-state to receive requests'.format(
-                        self._server_url
-                    )
-                )
-
-        def scan_application_with_bom(self, bom: Bom, iq_public_application_id: str,
-                                      iq_scan_stage: str) -> Any:
-
-            """
-            This method is intentionally blocking.
-
-            We submit a CycloneDX BOM to Nexus IQ for evaluation and then continuously poll IQ to determine
-            when the results are available. Once available, we grab the results and then this method will return.
-
-            """
-            iq_bom_submit_response = self._submit_bom(
-                bom=bom,
-                iq_internal_application_id=self._get_internal_application_id_from_public_application_id(
-                    iq_public_application_id=iq_public_application_id
-                ),
-                iq_scan_stage=iq_scan_stage
-            )
-
-            iq_status_url = iq_bom_submit_response['statusUrl']
-            self._logger.debug('Status URL to check is {}'.format(iq_status_url))
-            self._logger.debug('Starting to poll IQ for results')
-            iq_report_response = self._get_scan_report_results(status_uri=iq_status_url)
-            self._logger.debug('Polling for IQ results has stopped')
-            return iq_report_response
-
-        def _get_internal_application_id_from_public_application_id(self, iq_public_application_id: str) -> str:
-            """
-            Attempts to obtain the internal ID of the Application from Nexus IQ
-
-            """
-            iq_response = self.__make_request(
-                uri='/api/v2/applications?publicId={}'.format(iq_public_application_id)
-            )
-
-            if 'applications' not in iq_response.keys():
-                raise ValueError('Response from IQ is missing the \'applications\' key. Cannot parse')
-
-            if len(iq_response['applications']) == 1:
-                return str(iq_response['applications'][0]['id'])
-            else:
-                message = 'There were {} matching Applications found in IQ for {}'.format(
-                    len(iq_response['applications']), iq_public_application_id
-                )
-                self._logger.warning(message)
-                raise ValueError(message)
-
-        @poll_decorator(step=10, timeout=300, log_error=logging.DEBUG)  # type: ignore
-        def _get_scan_report_results(self, status_uri: str) -> Union[Any, bool]:
-            try:
-                response = self.__make_request(
-                    uri='/{}'.format(status_uri)
-                )
-                if 'isError' in response.keys() and not response['isError']:
-                    return response
-                else:
-                    return False
-            except ValueError:
-                return False
-
-        def _submit_bom(self, bom: Bom, iq_internal_application_id: str, iq_scan_stage: str) -> Any:
-            self._logger.debug(
-                'Submitting BOM to IQ for Application {} at stage {}'.format(iq_internal_application_id, iq_scan_stage)
-            )
-            return self.__make_request(
-                uri='/api/v2/scan/applications/{}/sources/jake?stageId={}'.format(
-                    iq_internal_application_id, iq_scan_stage
-                ),
-                method='POST',
-                body_data=make_outputter(bom, OutputFormat.XML, SchemaVersion.V1_4).output_as_string(),
-                additional_headers={'Content-Type': 'application/xml'}
-            )
-
-        def _validate_server(self) -> bool:
-            response = requests.get(url='{}/ping'.format(self._server_url), timeout=5)
-            if response.status_code == 200 and response.text.strip() == 'pong':
-                return True
-            else:
-                self._logger.error('IQ Server at {} is not available: {} - {}'.format(
-                    self._server_url, response.status_code, response.text
-                ))
-                return False
-
-        def __make_request(self, uri: str, body_data: Optional[str] = None,
-                           additional_headers: Optional[Dict[str, Any]] = None, method: str = 'GET') -> Any:
-            if not additional_headers:
-                additional_headers = {}
-            self._logger.debug('Beginning request to IQ {}'.format(uri))
-            response = requests.request(
-                method=method,
-                url='{}{}'.format(self._server_url, uri),
-                data=(body_data.encode('UTF-8') if body_data else None),
-                auth=self._auth,
-                headers={**self._DEFAULT_HEADERS, **additional_headers}
-            )
-
-            if response.ok:
-                self._logger.debug('   OK response {}'.format(response.status_code))
-                # We always expect JSON response from IQ at this time
-                return response.json()
-            else:
-                raise ValueError(response.text)
-
-    def __init__(self) -> None:
-        super().__init__()
-        self._iq_server: Union['IqCommand.IqServerApi', None] = None
 
     def handle_args(self) -> int:
         exit_code: int = 0
@@ -184,57 +46,84 @@ class IqCommand(BaseCommand):
                 description="[yellow]Submitting to Nexus Lifecycle for Policy Evaluation", start=True, total=10
             )
 
-            # task_validate_iq
-            self._iq_server = self.IqServerApi(
-                server_url=self.arguments.iq_server_url,
+            config = Configuration(
+                host=self.arguments.iq_server_url,
                 username=self.arguments.iq_username,
                 password=self.arguments.iq_password
             )
-            progress.update(
-                task_validate_iq, completed=10,
-                description=f"🐍 [green]IQ Server at {self.arguments.iq_server_url} is up and accessible"
-            )
 
-            # task_parser
-            parser = parser_selector.get_parser(
-                self.arguments.sbom_input_type, self.arguments.sbom_input_source
-            )
-            total_packages_collected = len(parser.get_components())
-            progress.update(
-                task_parser, completed=10,
-                description=f'🐍 [green]Collected {total_packages_collected} packages from {input_source_msg}'
-            )
+            with ApiClient(config) as api_client:
+                apps_api = ApplicationsApi(api_client)
+                scan_api = ScanApi(api_client)
 
-            # task_query_iq
-            progress.start_task(task_query_iq)
-            iq_response = self._iq_server.scan_application_with_bom(
-                bom=Bom(components=set(parser.get_components())),
-                iq_public_application_id=self.arguments.iq_application_id,
-                iq_scan_stage=self.arguments.iq_scan_stage
-            )
+                progress.update(
+                    task_validate_iq, completed=10,
+                    description=f"[green]IQ Server at {self.arguments.iq_server_url} is up and accessible"
+                )
 
-            if iq_response['policyAction'] == 'Failure':
+                # task_parser
+                parser = parser_selector.get_parser(
+                    self.arguments.sbom_input_type, self.arguments.sbom_input_source
+                )
+                total_packages_collected = len(parser.get_components())
+                progress.update(
+                    task_parser, completed=10,
+                    description=f'[green]Collected {total_packages_collected} packages from {input_source_msg}'
+                )
+
+                # Look up internal application ID
+                app_list = apps_api.get_applications(public_id=[self.arguments.iq_application_id])
+                if not app_list.applications or len(app_list.applications) != 1:
+                    raise ValueError(
+                        'There were {} matching Applications found in IQ for {}'.format(
+                            len(app_list.applications) if app_list.applications else 0,
+                            self.arguments.iq_application_id
+                        )
+                    )
+                internal_id = app_list.applications[0].id
+
+                # Build BOM and serialise to XML
+                bom = Bom(components=set(parser.get_components()))
+                bom_xml = make_outputter(bom, OutputFormat.XML, SchemaVersion.V1_4).output_as_string()
+
+                # Submit scan
+                progress.start_task(task_query_iq)
+                ticket = scan_api.scan_components(
+                    internal_id, 'jake', self.arguments.iq_scan_stage, bom_xml
+                )
+
+                # Extract scan ID from the last path segment of status_url
+                scan_id = ticket.status_url.rstrip('/').split('/')[-1]
+
+                # Poll for results
+                result = None
+                while True:
+                    result = scan_api.get_scan_status(internal_id, scan_id)
+                    if result.is_error is not None:
+                        break
+                    time.sleep(10)
+
+            if result.policy_action == 'Failure':
                 progress.update(
                     task_query_iq, completed=10,
-                    description='💥 [red]Snakes on the plane! There are policy failures from Sonatype Nexus IQ.'
+                    description='[red]Policy failures detected from Sonatype Nexus IQ.'
                 )
                 exit_code = 1
-            elif iq_response['policyAction'] == 'Warning':
+            elif result.policy_action == 'Warning':
                 progress.update(
                     task_query_iq, completed=10,
-                    description='🧨 [orange]Something slithers around your ankle! '
-                                'There are policy warnings from Sonatype Nexus IQ.'
+                    description='[yellow]Policy warnings detected from Sonatype Nexus IQ.'
                 )
             else:
                 progress.update(
                     task_query_iq, completed=10,
-                    description='🐍 [green]Sonatype Nexus IQ Policy Evaluation complete with ZERO snakes.'
+                    description='[green]Sonatype Nexus IQ Policy Evaluation complete with no policy violations.'
                 )
 
         print('')
         print('Your Sonatype Nexus IQ Lifecycle Report is available here:')
-        print('  HTML: {}/{}'.format(self.arguments.iq_server_url, iq_response['reportHtmlUrl']))
-        print('  PDF:  {}/{}'.format(self.arguments.iq_server_url, iq_response['reportPdfUrl']))
+        print('  HTML: {}/{}'.format(self.arguments.iq_server_url, result.report_html_url))
+        print('  PDF:  {}/{}'.format(self.arguments.iq_server_url, result.report_pdf_url))
         print('')
 
         return exit_code

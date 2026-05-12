@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "jake"
-version = "3.1.0"
+version = "4.0.0rc1"
 description = "A Sonatype Guide and Lifecycle integration to check for vulnerabilities in your Python environments"
 authors = ["Sonatype Community <community-group@sonatype.com>"]
 maintainers = ["Sonatype Community <community-group@sonatype.com>"]
@@ -31,7 +31,7 @@ classifiers = [
     'Typing :: Typed'
 ]
 keywords = [
-    "BOM", "SBOM", "SCA", "OWASP"
+    "BOM", "SBOM", "SCA", "OWASP", "Sonatype", "Sonatype Guide", "Sonatype Lifecycle"
 ]
 
 [tool.poetry.scripts]

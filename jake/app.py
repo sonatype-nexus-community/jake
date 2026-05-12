@@ -41,7 +41,7 @@ class JakeCmd:
 
     def __init__(self, args: argparse.Namespace) -> None:
         self._arguments = args
-        self._console = Console()
+        self._console = Console(highlight=False)
 
         if self._arguments.debug_enabled:
             self._DEBUG_ENABLED = True

@@ -26,6 +26,7 @@ from cyclonedx.output import make_outputter
 from cyclonedx.schema import OutputFormat, SchemaVersion
 from rich.progress import Progress
 from sonatype_iq_api_client import ApiClient, ApplicationsApi, Configuration, ThirdPartyAnalysisApi
+from sonatype_iq_api_client.exceptions import NotFoundException
 
 from . import BaseCommand
 from . import parser_selector
@@ -103,13 +104,18 @@ class IqCommand(BaseCommand):
                     raise RuntimeError('Scan returned no status URL')
                 scan_id = ticket.status_url.rstrip('/').split('/')[-1]
 
-                # Poll for results
+                # Poll for results — IQ returns 404 while the scan is still processing
                 result = None
-                while True:
-                    result = scan_api.get_scan_status(internal_id, scan_id)
-                    if result.is_error is not None:
-                        break
+                for _ in range(30):
+                    try:
+                        result = scan_api.get_scan_status(internal_id, scan_id)
+                        if result.is_error is not None:
+                            break
+                    except NotFoundException:
+                        pass
                     time.sleep(10)
+                if result is None:
+                    raise RuntimeError('Timed out waiting for IQ scan results after 300 seconds')
 
             if result.policy_action == 'Failure':
                 progress.update(

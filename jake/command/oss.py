@@ -358,7 +358,9 @@ class OssCommand(BaseCommand):
     def _get_max_cvss_score(component: Component, vulnerabilities: List[Vulnerability]) -> float:
         max_cvss_score: float = 0.0
         for v in vulnerabilities:
-            max_cvss_score = OssCommand._get_max_cvss_score_for_vulnerability(vulnerability=v)
+            score = OssCommand._get_max_cvss_score_for_vulnerability(vulnerability=v)
+            if score > max_cvss_score:
+                max_cvss_score = score
         return max_cvss_score
 
     @staticmethod

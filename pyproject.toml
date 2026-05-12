@@ -50,11 +50,11 @@ pyfiglet = ">= 0.8.post1, < 2.0.0"
 requests = "^2.32.4"
 rich = ">= 10.10.0"
 
-[tool.poetry.dev-dependencies]
-tox = "^3.28.0"
-coverage = "^6.2"
-flake8 = "^4.0.1"
-mypy = ">= 0.920, < 1.00"
+[tool.poetry.group.dev.dependencies]
+tox = "^4.0"
+coverage = "^7.14"
+flake8 = "^7.3"
+mypy = "^2.1"
 
 
 [tool.semantic_release]

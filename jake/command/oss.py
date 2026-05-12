@@ -36,17 +36,18 @@ from cyclonedx.model.vulnerability import (
 )
 from cyclonedx.output import make_outputter
 from cyclonedx.schema import OutputFormat, SchemaVersion
-from sonatype_guide_api_client import ApiClient, Configuration, OSSIndexCompatibilityApi, PurlRequestPost, \
-    ComponentReportPost
+from sonatype_guide_api_client import ApiClient, Configuration, OSSIndexCompatibilityApi, OssiVulnerabilityPost, \
+    PurlRequestPost, ComponentReportPost
 from sonatype_guide_api_client.exceptions import UnauthorizedException
 from rich.console import Console
 from rich.panel import Panel
-from rich.progress import Progress
+from rich.progress import Progress, TaskID
 from rich.table import Table
 from rich.tree import Tree
 
 from . import BaseCommand
 from . import parser_selector
+from jake._internal.parsers import BaseJakeParser
 
 _SONATYPE_GUIDE_SOURCE = 'Sonatype Guide'
 
@@ -129,17 +130,7 @@ class OssCommand(BaseCommand):
                     )
                 )
 
-            if self.arguments.oss_whitelist_json_file:
-                with open(self.arguments.oss_whitelist_json_file) as f:
-                    json_data = json.load(f)
-                whitelisted_entries = json_data.get("ignore", [])
-                whitelisted_ids = {entry["id"] for entry in whitelisted_entries}
-                if whitelisted_ids:
-                    for guide_report in guide_results:
-                        if guide_report.vulnerabilities:
-                            guide_report.vulnerabilities = [
-                                v for v in guide_report.vulnerabilities if v.id not in whitelisted_ids
-                            ]
+            self._apply_whitelist(guide_results)
 
             progress.update(
                 task_query_ossi, completed=10,
@@ -161,93 +152,113 @@ class OssCommand(BaseCommand):
             task_munching_data = progress.add_task(
                 description="[green]Munching & crunching data...", start=True, total=len(parser.get_components())
             )
-
-            components: List[Component] = []
-            vulnerabilities: List[Vulnerability] = []
-            for component in parser.get_components():
-                if not component.purl:
-                    continue
-
-                purl_str = str(component.purl)
-                matching = [r for r in guide_results if r.coordinates == purl_str]
-                if not matching:
-                    progress.update(task_munching_data, advance=1)
-                    components.append(component)
-                    continue
-
-                report: ComponentReportPost = matching[0]
-
-                if report.vulnerabilities:
-                    for vuln in report.vulnerabilities:
-
-                        ratings: List[VulnerabilityRating] = []
-                        if vuln.cvss_score:
-                            ratings.append(
-                                VulnerabilityRating(
-                                    source=VulnerabilitySource(
-                                        name=_SONATYPE_GUIDE_SOURCE, url=XsUri(vuln.reference or '')
-                                    ),
-                                    score=Decimal(
-                                        str(vuln.cvss_score)
-                                    ) if vuln.cvss_score else None,
-                                    severity=VulnerabilitySeverity.get_from_cvss_scores(
-                                        (vuln.cvss_score,)
-                                    ) if vuln.cvss_score else None,
-                                    method=VulnerabilityScoreSource.get_from_vector(
-                                        vector=vuln.cvss_vector
-                                    ) if vuln.cvss_vector else None,
-                                    vector=vuln.cvss_vector
-                                )
-                            )
-
-                        cwes = None
-                        if vuln.cwe:
-                            try:
-                                cwes = [int(vuln.cwe[4:])]
-                            except ValueError:
-                                pass    # ignore cases where conversion to int fails
-
-                        vulnerability: Vulnerability = Vulnerability(
-                            bom_ref=vuln.id,
-                            id=vuln.id,
-                            source=VulnerabilitySource(
-                                name=_SONATYPE_GUIDE_SOURCE, url=XsUri(vuln.reference or '')
-                            ),
-                            cwes=cwes,
-                            description=vuln.title,
-                            detail=vuln.description,
-                            ratings=ratings,
-                            references=[
-                                VulnerabilityReference(
-                                    id=vuln.display_name or '', source=VulnerabilitySource(
-                                        name=_SONATYPE_GUIDE_SOURCE, url=XsUri(vuln.reference or '')
-                                    )
-                                )
-                            ]
-                        )
-                        if vuln.external_references:
-                            advisories: Set[VulnerabilityAdvisory] = set()
-                            for ext_ref_url in vuln.external_references:
-                                advisories.add(VulnerabilityAdvisory(url=XsUri(uri=ext_ref_url)))
-                            vulnerability.advisories = advisories
-
-                        vulnerability.affects.add(
-                            BomTarget(
-                                ref=str(component.bom_ref),
-                                versions=[
-                                    BomTargetVersionRange(
-                                        version=component.version, status=ImpactAnalysisAffectedStatus.AFFECTED
-                                    )
-                                ]
-                            )
-                        )
-
-                        vulnerabilities.append(vulnerability)
-
-                components.append(component)
-                progress.update(task_munching_data, advance=1)
+            components, vulnerabilities = self._process_components(
+                parser, guide_results, progress, task_munching_data
+            )
 
         return components, vulnerabilities, guide_results
+
+    def _apply_whitelist(self, guide_results: List[ComponentReportPost]) -> None:
+        if not self.arguments.oss_whitelist_json_file:
+            return
+        with open(self.arguments.oss_whitelist_json_file) as f:
+            json_data = json.load(f)
+        whitelisted_ids = {entry["id"] for entry in json_data.get("ignore", [])}
+        if whitelisted_ids:
+            for guide_report in guide_results:
+                if guide_report.vulnerabilities:
+                    guide_report.vulnerabilities = [
+                        v for v in guide_report.vulnerabilities if v.id not in whitelisted_ids
+                    ]
+
+    def _process_components(
+        self,
+        parser: BaseJakeParser,
+        guide_results: List[ComponentReportPost],
+        progress: Progress,
+        task: TaskID,
+    ) -> tuple[List[Component], List[Vulnerability]]:
+        components: List[Component] = []
+        vulnerabilities: List[Vulnerability] = []
+        for component in parser.get_components():
+            if not component.purl:
+                continue
+            purl_str = str(component.purl)
+            matching = [r for r in guide_results if r.coordinates == purl_str]
+            if not matching:
+                progress.update(task, advance=1)
+                components.append(component)
+                continue
+            report: ComponentReportPost = matching[0]
+            if report.vulnerabilities:
+                for vuln in report.vulnerabilities:
+                    vulnerabilities.append(OssCommand._build_vulnerability(component, vuln))
+            components.append(component)
+            progress.update(task, advance=1)
+        return components, vulnerabilities
+
+    @staticmethod
+    def _build_vulnerability(component: Component, vuln: OssiVulnerabilityPost) -> Vulnerability:
+        ratings: List[VulnerabilityRating] = []
+        if vuln.cvss_score:
+            ratings.append(
+                VulnerabilityRating(
+                    source=VulnerabilitySource(
+                        name=_SONATYPE_GUIDE_SOURCE, url=XsUri(vuln.reference or '')
+                    ),
+                    score=Decimal(str(vuln.cvss_score)) if vuln.cvss_score else None,
+                    severity=VulnerabilitySeverity.get_from_cvss_scores(
+                        (vuln.cvss_score,)
+                    ) if vuln.cvss_score else None,
+                    method=VulnerabilityScoreSource.get_from_vector(
+                        vector=vuln.cvss_vector
+                    ) if vuln.cvss_vector else None,
+                    vector=vuln.cvss_vector
+                )
+            )
+
+        cwes = None
+        if vuln.cwe:
+            try:
+                cwes = [int(vuln.cwe[4:])]
+            except ValueError:
+                pass    # ignore cases where conversion to int fails
+
+        vulnerability: Vulnerability = Vulnerability(
+            bom_ref=vuln.id,
+            id=vuln.id,
+            source=VulnerabilitySource(
+                name=_SONATYPE_GUIDE_SOURCE, url=XsUri(vuln.reference or '')
+            ),
+            cwes=cwes,
+            description=vuln.title,
+            detail=vuln.description,
+            ratings=ratings,
+            references=[
+                VulnerabilityReference(
+                    id=vuln.display_name or '', source=VulnerabilitySource(
+                        name=_SONATYPE_GUIDE_SOURCE, url=XsUri(vuln.reference or '')
+                    )
+                )
+            ]
+        )
+        if vuln.external_references:
+            advisories: Set[VulnerabilityAdvisory] = set()
+            for ext_ref_url in vuln.external_references:
+                advisories.add(VulnerabilityAdvisory(url=XsUri(uri=ext_ref_url)))
+            vulnerability.advisories = advisories
+
+        vulnerability.affects.add(
+            BomTarget(
+                ref=str(component.bom_ref),
+                versions=[
+                    BomTargetVersionRange(
+                        version=component.version, status=ImpactAnalysisAffectedStatus.AFFECTED
+                    )
+                ]
+            )
+        )
+        return vulnerability
 
     def get_argument_parser_name(self) -> str:
         return 'guide'

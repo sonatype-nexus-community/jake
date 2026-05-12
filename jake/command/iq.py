@@ -25,7 +25,9 @@ from cyclonedx.model.bom import Bom
 from cyclonedx.output import make_outputter
 from cyclonedx.schema import OutputFormat, SchemaVersion
 from rich.progress import Progress
-from sonatype_iq_api_client import ApiClient, ApplicationsApi, Configuration, ThirdPartyAnalysisApi
+from typing import Optional
+from sonatype_iq_api_client import ApiClient, ApiThirdPartyScanResultDTO, ApplicationsApi, Configuration, \
+    ThirdPartyAnalysisApi
 from sonatype_iq_api_client.exceptions import NotFoundException
 
 from . import BaseCommand
@@ -106,15 +108,7 @@ class IqCommand(BaseCommand):
                 scan_id = ticket.status_url.rstrip('/').split('/')[-1]
 
                 # Poll for results — IQ returns 404 while the scan is still processing
-                result = None
-                for _ in range(30):
-                    try:
-                        result = scan_api.get_scan_status(internal_id, scan_id)
-                        if result.is_error is not None:
-                            break
-                    except NotFoundException:
-                        pass
-                    time.sleep(2)
+                result = IqCommand._poll_scan_result(scan_api, internal_id, scan_id)
                 if result is None:
                     raise RuntimeError('Timed out waiting for Sonatype Lifecycle scan results after 300 seconds')
 
@@ -142,6 +136,20 @@ class IqCommand(BaseCommand):
         print('')
 
         return exit_code
+
+    @staticmethod
+    def _poll_scan_result(
+        scan_api: ThirdPartyAnalysisApi, internal_id: str, scan_id: str
+    ) -> Optional[ApiThirdPartyScanResultDTO]:
+        for _ in range(30):
+            try:
+                result = scan_api.get_scan_status(internal_id, scan_id)
+                if result.is_error is not None:
+                    return result
+            except NotFoundException:
+                pass
+            time.sleep(2)
+        return None
 
     def get_argument_parser_name(self) -> str:
         return 'iq'

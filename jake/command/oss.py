@@ -19,6 +19,8 @@
 import json
 import os
 from argparse import ArgumentParser
+
+import certifi
 from decimal import Decimal
 from pathlib import Path
 from typing import Dict, Iterable, List, Set
@@ -82,7 +84,8 @@ class OssCommand(BaseCommand):
 
             config = Configuration(
                 username=self.arguments.oss_username,
-                password=self.arguments.oss_token
+                password=self.arguments.oss_token,
+                ssl_ca_cert=certifi.where()
             )
             with ApiClient(config) as client:
                 api = OSSIndexCompatibilityApi(client)
@@ -337,21 +340,30 @@ class OssCommand(BaseCommand):
             OssCommand._get_max_cvss_score_for_vulnerability(vulnerability=v)
         )
 
+        ratings_text = os.linesep.join([
+            f'   -  [{severity_color}]{rating.score:.1f} {rating.severity.name if rating.severity else ""} - '
+            f'Vector: {rating.vector if rating.vector else "Unknown"}, '
+            f'CWEs: {",".join(list(map(lambda cwe: str(cwe), v.cwes))) if v.cwes else "None Recorded"}'
+            f'[bright_white]'
+            for rating in v.ratings
+        ])
+
+        references_text = os.linesep.join([
+            f'  - {reference.source.name if reference.source and reference.source.name else ""} '
+            f'[Ref: {reference.id}]{os.linesep}'
+            f'    URL: {reference.source.url if reference.source and reference.source.url else "None"}'
+            for reference in v.references
+        ])
+
         content = f"""
 [bright_white]{v.description}
 {v.detail}
 
 Ratings:
-{os.linesep.join([f'   -  [{severity_color}]{rating.score:.1f} {rating.severity.name if rating.severity else ""} - '
-                  f'Vector: {rating.vector if rating.vector else "Unknown"}, '
-                  f'CWEs: {",".join(list(map(lambda cwe: str(cwe), v.cwes))) if v.cwes else "None Recorded"}'
-                  f'[bright_white]' for rating in v.ratings])}
+{ratings_text}
 
 References:
-{os.linesep.join([f'  - {reference.source.name if reference.source and reference.source.name else ""} '
-                  f'[Ref: {reference.id}]{os.linesep}'
-                  f'    URL: {reference.source.url if reference.source and reference.source.url else "None"}'
-                  for reference in v.references])}
+{references_text}
         """
 
         b.add(Panel(content, title=f'[bright_white]{v.id}', title_align="left"))

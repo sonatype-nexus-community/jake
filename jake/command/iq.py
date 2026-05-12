@@ -19,6 +19,8 @@
 import time
 from argparse import ArgumentParser
 
+import certifi
+
 from cyclonedx.model.bom import Bom
 from cyclonedx.output import make_outputter
 from cyclonedx.schema import OutputFormat, SchemaVersion
@@ -49,7 +51,8 @@ class IqCommand(BaseCommand):
             config = Configuration(
                 host=self.arguments.iq_server_url,
                 username=self.arguments.iq_username,
-                password=self.arguments.iq_password
+                password=self.arguments.iq_password,
+                ssl_ca_cert=certifi.where()
             )
 
             with ApiClient(config) as api_client:

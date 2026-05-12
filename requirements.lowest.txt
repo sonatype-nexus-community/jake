@@ -16,6 +16,7 @@
 # This file records the lowest supported versions for dependencies.
 cyclonedx-python-lib == 11.7.0
 art == 6.5
+certifi == 2024.7.4
 sonatype-guide-api-client == 0.1.0
 sonatype-iq-api-client == 0.201.0
 rich == 10.10.0

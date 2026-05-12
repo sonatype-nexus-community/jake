@@ -7,7 +7,7 @@ try:
     import tomllib  # type: ignore[import-not-found]
 except ImportError:
     try:
-        import tomli as tomllib  # type: ignore[no-redef]
+        import tomli as tomllib  # type: ignore[import-not-found, no-redef]
     except ImportError as e:
         raise ImportError('tomli is required on Python < 3.11 for poetry.lock parsing') from e
 

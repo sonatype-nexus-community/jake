@@ -114,7 +114,7 @@ class IqCommand(BaseCommand):
                             break
                     except NotFoundException:
                         pass
-                    time.sleep(10)
+                    time.sleep(2)
                 if result is None:
                     raise RuntimeError('Timed out waiting for Sonatype Lifecycle scan results after 300 seconds')
 

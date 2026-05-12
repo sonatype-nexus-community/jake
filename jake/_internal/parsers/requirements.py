@@ -4,7 +4,7 @@ from cyclonedx.model.component import Component, ComponentType
 from packageurl import PackageURL  # type: ignore[import-untyped]
 from .base import BaseJakeParser
 
-_PIN_RE = re.compile(r'^([A-Za-z0-9_.-]+(?:\[.*?\])?)[ \t]*==[ \t]*([^\s;#,]+)')
+_PIN_RE = re.compile(r'^([A-Za-z0-9_.-]+(?:\[[^\]]*\])?)[ \t]*==[ \t]*([^\s;#,]+)')
 
 
 class RequirementsParser(BaseJakeParser):

@@ -36,41 +36,37 @@ from jake._internal.parsers import (
 )
 
 
+def _parser_from_content(input_type: str, content: str) -> BaseJakeParser:
+    if input_type == 'CONDA':
+        return CondaListExplicitParser(conda_data=content)
+    if input_type == 'CONDA_JSON':
+        return CondaListJsonParser(conda_data=content)
+    if input_type == 'PIP':
+        return RequirementsParser(requirements_content=content)
+    if input_type == 'PIPENV':
+        return PipenvParser(pipenv_contents=content)
+    if input_type == 'POETRY':
+        return PoetryParser(poetry_lock_contents=content)
+    raise NotImplementedError
+
+
+def _parser_from_file(input_type: str) -> BaseJakeParser:
+    if input_type == 'PIP':
+        return RequirementsFileParser(requirements_file='requirements.txt')
+    if input_type == 'PIPENV':
+        return PipenvFileParser(pipenv_lock_filename='Pipfile.lock')
+    if input_type == 'POETRY':
+        return PoetryFileParser(poetry_lock_filename='poetry.lock')
+    raise NotImplementedError
+
+
 def get_parser(input_type: str, input_data_fh: Optional[TextIO]) -> BaseJakeParser:
     if input_type == 'ENV':
         return EnvironmentParser()
-
     if input_data_fh:
         with input_data_fh:
-            input_data = input_data_fh.read()
-            input_data_fh.close()
-
-        if input_type == 'CONDA':
-            return CondaListExplicitParser(conda_data=input_data)
-
-        if input_type == 'CONDA_JSON':
-            return CondaListJsonParser(conda_data=input_data)
-
-        if input_type == 'PIP':
-            return RequirementsParser(requirements_content=input_data)
-
-        if input_type == 'PIPENV':
-            return PipenvParser(pipenv_contents=input_data)
-
-        if input_type == 'POETRY':
-            return PoetryParser(poetry_lock_contents=input_data)
-
-    else:
-        if input_type == 'PIP':
-            return RequirementsFileParser(requirements_file='requirements.txt')
-
-        if input_type == 'PIPENV':
-            return PipenvFileParser(pipenv_lock_filename='Pipfile.lock')
-
-        if input_type == 'POETRY':
-            return PoetryFileParser(poetry_lock_filename='poetry.lock')
-
-    raise NotImplementedError
+            return _parser_from_content(input_type, input_data_fh.read())
+    return _parser_from_file(input_type)
 
 
 def add_parser_selector_arguments(arg_parser: ArgumentParser) -> None:

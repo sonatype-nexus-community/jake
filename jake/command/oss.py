@@ -45,6 +45,8 @@ from rich.tree import Tree
 from . import BaseCommand
 from . import parser_selector
 
+_OSS_INDEX_SOURCE = 'OSS Index'
+
 
 class OssCommand(BaseCommand):
     _console: Console
@@ -146,7 +148,7 @@ class OssCommand(BaseCommand):
                             ratings.append(
                                 VulnerabilityRating(
                                     source=VulnerabilitySource(
-                                        name='OSS Index', url=XsUri(vuln.reference or '')
+                                        name=_OSS_INDEX_SOURCE, url=XsUri(vuln.reference or '')
                                     ),
                                     score=Decimal(
                                         str(vuln.cvss_score)
@@ -172,7 +174,7 @@ class OssCommand(BaseCommand):
                             bom_ref=vuln.id,
                             id=vuln.id,
                             source=VulnerabilitySource(
-                                name='OSS Index', url=XsUri(vuln.reference or '')
+                                name=_OSS_INDEX_SOURCE, url=XsUri(vuln.reference or '')
                             ),
                             cwes=cwes,
                             description=vuln.title,
@@ -181,7 +183,7 @@ class OssCommand(BaseCommand):
                             references=[
                                 VulnerabilityReference(
                                     id=vuln.display_name or '', source=VulnerabilitySource(
-                                        name='OSS Index', url=XsUri(vuln.reference or '')
+                                        name=_OSS_INDEX_SOURCE, url=XsUri(vuln.reference or '')
                                     )
                                 )
                             ]
@@ -294,19 +296,10 @@ class OssCommand(BaseCommand):
                 )
 
                 total_vulnerabilities += len(comp_vulns)
-                if comp_vulns:
-                    tree = Tree(f'Vulnerability Details for [bright_white]{component.name}@{component.version}[white]')
-                    for v in comp_vulns:
-                        OssCommand._print_vulnerability(tree=tree, v=v)
-                    self._console.print(tree)
-                else:
-                    self._console.print(
-                        f"[{i}/{total_packages}] - {component.name}@{component.version}",
-                        style=OssCommand._get_color_for_cvss_score(
-                            cvss_score=OssCommand._get_max_cvss_score(
-                                component=component, vulnerabilities=comp_vulns)
-                        )
-                    )
+                tree = Tree(f'Vulnerability Details for [bright_white]{component.name}@{component.version}[white]')
+                for v in comp_vulns:
+                    OssCommand._print_vulnerability(tree=tree, v=v)
+                self._console.print(tree)
 
             i += 1
 

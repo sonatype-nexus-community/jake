@@ -39,22 +39,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
+      - name: Install Poetry
+        run: pipx install poetry==${{ env.POETRY_VERSION }}
+
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
           architecture: 'x64'
-
-      - name: Install poetry
-        uses: Gr1N/setup-poetry@48b0f77c8c1b1b19cb962f0f00dff7b4be8f81ec # v9
-        with:
-          poetry-version: ${{ env.POETRY_VERSION }}
-
-      - name: Cache poetry virtualenv
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
-        with:
-          path: ~/.cache/pypoetry/virtualenvs
-          key: ${{ runner.os }}-poetry-lint-${{ hashFiles('poetry.lock') }}
+          cache: 'poetry'
 
       - name: Install dependencies
         run: poetry install --no-ansi
@@ -77,22 +70,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
+      - name: Install Poetry
+        run: pipx install poetry==${{ env.POETRY_VERSION }}
+
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: ${{ matrix.python-version }}
           architecture: 'x64'
-
-      - name: Install poetry
-        uses: Gr1N/setup-poetry@48b0f77c8c1b1b19cb962f0f00dff7b4be8f81ec # v9
-        with:
-          poetry-version: ${{ env.POETRY_VERSION }}
-
-      - name: Cache poetry virtualenv
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
-        with:
-          path: ~/.cache/pypoetry/virtualenvs
-          key: ${{ runner.os }}-poetry-${{ matrix.python-version }}-${{ hashFiles('poetry.lock') }}
+          cache: 'poetry'
 
       - name: Install dependencies
         run: poetry install --no-ansi
@@ -127,22 +113,15 @@ jobs:
       - name: Create reports directory
         run: mkdir ${{ env.REPORTS_DIR }}
 
+      - name: Install Poetry
+        run: pipx install poetry==${{ env.POETRY_VERSION }}
+
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: ${{ matrix.python-version }}
           architecture: 'x64'
-
-      - name: Install poetry
-        uses: Gr1N/setup-poetry@48b0f77c8c1b1b19cb962f0f00dff7b4be8f81ec # v9
-        with:
-          poetry-version: ${{ env.POETRY_VERSION }}
-
-      - name: Cache poetry virtualenv
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
-        with:
-          path: ~/.cache/pypoetry/virtualenvs
-          key: ${{ runner.os }}-poetry-${{ matrix.python-version }}-${{ matrix.deps }}-${{ hashFiles('poetry.lock') }}
+          cache: 'poetry'
 
       - name: Install dependencies
         run: poetry install --no-ansi
@@ -180,22 +159,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
+      - name: Install Poetry
+        run: pipx install poetry==${{ env.POETRY_VERSION }}
+
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: ${{ env.PYTHON_VERSION_DEFAULT }}
           architecture: 'x64'
-
-      - name: Install poetry
-        uses: Gr1N/setup-poetry@48b0f77c8c1b1b19cb962f0f00dff7b4be8f81ec # v9
-        with:
-          poetry-version: ${{ env.POETRY_VERSION }}
-
-      - name: Cache poetry virtualenv
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
-        with:
-          path: ~/.cache/pypoetry/virtualenvs
-          key: ${{ runner.os }}-poetry-${{ env.PYTHON_VERSION_DEFAULT }}-locked-${{ hashFiles('poetry.lock') }}
+          cache: 'poetry'
 
       - name: Install dependencies
         run: poetry install --no-ansi
@@ -204,7 +176,7 @@ jobs:
         env:
           SONATYPE_GUIDE_USERNAME: ${{ secrets.OSSI_USERNAME }}
           SONATYPE_GUIDE_TOKEN: ${{ secrets.SONATYPE_GUIDE_TOKEN }}
-        run: poetry run jake guide -w
+        run: poetry run jake -w guide
 
   sonatype-lifecycle:
     name: Sonatype Lifecycle Policy Evaluation

@@ -22,8 +22,8 @@
 
 # Jake
 
-[![CircleCI](https://circleci.com/gh/sonatype-nexus-community/jake/tree/main.svg?style=svg)](https://circleci.com/gh/sonatype-nexus-community/jake/tree/main)
-![Python Version Support](https://img.shields.io/badge/python-3.7+-blue)
+[![GitHub Actions CI](https://github.com/sonatype-nexus-community/jake/actions/workflows/ci.yml/badge.svg)](https://github.com/sonatype-nexus-community/jake/actions/workflows/ci.yml)
+![Python Version Support](https://img.shields.io/badge/python-3.10+-blue)
 [![PyPI Version](https://img.shields.io/pypi/v/jake?label=PyPI&logo=pypi)](https://pypi.org/project/jake)
 [![GitHub license](https://img.shields.io/github/license/sonatype-nexus-community/jake)](https://github.com/sonatype-nexus-community/jake/blob/main/LICENSE)
 [![GitHub issues](https://img.shields.io/github/issues/sonatype-nexus-community/jake)](https://github.com/sonatype-nexus-community/jake/issues)
@@ -36,8 +36,8 @@
 - produce CycloneDX software bill-of-materials
 - report on known vulnerabilities
 
-`jake` is powered by [Sonatype OSS Index](https://ossindex.sonatype.org) and can also be used with 
-[Sonatype's Nexus IQ Server](https://www.sonatype.com/product-nexus-lifecycle).
+`jake` is powered by [Sonatype Guide](https://guide.sonatype.com) and can also be used with
+[Sonatype Nexus Lifecycle](https://www.sonatype.com/products/open-source-security-dependency-management).
 
 ## Installation
 
@@ -47,7 +47,7 @@ Install from pypi.org as you would any other Python module:
 pip install jake
 ```
 
-or 
+or
 
 ```
 poetry add jake
@@ -67,7 +67,7 @@ usage: jake [-h] [-v] [-w] [-X]  ...
 
 Put your Python dependencies in a chokehold
 
-optional arguments:
+options:
   -h, --help       show this help message and exit
   -v, --version    show which version of jake you are running
   -w, --warn-only  prevents exit with non-zero code when issues have been
@@ -75,19 +75,21 @@ optional arguments:
   -X               enable debug output
 
 Jake sub-commands:
-  
-    iq             perform a scan backed by Nexus Lifecycle
-    ddt            perform a scan backed by OSS Index
+
+    guide          perform a scan backed by Sonatype Guide
+    ddt            (DEPRECATED: use guide instead) perform a scan backed by Sonatype Guide
+    iq             perform a scan backed by Sonatype Nexus Lifecycle
     sbom           generate a CycloneDX software-bill-of-materials (no
                    vulnerabilities)
 ```
 
-`jake` will exit with code `0` under normal operation and `1` if vulnerabilities are found (OssIndex) or Policy 
-Violations are detected (Nexus IQ), unless you pass the `-w` flag in which case `jake` will always exit with code `0`....
+`jake` will exit with code `0` under normal operation and `1` if vulnerabilities are found (Sonatype Guide) or Policy
+Violations are detected (Nexus Lifecycle), unless you pass the `-w` flag in which case `jake` will always exit
+with code `0`.
 
 ### Generating an SBOM
 
-`jake` can take data from various inputs (or just look at your current Python environment) and produce a CycloneDX for 
+`jake` can take data from various inputs (or just look at your current Python environment) and produce a CycloneDX for
 you.
 
 ```
@@ -95,20 +97,20 @@ you.
 
 usage: jake sbom [-h] [-f FILE_PATH] [-t TYPE] [-o PATH/TO/FILE]
                    [--output-format {json,xml}]
-                   [--schema-version {1.0,1.1,1.2,1.3}]
+                   [--schema-version {1.0,1.1,1.2,1.3,1.4,1.5,1.6}]
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
-  -f FILE_PATH, --input FILE_PATH
+  -f FILE_PATH, --input-file FILE_PATH
                         Where to get input data from. If a path to a file is
-                        not specified directly here,then we will attempt to
+                        not specified directly here, then we will attempt to
                         read data from STDIN. If there is no data on STDIN, we
                         will then fall back to looking for standard files in
                         the current directory that relate to the type of input
                         indicated by the -t flag.
   -t TYPE, --type TYPE, -it TYPE, --input-type TYPE
                         how jake should find the packages from which to
-                        generate your SBOM.ENV = Read from the current Python
+                        generate your SBOM. ENV = Read from the current Python
                         Environment; CONDA = Read output from `conda list
                         --explicit`; CONDA_JSON = Read output from `conda list
                         --json`; PIP = read from a requirements.txt; PIPENV =
@@ -118,15 +120,15 @@ optional arguments:
                         Specify a file to output the SBOM to
   --output-format {json,xml}
                         SBOM output format (default = xml)
-  --schema-version {1.0,1.1,1.2,1.3}
-                        CycloneDX schema version to use (default = 1.3)
+  --schema-version {1.0,1.1,1.2,1.3,1.4,1.5,1.6}
+                        CycloneDX schema version to use (default = 1.6)
 ```
 
 Check out these examples using STDIN:
 ```
 conda list --explicit --md5 | jake sbom -t CONDA
 conda list --json | jake sbom -t CONDA_JSON
-cat /path/to/Pipfile.lock | python -m jake.app sbom -t PIPENV
+cat /path/to/Pipfile.lock | jake sbom -t PIPENV
 ```
 
 Check out these examples specifying a manifest:
@@ -135,199 +137,109 @@ jake sbom -t PIP -f /path/to/requirements.txt
 jake sbom -t PIPENV -f /path/to/Pipfile.lock
 ```
 
-### Check for vulnerabilities using OSS Index
+### Check for vulnerabilities using Sonatype Guide
 
-`jake` will look at the packaged installed in your current Python environment and check these against OSS Index for you.
-Optionally, it can create a CycloneDX software bill-of-materials at the same time in a format that suits you.
+`jake` will look at the packages installed in your current Python environment and check these against
+[Sonatype Guide](https://guide.sonatype.com) for you. Optionally, it can create a CycloneDX software
+bill-of-materials at the same time in a format that suits you.
+
+#### Authentication
+
+Sonatype Guide requires a registered account. Sign up at [guide.sonatype.com](https://guide.sonatype.com) and
+generate an API token. Supply your credentials via environment variables (recommended) or CLI flags:
+
+| Variable | Purpose |
+|---|---|
+| `SONATYPE_GUIDE_USERNAME` | Your Sonatype Guide username / email |
+| `SONATYPE_GUIDE_TOKEN` | Your Sonatype Guide API token |
 
 ```
-> jake ddt --help
+> jake guide --help
 
-usage: jake ddt [-h] [-f FILE_PATH] [-t TYPE] [--clear-cache] [-o PATH/TO/FILE] 
-                   [--output-format {xml,json}]
-                   [--schema-version {1.2,1.1,1.0,1.3}]
-                   [--whitelist OSS_WHITELIST_JSON_FILE]
+usage: jake guide [-h] [-f FILE_PATH] [-t TYPE] [-u USERNAME] [--token TOKEN]
+                  [-o PATH/TO/FILE] [--output-format {json,xml}]
+                  [--schema-version {1.0,1.1,1.2,1.3,1.4,1.5,1.6}]
+                  [--whitelist PATH]
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   -f FILE_PATH, --input-file FILE_PATH
                         Where to get input data from. If a path to a file is
-                        not specified directly here,then we will attempt to
+                        not specified directly here, then we will attempt to
                         read data from STDIN. If there is no data on STDIN, we
                         will then fall back to looking for standard files in
                         the current directory that relate to the type of input
                         indicated by the -t flag.
   -t TYPE, --type TYPE, -it TYPE, --input-type TYPE
                         how jake should find the packages from which to
-                        generate your SBOM.ENV = Read from the current Python
+                        generate your SBOM. ENV = Read from the current Python
                         Environment; CONDA = Read output from `conda list
                         --explicit`; CONDA_JSON = Read output from `conda list
                         --json`; PIP = read from a requirements.txt; PIPENV =
                         read from Pipfile.lock; POETRY = read from a
                         poetry.lock. (Default = ENV)
-  --clear-cache         Clears any local cached OSS Index data prior to execution
+  -u USERNAME, --username USERNAME
+                        Sonatype Guide username/email
+                        (env var: SONATYPE_GUIDE_USERNAME)
+  --token TOKEN         Sonatype Guide API token
+                        (env var: SONATYPE_GUIDE_TOKEN)
   -o PATH/TO/FILE, --output-file PATH/TO/FILE
-                        Specify a file to output the SBOM to. If not specified the report will be output to the console. STDOUT is not supported.
-  --output-format {xml,json}
+                        Specify a file to output the SBOM to. If not specified
+                        the report will be output to the console.
+                        STDOUT is not supported.
+  --output-format {json,xml}
                         SBOM output format (default = xml)
-  --schema-version {1.2,1.1,1.0,1.3}
-                        CycloneDX schema version to use (default = 1.3)
-  --whitelist OSS_WHITELIST_JSON_FILE
-                        Set path to whitelist json file
+  --schema-version {1.0,1.1,1.2,1.3,1.4,1.5,1.6}
+                        CycloneDX schema version to use (default = 1.6)
+  --whitelist PATH      Set path to whitelist json file
 ```
 
 So you can quickly get a report by running:
 
 ```
-> jake ddt
-
-                   ___           ___           ___     
-       ___        /  /\         /  /\         /  /\    
-      /__/\      /  /::\       /  /:/        /  /::\   
-      \__\:\    /  /:/\:\     /  /:/        /  /:/\:\  
-  ___ /  /::\  /  /::\ \:\   /  /::\____   /  /::\ \:\ 
- /__/\  /:/\/ /__/:/\:\_\:\ /__/:/\:::::\ /__/:/\:\ \:\
- \  \:\/:/~~  \__\/  \:\/:/ \__\/~|:|~~~~ \  \:\ \:\_\/
-  \  \::/          \__\::/     |  |:|      \  \:\ \:\  
-   \__\/           /  /:/      |  |:|       \  \:\_\/  
-                  /__/:/       |__|:|        \  \:\    
-                  \__\/         \__\|         \__\/    
-
-                                                  
-            /)                     /)             
-        _/_(/    _     _  __   _  (/_   _         
- o   o  (__/ )__(/_   /_)_/ (_(_(_/(___(/_ o   o  
-                                                  
-                                                  
-
-Jake Version: 1.1.0
-Put your Python dependencies in a chokehold.
-
-🐍 Collected 42 packages from your environment (0:00:00.10)
-🐍 Successfully queried OSS Index for package and vulnerability info (0:00:00.59)
-🐍 Sane number of results from OSS Index
-
-
-╔Summary═══════════════╦════╗
-║ Audited Dependencies ║ 42 ║
-╠══════════════════════╬════╣
-║ Vulnerablities Found ║ 0  ║
-╚══════════════════════╩════╝
-```
-
-...and this is what `jake` will output if any bad things are found:
-```
-                   ___           ___           ___     
-       ___        /  /\         /  /\         /  /\    
-      /__/\      /  /::\       /  /:/        /  /::\   
-      \__\:\    /  /:/\:\     /  /:/        /  /:/\:\  
-  ___ /  /::\  /  /::\ \:\   /  /::\____   /  /::\ \:\ 
- /__/\  /:/\/ /__/:/\:\_\:\ /__/:/\:::::\ /__/:/\:\ \:\
- \  \:\/:/~~  \__\/  \:\/:/ \__\/~|:|~~~~ \  \:\ \:\_\/
-  \  \::/          \__\::/     |  |:|      \  \:\ \:\  
-   \__\/           /  /:/      |  |:|       \  \:\_\/  
-                  /__/:/       |__|:|        \  \:\    
-                  \__\/         \__\|         \__\/    
-
-                                                  
-            /)                     /)             
-        _/_(/    _     _  __   _  (/_   _         
- o   o  (__/ )__(/_   /_)_/ (_(_(_/(___(/_ o   o  
-                                                  
-                                                  
-
-Jake Version: 1.1.5
-Put your Python dependencies in a chokehold
-
-🐍 Collected 69 packages from your environment                       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% -:--:--
-🐍 Successfully queried OSS Index for package and vulnerability info ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% -:--:--
-🐍 Sane number of results from OSS Index                             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% -:--:--
-
-[59/69] - pkg:pypi/cryptography@2.2 [VULNERABLE]
-Vulnerability Details for pkg:pypi/cryptography@2.2                                                                                                                                                                                                                                                                     
-├── ⚠  ID: 333aca51-7375-4a9d-be64-16d316ab9274                                                                                                                                                                                                                                                                         
-│   └── ╭─ CVE-2020-36242 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
-│       │                                                                                                                                                                                                                                                                                                              │
-│       │ In the cryptography package before 3.3.2 for Python, certain sequences of update calls to symmetrically encrypt multi-GB values could result in an integer overflow and buffer overflow, as demonstrated by the Fernet class.                                                                                │
-│       │                                                                                                                                                                                                                                                                                                              │
-│       │ Details:                                                                                                                                                                                                                                                                                                     │
-│       │   - CVSS Score: 9.1 - Critical                                                                                                                                                                                                                                                                               │
-│       │   - CVSS Vector: CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:H                                                                                                                                                                                                                                                │
-│       │   - CWE: Unknown                                                                                                                                                                                                                                                                                             │
-│       │                                                                                                                                                                                                                                                                                                              │
-│       │ References:                                                                                                                                                                                                                                                                                                  │
-│       │   - https://ossindex.sonatype.org/vulnerability/333aca51-7375-4a9d-be64-16d316ab9274?component-type=pypi&component-name=cryptography&utm_source=python-oss-index-lib%400.2.1&utm_medium=integration                                                                                                          │
-│       │   - https://nvd.nist.gov/vuln/detail/CVE-2020-36242                                                                                                                                                                                                                                                          │
-│       │                                                                                                                                                                                                                                                                                                              │
-│       ╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
-└── ⚠  ID: f19ff95c-cec5-4263-8d3b-e3e64698881e                                                                                                                                                                                                                                                                         
-    └── ╭─ CVE-2018-10903 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
-        │                                                                                                                                                                                                                                                                                                              │
-        │ A flaw was found in python-cryptography versions between >=1.9.0 and <2.3. The finalize_with_tag API did not enforce a minimum tag length. If a user did not validate the input length prior to passing it to finalize_with_tag an attacker could craft an invalid payload with a shortened tag (e.g. 1      │
-        │ byte) such that they would have a 1 in 256 chance of passing the MAC check. GCM tag forgeries can cause key leakage.                                                                                                                                                                                         │
-        │                                                                                                                                                                                                                                                                                                              │
-        │ Details:                                                                                                                                                                                                                                                                                                     │
-        │   - CVSS Score: 7.5 - High                                                                                                                                                                                                                                                                                   │
-        │   - CVSS Vector: CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N                                                                                                                                                                                                                                                │
-        │   - CWE: Unknown                                                                                                                                                                                                                                                                                             │
-        │                                                                                                                                                                                                                                                                                                              │
-        │ References:                                                                                                                                                                                                                                                                                                  │
-        │   - https://ossindex.sonatype.org/vulnerability/f19ff95c-cec5-4263-8d3b-e3e64698881e?component-type=pypi&component-name=cryptography&utm_source=python-oss-index-lib%400.2.1&utm_medium=integration                                                                                                          │
-        │   - https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2018-10903                                                                                                                                                                                                                                               │
-        │   - https://github.com/pyca/cryptography/pull/4342/commits/688e0f673bfbf43fa898994326c6877f00ab19ef                                                                                                                                                                                                          │
-        │   - https://nvd.nist.gov/vuln/detail/CVE-2018-10903                                                                                                                                                                                                                                                          │
-        │                                                                                                                                                                                                                                                                                                              │
-        ╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
-
-                    Summary                     
-┏━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━┓
-┃ Audited Dependencies ┃ Vulnerabilities Found ┃
-┡━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━┩
-│ 69                   │ 2                     │
-└──────────────────────┴───────────────────────┘
+> export SONATYPE_GUIDE_USERNAME=your@email.com
+> export SONATYPE_GUIDE_TOKEN=your-api-token
+> jake guide
 ```
 
 Check out these examples using STDIN:
 ```
-conda list --explicit --md5 | jake ddt -t CONDA
-conda list --json | jake ddt -t CONDA_JSON
-cat /path/to/Pipfile.lock | python -m jake.app ddt -t PIPENV
+conda list --explicit --md5 | jake guide -t CONDA
+conda list --json | jake guide -t CONDA_JSON
+cat /path/to/Pipfile.lock | jake guide -t PIPENV
 ```
 
 Check out these examples specifying a manifest:
 ```
-jake ddt -t PIP -f /path/to/requirements.txt
-jake ddt -t PIPENV -f /path/to/Pipfile.lock
+jake guide -t PIP -f /path/to/requirements.txt
+jake guide -t PIPENV -f /path/to/Pipfile.lock
 ```
 
-A pre-commit hook is also available for use
+A pre-commit hook is also available for use:
 
-```Yaml
+```yaml
   - repo: https://github.com/sonatype-nexus-community/jake
-    rev: "v1.3.0"
+    rev: "v4.0.0"
     hooks:
       - id: scan
 ```
 
 #### Whitelisting
 
-Whitelisting of vulnerabilities can be done! To whitelist vulnerabilities add the `--whitelist` argument and pass a json file like this:
+Vulnerabilities can be suppressed via a whitelist file. Pass the `--whitelist` argument with a path to a JSON file:
 
 ```
-> jake ddt --whitelist jake-whitelist.json
-
+> jake guide --whitelist jake-whitelist.json
 ```
 
-The file should look like this:
+The file format is:
 
 ```json
 {"ignore": [{"id": "f19ff95c-cec5-4263-8d3b-e3e64698881e", "reason": "Insert reason here"}]}
 ```
 
-The only field that actually matters is id and that is the ID you receive from OSS Index for a vulnerability.
-You can add fields such as reason so that you later can understand why you whitelisted a vulnerability.
-
-Any id that is whitelisted will be squelched from the results, and not cause a failure.
+The `id` field is the vulnerability ID returned by Sonatype Guide. Any whitelisted ID will be excluded from the
+results and will not cause a failure.
 
 ### Check for vulnerabilities using Sonatype Nexus Lifecycle
 
@@ -338,18 +250,18 @@ Access Sonatype's proprietary vulnerability data using `jake`:
 
 usage: jake iq [-h] [-f FILE_PATH] [-t TYPE] -s https://localhost:8070 -i APP_ID -u USER_ID -p PASSWORD [-st STAGE]
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   -f FILE_PATH, --input-file FILE_PATH
                         Where to get input data from. If a path to a file is
-                        not specified directly here,then we will attempt to
+                        not specified directly here, then we will attempt to
                         read data from STDIN. If there is no data on STDIN, we
                         will then fall back to looking for standard files in
                         the current directory that relate to the type of input
                         indicated by the -t flag.
-  -t TYPE, --type TYPE, -it TYPE, --input-type TYPE
+  -t TYPE, -it TYPE, --type TYPE, --input-type TYPE
                         how jake should find the packages from which to
-                        generate your SBOM.ENV = Read from the current Python
+                        generate your SBOM. ENV = Read from the current Python
                         Environment; CONDA = Read output from `conda list
                         --explicit`; CONDA_JSON = Read output from `conda list
                         --json`; PIP = read from a requirements.txt; PIPENV =
@@ -370,38 +282,62 @@ optional arguments:
 So passing parameters that suit your Nexus Lifecycle environment you can get a report:
 
 ```
-> jake iq -s https://my-nexus-lifecyle -i APP_ID -u USERNAME -p PASSWORD
-
-                   ___           ___           ___     
-       ___        /  /\         /  /\         /  /\    
-      /__/\      /  /::\       /  /:/        /  /::\   
-      \__\:\    /  /:/\:\     /  /:/        /  /:/\:\  
-  ___ /  /::\  /  /::\ \:\   /  /::\____   /  /::\ \:\ 
- /__/\  /:/\/ /__/:/\:\_\:\ /__/:/\:::::\ /__/:/\:\ \:\
- \  \:\/:/~~  \__\/  \:\/:/ \__\/~|:|~~~~ \  \:\ \:\_\/
-  \  \::/          \__\::/     |  |:|      \  \:\ \:\  
-   \__\/           /  /:/      |  |:|       \  \:\_\/  
-                  /__/:/       |__|:|        \  \:\    
-                  \__\/         \__\|         \__\/    
-
-                                                  
-            /)                     /)             
-        _/_(/    _     _  __   _  (/_   _         
- o   o  (__/ )__(/_   /_)_/ (_(_(_/(___(/_ o   o  
-                                                  
-                                                  
-
-Jake Version: 1.0.1
-Put your Python dependencies in a chokehold
-
-🐍 IQ Server at https://my-nexus-lifecyle is up and accessible (0:00:00.14)
-🐍 Collected 42 packages from your environment (0:00:00.09)
-🧨 Something slithers around your ankle! There are policy warnings from Sonatype Nexus IQ. (0:00:11.50)
-
-Your Sonatype Nexus IQ Lifecycle Report is available here:
-  HTML: https://my-nexus-lifecyle/ui/links/application/APP_ID/report/4831bcb7fbaa45c3a2481048e446b598
-  PDF:  https://my-nexus-lifecyle/ui/links/application/APP_ID/report/4831bcb7fbaa45c3a2481048e446b598/pdf
+> jake iq -s https://my-nexus-lifecycle -i APP_ID -u USERNAME -p PASSWORD
 ```
+
+## Migrating from OSS Index to Sonatype Guide
+
+jake v4.0.0 replaces the `ddt` (OSS Index) command with `guide` (Sonatype Guide). The two services use
+compatible vulnerability data and the same PURL-based lookup mechanism, so migration is straightforward.
+
+### Command rename
+
+| v3 (OSS Index) | v4 (Sonatype Guide) |
+|---|---|
+| `jake ddt` | `jake guide` |
+| `jake ddt -t PIP -f requirements.txt` | `jake guide -t PIP -f requirements.txt` |
+
+The `ddt` subcommand still exists in v4 as a deprecated alias and will be removed in a future release.
+
+### Environment variables
+
+| v3 variable | v4 variable | Notes |
+|---|---|---|
+| `OSS_INDEX_USERNAME` | `SONATYPE_GUIDE_USERNAME` | `OSS_INDEX_USERNAME` still accepted as a fallback |
+| `OSS_INDEX_TOKEN` | `SONATYPE_GUIDE_TOKEN` | `OSS_INDEX_TOKEN` still accepted as a fallback |
+
+To migrate, rename the variables in your shell profile or CI secrets:
+
+```
+# Before (v3)
+export OSS_INDEX_USERNAME=your@email.com
+export OSS_INDEX_TOKEN=your-token
+
+# After (v4)
+export SONATYPE_GUIDE_USERNAME=your@email.com
+export SONATYPE_GUIDE_TOKEN=your-token
+```
+
+### Account and API token
+
+Sonatype Guide uses the same account system as OSS Index. If you already have an OSS Index account your
+existing username and API token will work unchanged — only the environment variable names differ.
+
+### Whitelist file
+
+The whitelist JSON format is unchanged between v3 and v4:
+
+```json
+{"ignore": [{"id": "vulnerability-id-here", "reason": "reason"}]}
+```
+
+### Breaking changes summary
+
+- Python 3.7, 3.8, and 3.9 are no longer supported. Python 3.10+ is required.
+- `jake ddt` is deprecated; use `jake guide`.
+- The `--clear-cache` flag has been removed (Sonatype Guide has no local cache).
+- CycloneDX SBOM schema version default raised from 1.4 to 1.6.
+- The `ossindex-lib` dependency has been replaced by `sonatype-guide-api-client`.
 
 ## Why Jake?
 
@@ -420,10 +356,6 @@ See our [CHANGELOG](./CHANGELOG.md).
 
 ## Releasing
 
-We perform releases manually by clicking the "On Hold" button in the CircleCI web page.
-
-If you see a feature in the code that we have not released, please speak up, and we'll be sure to click the magic button.
-
 We use [python-semantic-release](https://python-semantic-release.readthedocs.io/en/latest/) to generate releases
 from commits to the `main` branch.
 
@@ -433,8 +365,6 @@ For example, to perform a "patch" release, add a commit to `main` with a comment
 fix: Resolve vulnerability: CVE-2020-27783 in lxml
 ```
 
-CI Release madness: If using Twine to release to PyPi, you now need to use a username of `__token__` and a password of an API token as [described here](https://www.reddit.com/r/AskProgramming/comments/190sjz8/is_twine_no_longer_supported_by_pypi/).
-
 ## The Fine Print
 
 Remember:
@@ -443,7 +373,7 @@ It is worth noting that this is **NOT SUPPORTED** by Sonatype, and is a contribu
 community (read: you!)
 
 * Use this contribution at the risk tolerance that you have
-* Do NOT file Sonatype support tickets related to `ossindex-lib`
+* Do NOT file Sonatype support tickets related to `jake`
 * DO file issues here on GitHub, so that the community can pitch in
 
 Phew, that was easier than I thought. Last but not least of all - have fun!

@@ -16,15 +16,10 @@
 
 # encoding: utf-8
 
-import sys
 from abc import ABC, abstractmethod
 from argparse import ArgumentParser, Namespace
+from importlib.metadata import version as meta_version
 from typing import Optional
-
-if sys.version_info >= (3, 8):
-    from importlib.metadata import version as meta_version
-else:
-    from importlib_metadata import version as meta_version
 
 jake_version: str = 'TBC'
 try:

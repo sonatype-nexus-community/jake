@@ -22,55 +22,51 @@ from argparse import FileType
 from typing import Optional
 from typing import TextIO
 
-from cyclonedx.parser import BaseParser
-from cyclonedx_py.parser.conda import CondaListExplicitParser
-from cyclonedx_py.parser.conda import CondaListJsonParser
-from cyclonedx_py.parser.environment import EnvironmentParser
-from cyclonedx_py.parser.pipenv import PipEnvFileParser
-from cyclonedx_py.parser.pipenv import PipEnvParser
-from cyclonedx_py.parser.poetry import PoetryFileParser
-from cyclonedx_py.parser.poetry import PoetryParser
-from cyclonedx_py.parser.requirements import RequirementsFileParser
-from cyclonedx_py.parser.requirements import RequirementsParser
+from jake._internal.parsers import (
+    BaseJakeParser,
+    CondaListExplicitParser,
+    CondaListJsonParser,
+    EnvironmentParser,
+    PipenvFileParser,
+    PipenvParser,
+    PoetryFileParser,
+    PoetryParser,
+    RequirementsFileParser,
+    RequirementsParser,
+)
 
 
-def get_parser(input_type: str, input_data_fh: Optional[TextIO]) -> BaseParser:
+def _parser_from_content(input_type: str, content: str) -> BaseJakeParser:
+    if input_type == 'CONDA':
+        return CondaListExplicitParser(conda_data=content)
+    if input_type == 'CONDA_JSON':
+        return CondaListJsonParser(conda_data=content)
+    if input_type == 'PIP':
+        return RequirementsParser(requirements_content=content)
+    if input_type == 'PIPENV':
+        return PipenvParser(pipenv_contents=content)
+    if input_type == 'POETRY':
+        return PoetryParser(poetry_lock_contents=content)
+    raise NotImplementedError
+
+
+def _parser_from_file(input_type: str) -> BaseJakeParser:
+    if input_type == 'PIP':
+        return RequirementsFileParser(requirements_file='requirements.txt')
+    if input_type == 'PIPENV':
+        return PipenvFileParser(pipenv_lock_filename='Pipfile.lock')
+    if input_type == 'POETRY':
+        return PoetryFileParser(poetry_lock_filename='poetry.lock')
+    raise NotImplementedError
+
+
+def get_parser(input_type: str, input_data_fh: Optional[TextIO]) -> BaseJakeParser:
     if input_type == 'ENV':
         return EnvironmentParser()
-
-    # All other input types require INPUT - let's grab it now if provided via STDIN or supplied FILE
     if input_data_fh:
         with input_data_fh:
-            input_data = input_data_fh.read()
-            input_data_fh.close()
-
-        if input_type == 'CONDA':
-            return CondaListExplicitParser(conda_data=input_data)
-
-        if input_type == 'CONDA_JSON':
-            return CondaListJsonParser(conda_data=input_data)
-
-        if input_type == 'PIP':
-            return RequirementsParser(requirements_content=input_data)
-
-        if input_type == 'PIPENV':
-            return PipEnvParser(pipenv_contents=input_data)
-
-        if input_type == 'POETRY':
-            return PoetryParser(poetry_lock_contents=input_data)
-
-    else:
-        # No data available on STDIN or the supplied FILE, so we'll try standard filenames in the current directory
-        if input_type == 'PIP':
-            return RequirementsFileParser(requirements_file='requirements.txt')
-
-        if input_type == 'PIPENV':
-            return PipEnvFileParser(pipenv_lock_filename='Pipfile.lock')
-
-        if input_type == 'POETRY':
-            return PoetryFileParser(poetry_lock_filename='poetry.lock')
-
-    raise NotImplementedError
+            return _parser_from_content(input_type, input_data_fh.read())
+    return _parser_from_file(input_type)
 
 
 def add_parser_selector_arguments(arg_parser: ArgumentParser) -> None:

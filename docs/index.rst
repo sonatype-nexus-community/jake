@@ -22,7 +22,7 @@ Jake's Documentation
 1. produce CycloneDX software bill-of-materials
 2. report on known vulnerabilities
 
-``jake`` is powered by `Sonatype OSS Index`_ and can also be used with `Sonatype's Nexus IQ Server`_.
+``jake`` is powered by `Sonatype Guide`_ and can also be used with `Sonatype Lifecycle`_.
 
 Internally, ``jake`` utilises libraries from `CycloneDX`_ when producing Software Bill of Materials.
 
@@ -40,6 +40,6 @@ CycloneDX is a lightweight BOM specification that is easily created, human-reada
    changelog
 
 
-.. _Sonatype OSS Index: https://ossindex.sonatype.org/
-.. _Sonatype's Nexus IQ Server: https://www.sonatype.com/products/open-source-security-dependency-management
+.. _Sonatype Guide: https://guide.sonatype.com
+.. _Sonatype Lifecycle: https://www.sonatype.com/products/open-source-security-dependency-management
 .. _CycloneDX: https://cyclonedx.org/tool-center/

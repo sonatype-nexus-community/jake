@@ -1,6 +1,337 @@
 # CHANGELOG
 
 
+## v4.0.0 (2026-05-13)
+
+### Bug Fixes
+
+- _get_max_cvss_score now tracks the highest score across all vulns
+  ([`b29908b`](https://github.com/sonatype-nexus-community/jake/commit/b29908bf2ec5619b976cfb4e943b43676f6f1156))
+
+Was reassigning on every loop iteration, so the returned value was the score of the last
+  vulnerability rather than the highest. Components with multiple vulnerabilities displayed the
+  wrong color and severity label.
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+
+Signed-off-by: Paul Horton <phorton@sonatype.com>
+
+- Provide Guide authentication feedback using new env variable names
+  ([`92e23b5`](https://github.com/sonatype-nexus-community/jake/commit/92e23b508197dfc4e91fb4901ba2681e473b9126))
+
+Signed-off-by: Paul Horton <phorton@sonatype.com>
+
+- Remove emoji from Rich output to fix Windows Unicode crash
+  ([`6997d9f`](https://github.com/sonatype-nexus-community/jake/commit/6997d9f720e3f03a2ea9308b984871c956f8e4b7))
+
+- Remove all emoji from progress/status strings in oss.py and iq.py - Replace :warning: markup with
+  plain text [bright_red](!) indicator - Add Console(highlight=False) in app.py for consistent
+  output - Add windows-latest to CI matrix to catch regressions
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+
+Signed-off-by: Paul Horton <phorton@sonatype.com>
+
+- Replace pyfiglet with art to fix Python 3.14 startup crash
+  ([`26c8311`](https://github.com/sonatype-nexus-community/jake/commit/26c831156b12105252c8188e7b5092f7c4f19d4f))
+
+pyfiglet uses pkg_resources which was removed in Python 3.14. Replace with art library (MIT, no
+  pkg_resources dependency).
+
+BREAKING CHANGE: pyfiglet is no longer a dependency
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+
+Signed-off-by: Paul Horton <phorton@sonatype.com>
+
+- **ci**: Address all CI failures from integration branch
+  ([`dfe8dc4`](https://github.com/sonatype-nexus-community/jake/commit/dfe8dc4d52106c6c58b479a8c79891d7e7ce6386))
+
+- Rename ScanApi → ThirdPartyAnalysisApi in iq.py (renamed in sonatype-iq-api-client 0.201.0) - Fix
+  mypy no-redef: rename whitelist loop variable report → guide_report in oss.py - Fix mypy null
+  safety: add `or ''` guard for Optional vuln.reference and vuln.display_name in oss.py - Fix flake8
+  E127: reformat _get_max_cvss_score() continuation lines in oss.py - Add type:
+  ignore[import-untyped] for art in app.py (missing py.typed marker) - Add type:
+  ignore[import-untyped] for packageurl in all five parser files (missing py.typed in lowest deps) -
+  Add shell: bash to Run tests step in ci.yml to fix bash syntax on Windows PowerShell runners
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+
+Signed-off-by: Paul Horton <phorton@sonatype.com>
+
+- **ci**: Correct typing and lowest-deps configuration for mypy
+  ([`93f7a36`](https://github.com/sonatype-nexus-community/jake/commit/93f7a366712bba3b90a06f39ac6c147d28e07a11))
+
+- requirements.lowest.txt: replace obsolete deps (cyclonedx-bom, ossindex-lib, pyfiglet, polling2,
+  requests) with current minimum versions of cyclonedx-python-lib, art, sonatype-guide-api-client,
+  sonatype-iq-api-client, rich, tomli - sbom.py: ExternalReference(reference_type=...) → (type=...)
+  for all 7 refs — cyclonedx-python-lib 11.x renamed this parameter from reference_type to type -
+  iq.py: add null guards for internal_id (str|None) and ticket.status_url (str|None) to satisfy
+  ThirdPartyAnalysisApi StrictStr; change source arg from 'jake' to 'cyclonedx' per 0.201.0 API
+  requirement - environment.py: annotate seen as set[str] and suppress attr-defined on
+  PackageMetadata.get() which is valid at runtime but absent from Protocol stub - poetry.py:
+  suppress import-not-found on tomllib which is stdlib on 3.11+ only
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+
+Signed-off-by: Paul Horton <phorton@sonatype.com>
+
+- **deps**: Bump rich minimum from 10.10.0 to 13.2.0
+  ([`41014e4`](https://github.com/sonatype-nexus-community/jake/commit/41014e48414487544da0d5f02bfeef1ed6839403))
+
+rich <13.2.0 depends on commonmark which transitively pulls in future, exposing CVE-2022-40899. rich
+  13.2.0 replaced commonmark with markdown-it-py, eliminating that dependency chain entirely.
+
+Closes #127
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+
+Signed-off-by: Paul Horton <phorton@sonatype.com>
+
+- **deps**: Pin urllib3 >= 2.7.0 to remediate CVEs
+  ([`b72636c`](https://github.com/sonatype-nexus-community/jake/commit/b72636c6739b19b6ee2e49d2d13c21c32d342971))
+
+urllib3 2.2.3 carries CVE-2025-66418, CVE-2025-66471, CVE-2026-21441 (all CVSS 7.5) and
+  CVE-2025-50181 (CVSS 6.1). Adding an explicit floor in pyproject.toml ensures the lock file cannot
+  regress to a vulnerable version; both API clients already allow >=2.1.0,<3.0.0 so 2.7.0 is
+  compatible.
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+
+Signed-off-by: Paul Horton <phorton@sonatype.com>
+
+- **iq**: Retry on 404 while waiting for IQ scan results
+  ([`1e7c939`](https://github.com/sonatype-nexus-community/jake/commit/1e7c939e755acf6168f256fcdffd93e12e237afd))
+
+IQ Server returns 404 NotFoundException while the scan is still processing. Catch it in the polling
+  loop and retry (up to 30 attempts / 300 seconds), mirroring the old polling2-based behaviour.
+  Raise RuntimeError if the timeout is exceeded.
+
+Signed-off-by: Paul Horton <phorton@sonatype.com>
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+
+- **iq**: Set Content-Type: application/xml when submitting CycloneDX SBOM
+  ([`4d3424b`](https://github.com/sonatype-nexus-community/jake/commit/4d3424b34df4e89ef33e0a37127f35eca603f728))
+
+The sonatype_iq_api_client selects the first accepted content type (application/json) by default.
+  Explicitly passing _content_type='application/xml' ensures IQ Server receives the correct header
+  and can parse the CycloneDX XML body.
+
+Signed-off-by: Paul Horton <phorton@sonatype.com>
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+
+- **oss**: Show clear auth error message on 401 Unauthorized
+  ([`cb86ff7`](https://github.com/sonatype-nexus-community/jake/commit/cb86ff70af362d91ab27fac1f01948521bf24cfc))
+
+Extract Progress block into _perform_scan() so UnauthorizedException can be caught in handle_args()
+  after Progress has closed, making the error message visible on the terminal instead of a raw
+  traceback.
+
+Signed-off-by: Paul Horton <phorton@sonatype.com>
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+
+- **quality**: Address 4 SonarQube issues on dev/4x/integration
+  ([`958eb4b`](https://github.com/sonatype-nexus-community/jake/commit/958eb4b8c390a28a1a28e65bf8410ae1ab779991))
+
+- oss.py: extract 'OSS Index' literal to _OSS_INDEX_SOURCE constant (S1192) - oss.py: remove dead
+  else-branch in _print_oss_index_report — the inner `if comp_vulns` check is redundant since the
+  outer guard already ensures it; reduces cognitive complexity from 17 to 15 (S3776) -
+  parser_selector.py: extract _parser_from_content and _parser_from_file helpers from get_parser;
+  reduces cognitive complexity from 19 to 2 (S3776) - requirements.py: replace reluctant quantifier
+  .*? with [^\]]* in _PIN_RE for more efficient regex matching (S5857)
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+
+Signed-off-by: Paul Horton <phorton@sonatype.com>
+
+- **ssl**: Add certifi dependency and configure SSL CA bundle for API clients
+  ([`ee3995a`](https://github.com/sonatype-nexus-community/jake/commit/ee3995a462491e6d4a6806f440cfdc06cd7a3d59))
+
+Adds certifi as an explicit dependency (>=2024.7.4, patching CVE-2024-39689) and passes
+  ssl_ca_cert=certifi.where() to both sonatype_guide_api_client and sonatype_iq_api_client
+  Configuration objects. The old ossindex-lib used requests which auto-loaded certifi; the new
+  OpenAPI-generated clients use urllib3 directly and require explicit CA bundle configuration to
+  work on systems without system CAs accessible to Python.
+
+Also extracts multi-line f-string join expressions in _print_vulnerability to local variables,
+  resolving pre-existing flake8 E122 continuation-line warnings.
+
+Signed-off-by: Paul Horton <phorton@sonatype.com>
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+
+- **typing**: Suppress import-not-found on tomli fallback import
+  ([`041ff88`](https://github.com/sonatype-nexus-community/jake/commit/041ff88a73ce53f2ceabc1e0fc79d505d7f5ca6e))
+
+mypy reports import-not-found for tomli on environments where it is not installed (Python 3.11+
+  where tomllib is stdlib and tomli is absent). The existing no-redef ignore did not cover this
+  error code.
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+
+Signed-off-by: Paul Horton <phorton@sonatype.com>
+
+### Chores
+
+- Ignore MODERNISATION.md local planning document
+  ([`e770375`](https://github.com/sonatype-nexus-community/jake/commit/e770375c29c2f1c3e5b7d0792561c1e4a083cccb))
+
+Signed-off-by: Paul Horton <phorton@sonatype.com>
+
+- Update dev tooling for v4.x
+  ([`d9e15b7`](https://github.com/sonatype-nexus-community/jake/commit/d9e15b76a1b0daafc87fca668ecc2e59c41c8e6b))
+
+- Rename [tool.poetry.dev-dependencies] to [tool.poetry.group.dev.dependencies] (Poetry 2.x) - Bump
+  tox to ^4.0, mypy to ^1.0, flake8 to ^7.0, coverage to ^7.0 - Update tox.ini: allowlist_externals,
+  minversion=4.0, mypy --python-version=3.10 - Update CI: POETRY_VERSION to 2.4.1
+
+BREAKING CHANGE: minimum Poetry version is now 2.x
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+
+Signed-off-by: Paul Horton <phorton@sonatype.com>
+
+- **ci**: Correct invocation of jake when integration testing against Sonatype Guide
+  ([`fe82fc4`](https://github.com/sonatype-nexus-community/jake/commit/fe82fc4d3fbc3a705394a544ed1b9596ca3cad4e))
+
+Signed-off-by: Paul Horton <phorton@sonatype.com>
+
+- **ci**: Indicate target Python Version to SonarQube
+  ([`72f641a`](https://github.com/sonatype-nexus-community/jake/commit/72f641aac35491436b800055cde0ddaecfcaa831))
+
+Signed-off-by: Paul Horton <phorton@sonatype.com>
+
+- **ci**: Update RTD config
+  ([`af67a11`](https://github.com/sonatype-nexus-community/jake/commit/af67a116885e4221add18cdb12bf583f9b450d69))
+
+Signed-off-by: Paul Horton <phorton@sonatype.com>
+
+### Continuous Integration
+
+- Add Sonatype Guide integration test job
+  ([`b72be43`](https://github.com/sonatype-nexus-community/jake/commit/b72be43560760b9c8bf653c4739868d2fc2398c1))
+
+Adds integration-guide job that runs `jake guide -w` against the real Sonatype Guide API after
+  build-and-test passes. Uses -w (warn-only) so incidental vulnerabilities in the CI environment do
+  not cause failure — the test validates authentication and end-to-end connectivity only.
+
+Secrets OSSI_USERNAME and SONATYPE_GUIDE_TOKEN are injected at step level. The job is skipped on
+  fork PRs where repository secrets are unavailable.
+
+Signed-off-by: Paul Horton <phorton@sonatype.com>
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+
+### Features
+
+- Drop Python 3.8/3.9, target >=3.10,<3.14
+  ([`370a56c`](https://github.com/sonatype-nexus-community/jake/commit/370a56ca187a3ce896c1916defa639ac04f13939))
+
+- Constrain python to >=3.10,<3.14 in pyproject.toml - Remove importlib-metadata conditional (stdlib
+  in 3.10+) - Update tox envlist to py{313,312,311,310} - Update CI matrix to Python 3.10, 3.11,
+  3.12, 3.13 - Remove importlib-metadata from requirements.lowest.txt - Update classifiers to
+  reflect supported Python versions
+
+BREAKING CHANGE: Python 3.8 and 3.9 are no longer supported
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+
+Signed-off-by: Paul Horton <phorton@sonatype.com>
+
+- Replace hand-rolled IQ client with sonatype-iq-api-client
+  ([`8cc6492`](https://github.com/sonatype-nexus-community/jake/commit/8cc6492e788e28130f09837c99530c8a5edfaba9))
+
+- Replace IqServerApi inner class with sonatype-iq-api-client ^0.201.0 - Use
+  ApplicationsApi.get_applications() for internal ID lookup - Use ScanApi.scan_components() for BOM
+  submission - Use ScanApi.get_scan_status() with polling loop (time.sleep) for results - Remove
+  requests and polling2 dependencies - Preserve all existing CLI arguments (-s, -i, -u, -p, -st)
+
+BREAKING CHANGE: hand-rolled IQ REST client replaced by official sonatype-iq-api-client
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+
+Signed-off-by: Paul Horton <phorton@sonatype.com>
+
+- Replace ossindex-lib with sonatype-guide-api-client, add guide subcommand
+  ([`882fedd`](https://github.com/sonatype-nexus-community/jake/commit/882feddddb8acb73876af66ff40a0d47efa320c5))
+
+- Replace ossindex-lib with sonatype-guide-api-client ^0.1.0 (Apache-2.0) - Rewrite OssCommand to
+  use OSSIndexCompatibilityApi with PurlRequestPost - Add -u/--username and --token args (env:
+  OSS_INDEX_USERNAME/OSS_INDEX_TOKEN) - Remove --clear-cache (Guide API has no local cache) - Rename
+  subcommand from ddt to guide - Add DdtCommand subclass as deprecated alias for ddt subcommand -
+  Update app.py to register both guide and ddt subcommands
+
+BREAKING CHANGE: ossindex-lib replaced by sonatype-guide-api-client; ddt is deprecated in favour of
+  guide
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+
+Signed-off-by: Paul Horton <phorton@sonatype.com>
+
+- Upgrade cyclonedx-bom v3 to cyclonedx-python-lib v11
+  ([`0fa0710`](https://github.com/sonatype-nexus-community/jake/commit/0fa07106d7d1324f838c0e029b5bff0231d9983c))
+
+- Replace cyclonedx-bom ^3.0.0 with cyclonedx-python-lib ^11.7.0 - Add tomli ^2.0 backport for
+  Python <3.11 (poetry.lock parsing) - Implement jake/_internal/parsers/ replacing removed
+  cyclonedx_py parsers: EnvironmentParser, RequirementsParser, PoetryParser, PipenvParser,
+  CondaListExplicitParser, CondaListJsonParser - Update parser_selector.py to use new internal
+  parsers - Update sbom.py: Bom(components=set(...)), tools.components.add(), make_outputter(),
+  SchemaVersion.from_version() - Update oss.py: vulnerabilities on Bom not Component, build vuln_map
+  from v.affects - Update iq.py: make_outputter() replacing get_instance() - Move
+  OutputFormat/SchemaVersion imports to cyclonedx.schema
+
+BREAKING CHANGE: cyclonedx-bom is replaced by cyclonedx-python-lib v11; CycloneDX schema 1.5 and 1.6
+  now supported
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+
+Signed-off-by: Paul Horton <phorton@sonatype.com>
+
+- **guide**: Rename env vars to SONATYPE_GUIDE_*, update all docs
+  ([`b4a9ff1`](https://github.com/sonatype-nexus-community/jake/commit/b4a9ff10a84ba9bd314c085ae58011c40f5a18d8))
+
+Code: - SONATYPE_GUIDE_USERNAME / SONATYPE_GUIDE_TOKEN are now the primary environment variables for
+  `jake guide`; OSS_INDEX_USERNAME / OSS_INDEX_TOKEN are accepted as fallbacks for backward
+  compatibility - Update CLI help strings to reference Sonatype Guide, not OSS Index
+
+Docs (README.md, docs/usage.rst, docs/configuration.rst, docs/index.rst): - Replace all OSS Index
+  references with Sonatype Guide - Update Python version badge to 3.10+ - Switch CI badge from
+  CircleCI to GitHub Actions - Document SONATYPE_GUIDE_* env vars and fallback behaviour - Add
+  "Migrating from OSS Index to Sonatype Guide" section covering command rename (ddt → guide), env
+  var rename, and breaking changes - Refresh --help output blocks to reflect v4 commands and flags
+
+Signed-off-by: Paul Horton <phorton@sonatype.com>
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+
+### Refactoring
+
+- Extract _build_ratings to reduce Cognitive Complexity in oss.py
+  ([`d700989`](https://github.com/sonatype-nexus-community/jake/commit/d70098919c81d2235777c9e33a2919f7babbbd9f))
+
+_build_vulnerability was still at 17 after the prior refactor. Extracting the ratings construction
+  into _build_ratings removes the outer if-guard and two redundant ternaries (score/severity were
+  guarded by the outer if but repeated the condition), bringing _build_vulnerability to <=15.
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+
+Signed-off-by: Paul Horton <phorton@sonatype.com>
+
+- Extract helpers to reduce Cognitive Complexity in iq.py and oss.py
+  ([`daed157`](https://github.com/sonatype-nexus-community/jake/commit/daed157a228a0c28bec9b4a166cd426c050e8c22))
+
+Fixes two SonarQube S3776 violations introduced on dev/4x/integration: - iq.py: extract
+  _poll_scan_result() to bring handle_args from 16 to <=15 - oss.py: extract _build_vulnerability(),
+  _apply_whitelist(), and _process_components() to bring _perform_scan from 64 to <=15
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
+
+Signed-off-by: Paul Horton <phorton@sonatype.com>
+
+
 ## v3.1.0 (2026-05-12)
 
 ### Bug Fixes
@@ -27,6 +358,11 @@ Signed-off-by: Paul Horton <phorton@sonatype.com>
 
 - **ci**: Allow brent-spiner to automate releases
   ([`8009e8b`](https://github.com/sonatype-nexus-community/jake/commit/8009e8b6829a4e043fe6b285cff702d9e6f9f66e))
+
+Signed-off-by: Paul Horton <phorton@sonatype.com>
+
+- **ci**: Update RTD config
+  ([`5a614da`](https://github.com/sonatype-nexus-community/jake/commit/5a614dade70c3e2e6b890475e6b662fb5781b554))
 
 Signed-off-by: Paul Horton <phorton@sonatype.com>
 

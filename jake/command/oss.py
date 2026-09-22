@@ -161,7 +161,7 @@ class OssCommand(BaseCommand):
     def _apply_whitelist(self, guide_results: List[ComponentReportPost]) -> None:
         if not self.arguments.oss_whitelist_json_file:
             return
-        with open(self.arguments.oss_whitelist_json_file) as f:
+        with open(self.arguments.oss_whitelist_json_file, encoding='utf-8') as f:
             json_data = json.load(f)
         whitelisted_ids = {entry["id"] for entry in json_data.get("ignore", [])}
         if whitelisted_ids:

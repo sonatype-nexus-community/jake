@@ -18,6 +18,7 @@
 
 import os
 import subprocess
+import tempfile
 from unittest import TestCase
 
 from jake.command import jake_version
@@ -36,3 +37,16 @@ class TestJakeCmd(TestCase):
     def test_jake_version(self):
         output = subprocess.check_output('jake -v', shell=True)
         self.assertEqual(f'jake {jake_version}', output.decode('utf-8').rstrip(os.linesep))
+
+    def test_jake_sbom_poetry_invalid_toml(self):
+        with tempfile.TemporaryDirectory() as dtmp:
+            bad_toml = os.path.join(dtmp, 'poetry.lock')
+            with open(bad_toml, 'w', encoding='utf-8') as f:
+                f.write('this is not toml [[[[' + os.linesep)
+            proc = subprocess.run(
+                f'jake sbom -t POETRY -f {bad_toml}',
+                shell=True, capture_output=True, text=True)
+        self.assertEqual(proc.returncode, 1)
+        combined = proc.stdout + proc.stderr
+        self.assertIn('unable to parse POETRY input', combined)
+        self.assertNotIn('Traceback', combined)

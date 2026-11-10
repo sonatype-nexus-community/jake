@@ -72,10 +72,16 @@ ThisTool = Component(
 class SbomCommand(BaseCommand):
 
     def handle_args(self) -> int:
-        bom = Bom(components=set(
-            parser_selector.get_parser(self.arguments.sbom_input_type, self.arguments.sbom_input_source)
-            .get_components()
-        ))
+        try:
+            components = parser_selector.get_parser(
+                self.arguments.sbom_input_type, self.arguments.sbom_input_source
+            ).get_components()
+        except ValueError as ex:
+            # Malformed input (e.g. invalid TOML/JSON or undecodable bytes)
+            # is a usage error: report it instead of dumping a traceback.
+            print(f'Error: unable to parse {self.arguments.sbom_input_type} input: {ex}')
+            return 1
+        bom = Bom(components=set(components))
         bom.metadata.tools.components.add(ThisTool)
 
         output_format = OutputFormat.XML
